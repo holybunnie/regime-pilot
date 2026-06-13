@@ -1,0 +1,23 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "attest/contracts/SignalAttestor.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.24;\n\n/// @title SignalAttestor\n/// @notice Minimal commit-reveal notary for trading signals. The owner commits a\n///         hash of a signal each hour BEFORE the market outcome is known, then later\n///         reveals the underlying payload. Anyone can recompute the hash from the\n///         revealed payload + salt and check it against the on-chain commit and its\n///         block timestamp \u2014 proving the signal predated the outcome and was not\n///         altered. Holds no funds, makes no external calls, is not upgradeable.\n///\n///         Hash recipe (see README): hash = keccak256(canonical_json_bytes || salt)\n///         where canonical JSON has sorted keys, no whitespace, UTF-8; salt is 32\n///         random bytes stored locally per commit.\ncontract SignalAttestor {\n    address public immutable owner;\n    uint256 public commitCount;\n\n    struct Commit {\n        bytes32 hash;\n        uint64 timestamp;   // block.timestamp at commit (seconds, UTC)\n        bool revealed;\n    }\n\n    mapping(uint256 => Commit) public commits;\n\n    event Committed(uint256 indexed id, bytes32 hash, uint256 timestamp);\n    event Revealed(uint256 indexed id, string payloadURI, bytes32 salt);\n\n    error NotOwner();\n    error BadId();\n    error AlreadyRevealed();\n\n    constructor() {\n        owner = msg.sender;\n    }\n\n    modifier onlyOwner() {\n        if (msg.sender != owner) revert NotOwner();\n        _;\n    }\n\n    /// @notice Notarize a signal hash. Returns the assigned commit id.\n    function commit(bytes32 hash) external onlyOwner returns (uint256 id) {\n        id = commitCount++;\n        commits[id] = Commit({hash: hash, timestamp: uint64(block.timestamp), revealed: false});\n        emit Committed(id, hash, block.timestamp);\n    }\n\n    /// @notice Reveal the payload behind a prior commit. Does not re-store the payload\n    ///         on-chain (kept cheap); the event carries the URI + salt for verifiers.\n    function reveal(uint256 id, string calldata payloadURI, bytes32 salt) external onlyOwner {\n        if (id >= commitCount) revert BadId();\n        Commit storage c = commits[id];\n        if (c.revealed) revert AlreadyRevealed();\n        c.revealed = true;\n        emit Revealed(id, payloadURI, salt);\n    }\n\n    /// @notice Read a commit's stored fields.\n    function getCommit(uint256 id) external view returns (bytes32 hash, uint64 timestamp, bool revealed) {\n        Commit storage c = commits[id];\n        return (c.hash, c.timestamp, c.revealed);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode"
+        ]
+      }
+    }
+  }
+}
