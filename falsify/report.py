@@ -58,8 +58,8 @@ def metrics(eq, start=None, end=None):
             "skew": float(pd.Series(rets).skew()), "kurt": float(pd.Series(rets).kurt() + 3.0)}
 
 
-def load_base():
-    spec = json.loads(SPEC.read_text())
+def load_base(spec_path=SPEC):
+    spec = json.loads(Path(spec_path).read_text())
     universe = [t["symbol"] for t in json.loads((REPO / "spec" / "universe.json").read_text())["tokens"]]
     panels = bt.load_panels(universe)
     feats = bt.build_features(spec, panels)
@@ -235,7 +235,10 @@ def ablation(base, panels, feats, embargo):
 
 # ----------------------------------------------------------------------- assemble
 def main():
-    base, universe, panels, feats, embargo = load_base()
+    spec_path = Path(sys.argv[1]) if len(sys.argv) > 1 else SPEC
+    suffix = "" if spec_path.stem == "regime_pilot" else "_" + spec_path.stem
+    base, universe, panels, feats, embargo = load_base(spec_path)
+    print(f"Falsifying {spec_path.name} ...")
     print("Running walk-forward (27 configs)...")
     wf = walk_forward(base, panels, feats, embargo)
     print("Running perturbation...")
@@ -250,13 +253,13 @@ def main():
     report = {"spec": base["meta"]["name"], "version": base["meta"]["version"],
               "embargo_start": str(embargo), "walk_forward": wf, "perturbation": pt,
               "shuffle_canary": sc, "deflated_sharpe": df, "ablation": ab}
-    (REPO / "falsify" / "REPORT.json").write_text(json.dumps(report, indent=2, sort_keys=True))
-    _write_md(report)
-    print("\nWrote falsify/REPORT.json and falsify/REPORT.md")
+    (REPO / "falsify" / f"REPORT{suffix}.json").write_text(json.dumps(report, indent=2, sort_keys=True))
+    _write_md(report, suffix)
+    print(f"\nWrote falsify/REPORT{suffix}.json and falsify/REPORT{suffix}.md")
     return 0
 
 
-def _write_md(r):
+def _write_md(r, suffix=""):
     wf, pt, sc, df, ab = r["walk_forward"], r["perturbation"], r["shuffle_canary"], r["deflated_sharpe"], r["ablation"]
     L = [f"# Falsification Report — {r['spec']} v{r['version']}", "",
          f"Embargoed out-of-sample window begins **{r['embargo_start'][:10]}** and is evaluated once, last.", ""]
@@ -313,7 +316,7 @@ def _write_md(r):
 
     L += ["", "---", "*Disclaimer: backtested performance does not predict live results. This project "
           "executes zero trades. Data: Binance hourly OHLCV + CoinMarketCap Fear & Greed.*"]
-    (REPO / "falsify" / "REPORT.md").write_text("\n".join(L) + "\n")
+    (REPO / "falsify" / f"REPORT{suffix}.md").write_text("\n".join(L) + "\n")
 
 
 if __name__ == "__main__":

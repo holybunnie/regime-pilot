@@ -59,7 +59,9 @@ def compute_signal(spec_path, effective_hour=None):
     regime = regimes.loc[t]
     row = feats.loc[t]
     w = bt.target_weights(spec, row, panels, t, regime, 0.0, ladder, universe)
-    weights = {a: round(v, WEIGHT_ROUND) for a, v in w.items() if v > 0}
+    # keep non-zero weights, including NEGATIVE (short) ones for v2 long/short specs.
+    # For long-only v1 all weights are >= 0, so this is identical to the old v>0 filter.
+    weights = {a: round(v, WEIGHT_ROUND) for a, v in w.items() if v != 0}
 
     payload = {
         "spec_version": spec["meta"]["version"],

@@ -59,6 +59,18 @@
    commit→reveal→verify), and x402 runs on Base mainnet. The funded wallet holds mainnet BNB +
    Base USDC for exactly this.
 
-10. **Solidity toolchain: TBD.** Neither `solc` nor Foundry is installed. Leaning toward `py-solc-x`
+10. **Re-froze live attestation from v1 to v2 (long/short) on 2026-06-13 ~11:26 UTC.** v2 adds
+    disciplined short exposure (short only confirmed downtrends — breadth breakdown AND price below
+    30d trend AND vol not extreme; never fades euphoria or shorts into capitulation; 20 bps/day
+    borrow cost). v2 tested better OUT-OF-SAMPLE (embargo +1.8% vs v1 +0.4%, Sharpe 2.98 vs 2.21,
+    walk-forward +1.3% vs +0.2%), shuffle-clean, robust — and its deflated Sharpe did NOT improve
+    (0.013), confirming no overfitting (neither version has a statistically significant edge over
+    the full bear window; the live forward test is the arbiter). Thresholds set by economic logic /
+    symmetry, not search, so trials stay 27. Engineering: v1 spec file untouched; `attest/verify.py`
+    and `reveal.py` match each commit to whichever spec reproduces its on-chain hash, so commits 0-3
+    (v1) stay verifiable while 4+ are v2. `commit_hour.py` now points at v2. v1 remains the
+    documented fallback (operator's call: revert by repointing commit_hour to v1).
+
+11. **Solidity toolchain: TBD.** Neither `solc` nor Foundry is installed. Leaning toward `py-solc-x`
    (pip-installable solc) + `web3.py` to keep the whole stack Python and reproducible with one
    lockfile; will confirm in Phase 7. *Why:* one language, one lockfile, easier determinism story.
