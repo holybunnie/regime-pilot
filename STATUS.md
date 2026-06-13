@@ -1,14 +1,14 @@
 # STATUS — Regime Pilot (plain English, for the operator)
 
-**Last updated:** 2026-06-13 06:15 UTC
+**Last updated:** 2026-06-13 07:00 UTC
 **Days to freeze:** submission freezes **2026-06-21 13:00 UTC** → ~8 days left.
 
 ## Scoreboard
 | Phase | State | One-line summary |
 |-------|-------|------------------|
-| 0 — Environment discovery | ✅ DONE | Machine, network, gas, SDK, and CMC skill format all checked with real calls; evidence saved. |
-| 1 — Data layer | ⏳ BLOCKED ON YOU | Cannot start until you give me a CMC API key. |
-| 2 — Spec schema | 🔜 NEXT | Can start now; does not need your input. |
+| 0 — Environment discovery | ✅ DONE | Machine, network, gas, SDK, CMC skill format, key tier + wallet all verified with real calls. `make verify-phase0` passes. |
+| 1 — Data layer | 🔜 NEXT | Unblocked. Data plan decided (hybrid: Binance hourly prices + CMC Fear&Greed history + CMC live quotes). |
+| 2 — Spec schema | ✅ DONE | JSON Schema + validator + 1 example + 8 malformed-rejection tests. `make verify-phase2` passes. |
 | 3 — Skill (compiler) | 🔜 | Needs the schema (Phase 2). |
 | 4 — Backtest engine | 🔜 | Needs schema + some cached data. |
 | 5 — Flagship strategy | 🔜 | Needs engine + data. |
@@ -17,6 +17,17 @@
 | 8 — x402 data plan | 🔜 | Can capture published prices now; one real $0.01 payment needs USDC-on-Base from you (optional). |
 | 9 — Packaging/demo | 🔜 | End. |
 | 10 — Verify harness | 🔜 | Built incrementally per phase. |
+
+## Key fact discovered: your CMC plan blocks price history
+Your CMC key works but is the **free tier**, which does **not** allow historical price data (only
+live prices + Fear & Greed history). You chose the **hybrid** plan: the backtest's historical
+prices come from Binance's free public data, the sentiment signal from CMC's Fear & Greed history,
+and the live on-chain proof stays 100% CMC. Cost: $0. This is documented openly in DECISIONS.md.
+
+## Wallet (verified on-chain)
+Address `0x73C0152a7dB01Cb11E257A8C82366B3EEaF53Ae1`: 0.009 BNB on BSC (attestation gas — enough at
+current low gas; top up to ~0.03 BNB if you want a spike buffer) + 1.50 USDC on Base (x402, ~150
+calls). No Base ETH needed (x402 is gasless for the payer).
 
 ## What I verified in Phase 0 (all with real calls, evidence in `evidence/`)
 - This machine: Ubuntu 24.04, Python 3.12.1, Node 24.14, 7.8 GB RAM, 20 GB free disk. Good enough.
@@ -34,24 +45,15 @@
   left over is yours; this project never spends BNB on anything but its own gas and executes ZERO
   trades.
 
-## 🙋 WHAT I NEED FROM YOU (in priority order)
-1. **CMC API key** — paste it into `.env` as `CMC_API_KEY`. Get it free at
-   https://pro.coinmarketcap.com/account . Without it I cannot fetch any market data (Phase 1).
-   As soon as you give it, I'll call `/v1/key/info` and tell you in plain English exactly which
-   data your plan can access (historical OHLCV varies by plan).
-2. **A funded attestation wallet** (for the on-chain proof). Steps:
-   - Make a brand-new wallet (e.g. a fresh MetaMask account) used for nothing else.
-   - Send it **0.05 BNB** on BNB Smart Chain.
-   - Export its private key and paste into `.env` as `ATTEST_PRIVATE_KEY`.
-   This is the headline differentiator and the live commits should start ASAP — but I will work on
-   the testnet version today without it, so you can do this in parallel.
-3. *(Optional, helps a special prize)* A Base wallet with ~$2 of USDC, key in `.env` as
-   `X402_BASE_PRIVATE_KEY`, so I can execute one real $0.01 x402 payment instead of only quoting
-   the published price.
+## 🙋 WHAT I NEED FROM YOU
+- **Nothing blocking right now.** CMC key, wallet (BNB + USDC) all provided and verified.
+- *(Optional)* Top up the wallet to ~0.03 BNB if you want a comfortable buffer against a gas
+  spike during the ~8 days of hourly commits. Not urgent at current gas prices.
 
-## How to see Phase 0 for yourself
+## How to see the work for yourself
 ```
-cat regime-pilot/evidence/phase0_discovery.md
+cd regime-pilot
+make verify-phase0     # live-checks every dependency + your credentials
+make verify-phase2     # proves the spec schema accepts valid + rejects broken specs
+make verify            # runs all gates that exist so far
 ```
-(A `make verify-phase0` command that re-runs all these probes live will land with the Makefile in
-the next step.)
