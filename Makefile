@@ -46,6 +46,15 @@ verify-phase6:
 verify-phase7:
 	PYTHONPATH=. $(PY) cli/verify_phase7.py
 
+verify-phase8:
+	$(PY) cli/verify_phase8.py
+
+x402-pay:
+	PYTHONPATH=. $(PY) x402plan/pay_x402.py
+
+x402-plan:
+	$(PY) x402plan/build_plan.py
+
 data:
 	$(PY) engine/data/fetch.py
 
@@ -88,6 +97,8 @@ verify:
 	@$(PY) cli/verify_phase5.py || true
 	@echo
 	@PYTHONPATH=. $(PY) cli/verify_phase7.py || true
+	@echo
+	@$(PY) cli/verify_phase8.py || true
 	@echo "#######################################################"
 	@echo "(More gates land with the data/engine/falsify/attest phases.)"
 

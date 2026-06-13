@@ -1,0 +1,38 @@
+{
+  "executed_real_payment": true,
+  "feeds": [
+    {
+      "cadence_per_week": 168,
+      "feed": "price",
+      "free_source": "Binance public klines (backtest) + CMC free tier (live)",
+      "oos_degradation_if_dropped": 0.0181,
+      "verdict": "KEEP",
+      "x402_available": true,
+      "x402_per_request_usd": 0.01,
+      "x402_weekly_cost_usd": 1.68
+    },
+    {
+      "cadence_per_week": 7,
+      "feed": "fear_greed",
+      "free_source": "CMC /v3/fear-and-greed (free on all tiers; not on x402)",
+      "oos_degradation_if_dropped": 0.0259,
+      "verdict": "KEEP",
+      "x402_available": false,
+      "x402_per_request_usd": null,
+      "x402_weekly_cost_usd": null
+    }
+  ],
+  "flagship_v2_oos_return_gross": 0.0179,
+  "flagship_v2_oos_return_net_of_free_sources": 0.0179,
+  "live_cost_now_note": "Strategy runs on FREE sources (Binance + CMC free tier); $0/week.",
+  "live_cost_now_usd_per_week": 0.0,
+  "minimal_viable_feed_set": [
+    "price",
+    "fear_greed"
+  ],
+  "price_per_request_usd": 0.01,
+  "x402_breakeven_capital_usd": 402.23,
+  "x402_cost_if_used_usd_per_month": 7.2,
+  "x402_cost_if_used_usd_per_week": 1.68,
+  "x402_unlocks_beyond_free": "get_global_crypto_derivatives_metrics (funding/OI) \u2014 blocked on free REST tier"
+}
