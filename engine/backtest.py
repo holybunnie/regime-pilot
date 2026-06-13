@@ -194,6 +194,41 @@ def select_assets(playbook, feats_row, panels, t, universe):
     return avail[:top_n]
 
 
+def target_weights(spec, row, panels, t, regime, dd, ladder, universe):
+    """Deterministic target portfolio weights for `regime` at hour `t`.
+
+    Shared by the backtest (live drawdown `dd`) and the live attestation committer
+    (dd=0 -> full-budget intent) so the attested signal matches the engine exactly.
+    """
+    sizing, risk = spec["sizing"], spec["risk"]
+    pb = spec["playbooks"][regime]
+    w = {a: 0.0 for a in universe}
+    asset_vol = row.get(sizing["asset_vol_feature"])
+    if pb["action"] == "flat" or asset_vol is None or np.isnan(asset_vol):
+        return w
+    base = sz.position_size(asset_vol, sizing["k"], sizing["vol_target_annual"],
+                            dd, risk["max_drawdown_budget"], sizing.get("max_position_weight", 0.5))
+    gmult = sz.gross_multiplier(dd, risk["max_drawdown_budget"], ladder, regime)
+    gross = min(base, risk["max_gross_exposure"]) * gmult
+    if pb["action"] == "hold_assets":
+        chosen = select_assets(pb, row, panels, t, universe)
+        if chosen:
+            wt = min(gross / len(chosen), risk["per_asset_cap"])
+            for a in chosen:
+                w[a] = wt
+    elif pb["action"] == "staged_reentry":
+        scale = float(np.clip((row.get(pb.get("reentry_feature"), 0) or 0) / 100.0, 0, 1))
+        for a in pb.get("assets", []):
+            if a in w:
+                w[a] = min(gross * scale, risk["per_asset_cap"])
+    elif pb["action"] == "mean_revert":
+        chosen = select_assets({"select": {"rank_by": "volume_24h", "top_n": 1}},
+                               row, panels, t, universe)
+        for a in chosen:
+            w[a] = min(gross * 0.5, risk["per_asset_cap"])
+    return w
+
+
 def run(spec, universe=None, end=None):
     """Run the backtest. If `end` (UTC Timestamp) is given, no decision is made at or
     after it — used to keep parameter fitting strictly out of the embargoed window."""
@@ -231,33 +266,8 @@ def run(spec, universe=None, end=None):
         pb = spec["playbooks"][regime]
         dd = (peak - equity) / peak if peak > 0 else 0.0
 
-        # ----- target weights -----
-        w_target = {a: 0.0 for a in universe}
-        asset_vol = row.get(avf)
-        if pb["action"] == "flat" or asset_vol is None or np.isnan(asset_vol):
-            pass
-        else:
-            base = sz.position_size(asset_vol, sizing["k"], sizing["vol_target_annual"],
-                                    dd, risk["max_drawdown_budget"],
-                                    sizing.get("max_position_weight", 0.5))
-            gmult = sz.gross_multiplier(dd, risk["max_drawdown_budget"], ladder, regime)
-            gross = min(base, risk["max_gross_exposure"]) * gmult
-            if pb["action"] == "hold_assets":
-                chosen = select_assets(pb, row, panels, t, universe)
-                if chosen:
-                    w = min(gross / len(chosen), risk["per_asset_cap"])
-                    for a in chosen:
-                        w_target[a] = w
-            elif pb["action"] == "staged_reentry":
-                scale = float(np.clip((row.get(pb.get("reentry_feature"), 0) or 0) / 100.0, 0, 1))
-                for a in pb.get("assets", []):
-                    if a in w_target:
-                        w_target[a] = min(gross * scale, risk["per_asset_cap"])
-            elif pb["action"] == "mean_revert":
-                chosen = select_assets({"select": {"rank_by": "volume_24h", "top_n": 1}},
-                                       row, panels, t, universe)
-                for a in chosen:
-                    w_target[a] = min(gross * 0.5, risk["per_asset_cap"])
+        # ----- target weights (shared with the live attestation committer) -----
+        w_target = target_weights(spec, row, panels, t, regime, dd, ladder, universe)
 
         # ----- costs on rebalance (filled at close[t]) -----
         cost = 0.0

@@ -37,11 +37,29 @@ verify-phase4:
 verify-phase5:
 	$(PY) cli/verify_phase5.py
 
+verify-phase7:
+	PYTHONPATH=. $(PY) cli/verify_phase7.py
+
 data:
 	$(PY) engine/data/fetch.py
 
 backtest:
 	$(PY) engine/backtest.py
+
+attest-deploy:
+	PYTHONPATH=. $(PY) attest/deploy.py
+
+attest-commit:
+	PYTHONPATH=. $(PY) attest/commit_hour.py
+
+attest-status:
+	@PYTHONPATH=. $(PY) attest/status.py
+
+attest-reveal:
+	PYTHONPATH=. $(PY) attest/reveal.py
+
+attest-verify:
+	PYTHONPATH=. $(PY) attest/verify.py
 
 # Aggregate gate — grows as phases land. Runs every gate that currently exists.
 verify:
@@ -57,6 +75,8 @@ verify:
 	@$(PY) tests/test_engine.py || true
 	@echo
 	@$(PY) cli/verify_phase5.py || true
+	@echo
+	@PYTHONPATH=. $(PY) cli/verify_phase7.py || true
 	@echo "#######################################################"
 	@echo "(More gates land with the data/engine/falsify/attest phases.)"
 

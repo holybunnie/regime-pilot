@@ -13,7 +13,7 @@
 | 4 — Backtest engine | ✅ DONE | Deterministic engine (guarded accessor, predicate AST, regime hysteresis, drawdown sizing). Proven: no-lookahead, feature-shift, byte-identical reruns, ladder boundaries. `make verify-phase4` passes. |
 | 5 — Flagship strategy | ✅ DONE | Regime Pilot spec (4 regimes, breadth + percentile features, sizing law). Backtest: **−10.4% vs BTC −45%** (a +34.6pp defensive outperformance), 12.4% max DD. Embargo proven untouched. `make verify-phase5` passes. |
 | 6 — Falsification report | 🔜 | Needs strategy results. |
-| 7 — On-chain attestation | ⏳ PARTIAL / URGENT | Can deploy to **testnet today** with no input from you. Mainnet + live hourly commits need a funded wallet. **Every day of delay shrinks the forward-test proof.** |
+| 7 — On-chain attestation | ✅ LIVE (mainnet) | SignalAttestor deployed to **BSC mainnet** (`0xB874…21c1`); commit→reveal→verify proven on real bytecode; 2 commits made, hashes reproduce from public data. **Needs you to push to GitHub + add 3 secrets to keep the hourly cron running** (see below). `make verify-phase7` passes. |
 | 8 — x402 data plan | 🔜 | Can capture published prices now; one real $0.01 payment needs USDC-on-Base from you (optional). |
 | 9 — Packaging/demo | 🔜 | End. |
 | 10 — Verify harness | 🔜 | Built incrementally per phase. |
@@ -45,7 +45,22 @@ calls). No Base ETH needed (x402 is gasless for the payer).
   left over is yours; this project never spends BNB on anything but its own gas and executes ZERO
   trades.
 
-## 🙋 WHAT I NEED FROM YOU
+## 🚨 ACTION NEEDED: keep the hourly on-chain commits running (GitHub Actions)
+The attestation is LIVE on mainnet and I've made the first commits manually. To run it
+automatically every hour for free (no VPS), do this once:
+1. Create a GitHub repo named `regime-pilot` under your account and push this folder to it
+   (I can do the push for you if you authorize `gh`/git credentials — just say so).
+2. In the repo: **Settings → Secrets and variables → Actions → New repository secret**, add
+   these three (names exactly):
+   - `CMC_API_KEY` — your CoinMarketCap key (same value as in `.env`)
+   - `ATTEST_PRIVATE_KEY` — the wallet private key (same value you put in `.env`)
+   - `ATTEST_SALT_SEED` — copy the value from your `.env` file's `ATTEST_SALT_SEED` line
+3. That's it. The workflow `.github/workflows/attest.yml` then commits one signal every hour
+   at HH:05 and pushes the public record. Watch it under the repo's **Actions** tab.
+- Until you do this, I can keep firing commits manually from here, but this Codespace sleeps,
+  so GitHub Actions is what makes it reliable for the 8 days to the freeze.
+
+## 🙋 OTHER (non-blocking)
 - **The official 149-token BEP-20 universe list** from the hackathon brief, when convenient.
   I've built and tested everything on a verified interim set of 15 liquid majors (BNB, BTC, ETH,
   …). The moment you paste the official list into `spec/universe.json`, `make data` re-pulls it and
