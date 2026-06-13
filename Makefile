@@ -31,6 +31,9 @@ verify-phase1:
 verify-phase2:
 	$(PY) tests/test_schema.py
 
+verify-phase3:
+	$(PY) cli/verify_phase3.py
+
 verify-phase4:
 	$(PY) tests/test_sizing.py && $(PY) tests/test_engine.py
 
@@ -73,6 +76,8 @@ verify:
 	@$(PY) cli/verify_phase0.py || true
 	@echo
 	@$(PY) cli/verify_phase1.py || true
+	@echo
+	@$(PY) cli/verify_phase3.py || true
 	@echo
 	@$(PY) tests/test_schema.py || true
 	@echo

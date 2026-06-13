@@ -9,7 +9,7 @@
 | 0 — Environment discovery | ✅ DONE | Machine, network, gas, SDK, CMC skill format, key tier + wallet all verified with real calls. `make verify-phase0` passes. |
 | 1 — Data layer | ✅ DONE | 15 tokens × 9,361 hourly bars (390 days) + CMC Fear&Greed history cached; 0 gaps, 0 dups, cache matches live, embargo set. `make verify-phase1` passes. *(Universe is interim — see note below.)* |
 | 2 — Spec schema | ✅ DONE | JSON Schema + validator + 1 example + 8 malformed-rejection tests. `make verify-phase2` passes. |
-| 3 — Skill (compiler) | 🔜 | Needs the schema (Phase 2). |
+| 3 — Skill (compiler) | ✅ DONE | Installable CMC-format `skill/SKILL.md` + `compiler_prompt.md` + 3 worked example intents (flagship, momentum, impossible/refusal). `make verify-phase3` passes (specs validate; downstream byte-identical). |
 | 4 — Backtest engine | ✅ DONE | Deterministic engine (guarded accessor, predicate AST, regime hysteresis, drawdown sizing). Proven: no-lookahead, feature-shift, byte-identical reruns, ladder boundaries. `make verify-phase4` passes. |
 | 5 — Flagship strategy | ✅ DONE | Regime Pilot spec (4 regimes, breadth + percentile features, sizing law). Backtest: **−10.4% vs BTC −45%** (a +34.6pp defensive outperformance), 12.4% max DD. Embargo proven untouched. `make verify-phase5` passes. |
 | 6 — Falsification report | ✅ DONE | Walk-forward, ±20% perturbation (robust), shuffle canary (edge vanished — no leakage), deflated Sharpe (0.01 — honestly fails the multiple-testing bar over the bear-market window), feature ablation. `make verify-phase6` passes. |
