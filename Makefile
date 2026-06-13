@@ -34,6 +34,9 @@ verify-phase2:
 verify-phase4:
 	$(PY) tests/test_sizing.py && $(PY) tests/test_engine.py
 
+verify-phase5:
+	$(PY) cli/verify_phase5.py
+
 data:
 	$(PY) engine/data/fetch.py
 
@@ -52,6 +55,8 @@ verify:
 	@$(PY) tests/test_sizing.py || true
 	@echo
 	@$(PY) tests/test_engine.py || true
+	@echo
+	@$(PY) cli/verify_phase5.py || true
 	@echo "#######################################################"
 	@echo "(More gates land with the data/engine/falsify/attest phases.)"
 

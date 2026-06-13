@@ -63,7 +63,8 @@
               "kind": {"type": "string", "enum": ["raw", "sma", "realized_vol", "percentile_rank", "breadth", "delta"]},
               "window": {"type": "integer", "minimum": 1, "description": "Lookback length in hours. Required for sma/realized_vol/percentile_rank/breadth/delta."},
               "threshold_kind": {"type": "string", "enum": ["above_mean"], "description": "For breadth: the per-asset condition counted across the universe."},
-              "threshold_window": {"type": "integer", "minimum": 1, "description": "For breadth: window of the per-asset mean (e.g. 30d)."}
+              "threshold_window": {"type": "integer", "minimum": 1, "description": "For breadth: window of the per-asset mean (e.g. 30d)."},
+              "rank_window": {"type": "integer", "minimum": 2, "description": "Optional. If set, the transform's output is percentile-ranked (0..100) over this trailing window. Lets any transform be expressed as a percentile, e.g. percentile rank of realized vol. This is how the flagship uses percentile-based thresholds."}
             },
             "allOf": [
               {"if": {"properties": {"kind": {"enum": ["sma", "realized_vol", "percentile_rank", "delta"]}}}, "then": {"required": ["window"]}},

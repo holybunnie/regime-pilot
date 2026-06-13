@@ -46,6 +46,19 @@
    market_cap` raises a clear error; `volume_24h` (liquidity) is the supported ranking. Documented
    in ASSUMPTIONS.md; the flagship's playbooks use volume_24h / breadth.
 
-8. **Solidity toolchain: TBD.** Neither `solc` nor Foundry is installed. Leaning toward `py-solc-x`
+8. **Flagship reported honestly, not curve-fit.** The backtest window happened to be a severe
+   bear market (BTC −45%). Regime Pilot returned −10.4% — a +34.6pp outperformance with a 12.4%
+   max drawdown — by routing to cash (the `chop`/`crowded_fragile` flat playbooks) through the
+   decline. We deliberately did NOT tune parameters to flip the absolute return positive; that
+   would be the exact overfitting the falsification report and on-chain attestation are built to
+   expose. The honest value proposition is capital preservation / defensive regime routing, to be
+   stress-tested out-of-sample in Phase 6.
+
+9. **All on-chain work is MAINNET only.** Per the operator: no BSC testnet. The attestation
+   contract deploys straight to BSC mainnet (after a local mock-chain dry-run of
+   commit→reveal→verify), and x402 runs on Base mainnet. The funded wallet holds mainnet BNB +
+   Base USDC for exactly this.
+
+10. **Solidity toolchain: TBD.** Neither `solc` nor Foundry is installed. Leaning toward `py-solc-x`
    (pip-installable solc) + `web3.py` to keep the whole stack Python and reproducible with one
    lockfile; will confirm in Phase 7. *Why:* one language, one lockfile, easier determinism story.

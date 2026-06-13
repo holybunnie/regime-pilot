@@ -1,0 +1,23 @@
+{
+  "avg_gross_exposure": 0.075729,
+  "benchmark_btc_max_drawdown": 0.528645,
+  "benchmark_btc_return": -0.449551,
+  "configurations_tried": 27,
+  "disclaimer": "Backtested performance does not predict live results. Zero trades executed.",
+  "excess_return_vs_btc": 0.345721,
+  "fee_bps": 10,
+  "hours_per_regime": {
+    "capitulation": 924,
+    "chop": 4043,
+    "trend_up": 1514
+  },
+  "max_drawdown": 0.12429,
+  "sharpe_annualized": -2.203729,
+  "slippage_bps_floor": 5,
+  "spec_name": "Regime Pilot",
+  "spec_version": "1.0.0",
+  "total_return": -0.103829,
+  "trade_count": 2402,
+  "window_end": "2026-06-13T07:00:00+00:00",
+  "window_start": "2025-09-16T06:00:00+00:00"
+}

@@ -86,6 +86,8 @@ def build_features(spec, panels):
             series = ind.breadth(panels["close"], t["threshold_window"])
         else:
             raise ValueError(f"unknown transform {kind}")
+        if t.get("rank_window"):                 # optional percentile-rank of the transform output
+            series = ind.percentile_rank(series, t["rank_window"])
         out[f["name"]] = series.shift(1)        # <-- the no-lookahead shift
     return out
 
@@ -192,7 +194,9 @@ def select_assets(playbook, feats_row, panels, t, universe):
     return avail[:top_n]
 
 
-def run(spec, universe=None):
+def run(spec, universe=None, end=None):
+    """Run the backtest. If `end` (UTC Timestamp) is given, no decision is made at or
+    after it — used to keep parameter fitting strictly out of the embargoed window."""
     universe = universe or [t["symbol"] for t in
                             json.loads((REPO / "spec" / "universe.json").read_text())["tokens"]]
     panels = load_panels(universe)
@@ -211,6 +215,8 @@ def run(spec, universe=None):
         raise RuntimeError("no hours with all features populated — check windows vs history")
     start = valid.index[0]
     hours = close.index[close.index >= start]
+    if end is not None:
+        hours = hours[hours <= end]
 
     equity, peak = 1.0, 1.0
     w_prev = {a: 0.0 for a in universe}
@@ -278,10 +284,14 @@ def run(spec, universe=None):
                         "drawdown": round((peak - equity) / peak, ROUND), "regime": regime,
                         "gross": round(sum(w_target.values()), ROUND)})
 
-    return _finalize(spec, eq_rows, trade_rows, regime_series, start, hours[-1])
+    bw = panels["btc"].loc[start:hours[-1]]
+    bench_ret = float(bw.iloc[-1] / bw.iloc[0] - 1.0)
+    bench_dd = float(((bw.cummax() - bw) / bw.cummax()).max())
+    return _finalize(spec, eq_rows, trade_rows, regime_series, start, hours[-1],
+                     bench_ret, bench_dd)
 
 
-def _finalize(spec, eq_rows, trade_rows, regime_series, start, end):
+def _finalize(spec, eq_rows, trade_rows, regime_series, start, end, bench_ret, bench_dd):
     eq = pd.DataFrame(eq_rows)
     total_return = eq["equity"].iloc[-1] - 1.0
     max_dd = eq["drawdown"].max()
@@ -294,6 +304,9 @@ def _finalize(spec, eq_rows, trade_rows, regime_series, start, end):
         "total_return": round(float(total_return), 6),
         "max_drawdown": round(float(max_dd), 6),
         "sharpe_annualized": round(float(sharpe), 6),
+        "benchmark_btc_return": round(bench_ret, 6),
+        "benchmark_btc_max_drawdown": round(bench_dd, 6),
+        "excess_return_vs_btc": round(float(total_return) - bench_ret, 6),
         "trade_count": len(trade_rows),
         "avg_gross_exposure": round(float(eq["gross"].mean()), 6),
         "hours_per_regime": per_regime,
@@ -305,12 +318,43 @@ def _finalize(spec, eq_rows, trade_rows, regime_series, start, end):
     return {"equity": eq, "trades": pd.DataFrame(trade_rows), "summary": summary}
 
 
+def _report_md(s):
+    rp = "\n".join(f"| {k} | {v} |" for k, v in sorted(s["hours_per_regime"].items()))
+    return f"""# Backtest Report — {s['spec_name']} v{s['spec_version']}
+
+**Window:** {s['window_start'][:16]} → {s['window_end'][:16]} UTC
+
+## Headline (net of costs)
+| Metric | Strategy | BTC buy & hold |
+|--------|---------:|---------------:|
+| Total return | {s['total_return']:+.2%} | {s['benchmark_btc_return']:+.2%} |
+| Max drawdown | {s['max_drawdown']:.2%} | {s['benchmark_btc_max_drawdown']:.2%} |
+| Excess return vs BTC | **{s['excess_return_vs_btc']:+.2%}** | — |
+| Annualized Sharpe | {s['sharpe_annualized']:.2f} | — |
+| Trades | {s['trade_count']} | — |
+| Avg gross exposure | {s['avg_gross_exposure']:.1%} | 100% |
+
+## Hours per regime
+| Regime | Hours |
+|--------|------:|
+{rp}
+
+## Disclosures (honesty rule R8)
+- **Data sources:** hourly OHLCV from Binance public API (backtest prices); Fear & Greed history
+  from CoinMarketCap `/v3/fear-and-greed/historical`. See DECISIONS.md for the hybrid-data rationale.
+- **Costs modeled:** {s['fee_bps']} bps fee/side + {s['slippage_bps_floor']} bps slippage floor + size-aware slippage.
+- **Configurations tried:** {s['configurations_tried']} (used by the deflated Sharpe in the falsification report).
+- **Disclaimer:** {s['disclaimer']}
+"""
+
+
 def write_outputs(result, outdir):
     outdir = Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     result["equity"].to_csv(outdir / "equity_curve.csv", index=False, lineterminator="\n")
     result["trades"].to_csv(outdir / "trades.csv", index=False, lineterminator="\n")
     (outdir / "summary.json").write_text(json.dumps(result["summary"], indent=2, sort_keys=True))
+    (outdir / "report.md").write_text(_report_md(result["summary"]))
 
 
 def main(argv):
