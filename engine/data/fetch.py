@@ -17,6 +17,7 @@ Design rules honored:
 Run: python engine/data/fetch.py            (or: make data)
 """
 import json
+import os
 import time
 import sys
 from datetime import datetime, timedelta, timezone
@@ -44,6 +45,8 @@ def now_utc():
 
 
 def load_env():
+    # .env file first, then real environment variables take precedence (so GitHub
+    # Actions secrets, which arrive as env vars and have no .env file, are honored).
     env = {}
     if ENV.exists():
         for line in ENV.read_text().splitlines():
@@ -51,6 +54,7 @@ def load_env():
             if line and not line.startswith("#") and "=" in line:
                 k, v = line.split("=", 1)
                 env[k.strip()] = v.strip()
+    env.update({k: v for k, v in os.environ.items() if k.startswith("CMC_") or k.startswith("ATTEST_")})
     return env
 
 
