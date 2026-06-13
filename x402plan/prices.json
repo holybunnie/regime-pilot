@@ -1,0 +1,33 @@
+{
+  "_source": "Live CMC x402 402-challenge captured 2026-06-13 + ONE real executed payment. Not from docs.",
+  "network": "Base mainnet (eip155:8453)",
+  "asset": "USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)",
+  "price_per_request_usd": 0.01,
+  "pay_to": "0x3C5f3a6cE224BB89D72f5EB4232ecC27F67B3eeA",
+  "transfer_method": "EIP-3009 transferWithAuthorization (gasless for payer)",
+  "executed_payment": {
+    "executed": true,
+    "tool": "get_crypto_quotes_latest",
+    "args": {"id": "1"},
+    "http_status": 200,
+    "usdc_spent": 0.01,
+    "usdc_balance_before": 1.5000,
+    "usdc_balance_after": 1.4900,
+    "settlement_status": "settled",
+    "x402_flow_id": "dd5a9ce9-bece-405e-b73e-66638b976e01",
+    "gasless_confirmed": true,
+    "note": "Wallet held 0 Base ETH; settlement still succeeded -> facilitator pays gas, EIP-3009 confirmed.",
+    "evidence": "evidence/x402_executed_payment.json"
+  },
+  "x402_tools_available": [
+    "get_crypto_quotes_latest", "trending_crypto_narratives", "search_crypto_info",
+    "get_crypto_latest_news", "get_crypto_technical_analysis", "get_crypto_metrics",
+    "get_global_crypto_derivatives_metrics", "search_cryptos", "get_global_metrics_latest",
+    "get_upcoming_macro_events", "get_crypto_info", "get_crypto_marketcap_technical_analysis"
+  ],
+  "notes": [
+    "x402 endpoint: https://mcp.coinmarketcap.com/x402/mcp (MCP streamable-HTTP; the REST host pro.coinmarketcap.com is behind an AWS WAF JS challenge and not callable headless).",
+    "x402 UNLOCKS get_global_crypto_derivatives_metrics (funding/OI) which the free REST tier blocks — relevant for a future strategy version.",
+    "There is NO fear-and-greed tool on x402; Fear & Greed remains free via the CMC v3 REST endpoint on all tiers."
+  ]
+}

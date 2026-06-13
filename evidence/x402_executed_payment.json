@@ -1,0 +1,12 @@
+{
+  "tool": "get_crypto_quotes_latest",
+  "args": {
+    "id": "1"
+  },
+  "amount_usdc": 0.01,
+  "pay_to": "0x3C5f3a6cE224BB89D72f5EB4232ecC27F67B3eeA",
+  "config_id": "699dbab79f32ffde650104aa",
+  "http": 200,
+  "settlement_header": "eyJ4NDAyVmVyc2lvbiI6MiwieDQwMkZsb3dJZCI6ImRkNWE5Y2U5LWJlY2UtNDA1ZS1iNzNlLTY2NjM4Yjk3NmUwMSIsInJlc291cmNlIjoiWDQwMl9nZXRfY3J5cHRvX3F1b3Rlc19sYXRlc3QiLCJzdGF0dXMiOiJzZXR0bGVkIn0=",
+  "data_excerpt": "{\"jsonrpc\": \"2.0\", \"id\": 1, \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"[{\\\"id\\\":\\\"1\\\",\\\"name\\\":\\\"Bitcoin\\\",\\\"symbol\\\":\\\"BTC\\\",\\\"slug\\\":\\\"bitcoin\\\",\\\"price\\\":64087.214782374125000000000000,\\\"rank\\\":1,\\\"turnover\\\":0.01673471,\\\"last_updated_time\\\":\\\"2026-06-13T13:00:00.000Z\\\",\\\"percent_change_1h\\\":0.26479025,\\\"percent_change_24h\\\":1.08317274,\\\"percent_change_7d\\\":5.10638379,\\\"percent_change_30d\\\":-19.58129228,\\\"percent_change_60d\\\":-13.96168761,\\\"percent_change_90d\\\":-10.53377140,\\\"percent_change_1y\\\":-38.90660055,\\\"percent_change_3y\\\":145.76979950124500,\\\"percent_change_all\\\":103898268.068"
+}
