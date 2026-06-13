@@ -37,6 +37,9 @@ verify-phase4:
 verify-phase5:
 	$(PY) cli/verify_phase5.py
 
+verify-phase6:
+	PYTHONPATH=. $(PY) cli/verify_phase6.py
+
 verify-phase7:
 	PYTHONPATH=. $(PY) cli/verify_phase7.py
 
@@ -45,6 +48,9 @@ data:
 
 backtest:
 	$(PY) engine/backtest.py
+
+falsify:
+	PYTHONPATH=. $(PY) falsify/report.py
 
 attest-deploy:
 	PYTHONPATH=. $(PY) attest/deploy.py
