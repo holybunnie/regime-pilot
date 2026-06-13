@@ -57,7 +57,7 @@ Individual gates: `make verify-phase{0,1,3,4,5,6,7,8,9}` (and `make falsify` reg
 - **Interim universe.** 15 liquid majors pending the brief's official 149-token list (engine is
   universe-agnostic; replace `spec/universe.json` and re-run `make data`).
 - **Ranking** by 24h dollar-volume (market-cap history not on the free tier).
-- **Not yet done:** BscScan source verification (needs `BSCSCAN_API_KEY`); the reveal step (June 20–21).
+- **Not yet done:** the reveal step (June 20–21). (Contract source is verified on BscScan — exact match.)
 
 ## 6. Architecture / data flow
 intent → `skill/` (LLM authors spec) → `spec/*.spec.json` → `engine/` (deterministic backtest)

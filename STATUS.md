@@ -5,8 +5,8 @@
 
 ## Bottom line
 **All 10 phases are built, tested, and committed.** `make verify` passes top to bottom. The
-on-chain attestation runs itself every hour. Two items remain, both external/time-gated: BscScan
-source verification (needs a free API key from you) and the reveal on June 20–21.
+on-chain attestation runs itself every hour, and the **contract source is verified on BscScan**
+(exact bytecode + ABI match). The only remaining item is the **reveal on June 20–21** (scripted, ready).
 
 ## Scoreboard
 | Phase | State | One-line summary |
@@ -38,11 +38,10 @@ accruing now and will be the real arbiter.
 - Honest record: id=0 is a late manual bootstrap (flagged ⚠️ not-prompt); one early hour is logged
   MISSED (an env-var bug, since fixed). Nothing hidden.
 
-## 🙋 What I need from you (both optional / non-blocking)
-1. **BscScan API key** → paste into `.env` as `BSCSCAN_API_KEY`, then I auto-verify the contract
-   source so judges can read it. Get it at https://etherscan.io/myapikey (one key works for BSC).
-2. **The official 149-token universe list** → drop into `spec/universe.json`; everything re-derives
+## 🙋 What I need from you (optional / non-blocking)
+1. **The official 149-token universe list** → drop into `spec/universe.json`; everything re-derives
    (the engine is universe-agnostic). Until then we run a verified interim set of 15 liquid majors.
+2. Nothing else. (Contract source is verified on BscScan; the reveal is scripted for June 20–21.)
 
 ## How to see it all
 ```bash
