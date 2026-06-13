@@ -1,0 +1,233 @@
+{
+  "ablation": {
+    "full_oos_return": 0.0037,
+    "full_oos_sharpe": 2.0141,
+    "rows": [
+      {
+        "degradation_return": 0.0,
+        "dropped_feature": "breadth_30d",
+        "oos_return": 0.0037,
+        "oos_sharpe": 2.0141
+      },
+      {
+        "degradation_return": 0.0032,
+        "dropped_feature": "breadth_pct",
+        "oos_return": 0.0005,
+        "oos_sharpe": 0.2769
+      },
+      {
+        "degradation_return": 0.0032,
+        "dropped_feature": "fg_level",
+        "oos_return": 0.0005,
+        "oos_sharpe": 0.6224
+      },
+      {
+        "degradation_return": 0.0085,
+        "dropped_feature": "fg_delta_7d",
+        "oos_return": -0.0048,
+        "oos_sharpe": -2.0288
+      },
+      {
+        "degradation_return": 0.0,
+        "dropped_feature": "btc_vol",
+        "oos_return": 0.0037,
+        "oos_sharpe": 2.0141
+      },
+      {
+        "degradation_return": -0.0001,
+        "dropped_feature": "btc_vol_pct",
+        "oos_return": 0.0038,
+        "oos_sharpe": 2.0594
+      }
+    ]
+  },
+  "deflated_sharpe": {
+    "deflated_benchmark_sr_per_period": 0.004034,
+    "deflated_sharpe_ratio": 0.0116,
+    "interpretation": "does NOT clear the multiple-testing bar (likely no real edge)",
+    "kurt": 51.523,
+    "n_obs": 6481,
+    "observed_sharpe_annual": -2.2039,
+    "observed_sharpe_per_period": -0.023547,
+    "reference": "Bailey & Lopez de Prado (2014), The Deflated Sharpe Ratio",
+    "skew": -2.1564,
+    "trials": 27,
+    "var_sr_trials": 3.951170875125212e-06
+  },
+  "embargo_start": "2026-05-14 08:00:00+00:00",
+  "perturbation": {
+    "baseline_return": -0.1071,
+    "baseline_sharpe": -2.4339,
+    "max_abs_return_swing": 0.0291,
+    "rows": [
+      {
+        "d_return": -0.0013,
+        "max_dd": 0.1246,
+        "param": "k -20%",
+        "return": -0.1084,
+        "sharpe": -2.4861
+      },
+      {
+        "d_return": 0.0051,
+        "max_dd": 0.119,
+        "param": "vol_target -20%",
+        "return": -0.102,
+        "sharpe": -2.3585
+      },
+      {
+        "d_return": 0.0119,
+        "max_dd": 0.1118,
+        "param": "max_dd_budget -20%",
+        "return": -0.0953,
+        "sharpe": -2.2111
+      },
+      {
+        "d_return": 0.0045,
+        "max_dd": 0.1199,
+        "param": "fg_extremes -20%",
+        "return": -0.1026,
+        "sharpe": -2.2768
+      },
+      {
+        "d_return": 0.0175,
+        "max_dd": 0.1268,
+        "param": "vol_pct_thr -20%",
+        "return": -0.0896,
+        "sharpe": -2.1465
+      },
+      {
+        "d_return": 0.0291,
+        "max_dd": 0.1184,
+        "param": "breadth_thr -20%",
+        "return": -0.0781,
+        "sharpe": -1.4928
+      },
+      {
+        "d_return": 0.0,
+        "max_dd": 0.1243,
+        "param": "k +20%",
+        "return": -0.1071,
+        "sharpe": -2.4339
+      },
+      {
+        "d_return": -0.0018,
+        "max_dd": 0.1261,
+        "param": "vol_target +20%",
+        "return": -0.1089,
+        "sharpe": -2.4646
+      },
+      {
+        "d_return": -0.0162,
+        "max_dd": 0.1402,
+        "param": "max_dd_budget +20%",
+        "return": -0.1233,
+        "sharpe": -2.6618
+      },
+      {
+        "d_return": 0.0048,
+        "max_dd": 0.1178,
+        "param": "fg_extremes +20%",
+        "return": -0.1023,
+        "sharpe": -2.147
+      },
+      {
+        "d_return": -0.0102,
+        "max_dd": 0.1341,
+        "param": "vol_pct_thr +20%",
+        "return": -0.1173,
+        "sharpe": -2.6311
+      },
+      {
+        "d_return": 0.0007,
+        "max_dd": 0.1146,
+        "param": "breadth_thr +20%",
+        "return": -0.1064,
+        "sharpe": -2.3097
+      }
+    ],
+    "verdict": "ROBUST (degrades smoothly)"
+  },
+  "shuffle_canary": {
+    "edge_survived_shuffle": false,
+    "real_return": -0.1071,
+    "real_sharpe": -2.4339,
+    "seed": 20260613,
+    "shuffled_return": -0.08,
+    "shuffled_sharpe": -2.9119,
+    "verdict": "PASS \u2014 edge vanished on shuffled data (as it should)"
+  },
+  "spec": "Regime Pilot",
+  "version": "1.0.0",
+  "walk_forward": {
+    "embargo_oos": {
+      "hours": 720,
+      "max_dd": 0.0083,
+      "return": 0.0017,
+      "sharpe": 0.8495
+    },
+    "embargo_selected": "p8_k0.5_b55",
+    "folds": [
+      {
+        "fold": 1,
+        "selected": "p4_k0.3_b55",
+        "train_end": "2025-11-03",
+        "val_end": "2025-12-21",
+        "val_return": -0.054,
+        "val_sharpe": -6.6771
+      },
+      {
+        "fold": 2,
+        "selected": "p4_k0.3_b55",
+        "train_end": "2025-12-21",
+        "val_end": "2026-02-07",
+        "val_return": -0.0315,
+        "val_sharpe": -2.1461
+      },
+      {
+        "fold": 3,
+        "selected": "p12_k0.3_b55",
+        "train_end": "2026-02-07",
+        "val_end": "2026-03-27",
+        "val_return": -0.0172,
+        "val_sharpe": -2.2807
+      },
+      {
+        "fold": 4,
+        "selected": "p8_k0.5_b55",
+        "train_end": "2026-03-27",
+        "val_end": "2026-05-14",
+        "val_return": 0.0039,
+        "val_sharpe": 0.5185
+      }
+    ],
+    "grid_sharpes": {
+      "p12_k0.3_b55": -2.4401,
+      "p12_k0.3_b60": -2.6234,
+      "p12_k0.3_b65": -2.6346,
+      "p12_k0.5_b55": -2.3098,
+      "p12_k0.5_b60": -2.4237,
+      "p12_k0.5_b65": -2.5235,
+      "p12_k0.7_b55": -2.3098,
+      "p12_k0.7_b60": -2.4237,
+      "p12_k0.7_b65": -2.5235,
+      "p4_k0.3_b55": -2.4969,
+      "p4_k0.3_b60": -2.5433,
+      "p4_k0.3_b65": -2.9447,
+      "p4_k0.5_b55": -2.325,
+      "p4_k0.5_b60": -2.4368,
+      "p4_k0.5_b65": -2.6813,
+      "p4_k0.7_b55": -2.3249,
+      "p4_k0.7_b60": -2.4368,
+      "p4_k0.7_b65": -2.6813,
+      "p8_k0.3_b55": -2.4972,
+      "p8_k0.3_b60": -2.5715,
+      "p8_k0.3_b65": -2.8808,
+      "p8_k0.5_b55": -2.218,
+      "p8_k0.5_b60": -2.4339,
+      "p8_k0.5_b65": -2.7547,
+      "p8_k0.7_b55": -2.218,
+      "p8_k0.7_b60": -2.4339,
+      "p8_k0.7_b65": -2.7547
+    }
+  }
+}

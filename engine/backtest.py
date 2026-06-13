@@ -229,13 +229,19 @@ def target_weights(spec, row, panels, t, regime, dd, ladder, universe):
     return w
 
 
-def run(spec, universe=None, end=None):
+def run(spec, universe=None, end=None, panels=None, feats=None):
     """Run the backtest. If `end` (UTC Timestamp) is given, no decision is made at or
-    after it — used to keep parameter fitting strictly out of the embargoed window."""
+    after it — used to keep parameter fitting strictly out of the embargoed window.
+
+    Optional `panels`/`feats` injection (default None = compute normally) lets the
+    falsification suite reuse data/features across variants and feed shuffled data.
+    These are additive: the live attestation path (compute_signal) never calls run()."""
     universe = universe or [t["symbol"] for t in
                             json.loads((REPO / "spec" / "universe.json").read_text())["tokens"]]
-    panels = load_panels(universe)
-    feats = build_features(spec, panels)
+    if panels is None:
+        panels = load_panels(universe)
+    if feats is None:
+        feats = build_features(spec, panels)
     regime_series = assign_regimes(spec, feats)
 
     close = panels["close"]

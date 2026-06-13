@@ -12,7 +12,7 @@
 | 3 — Skill (compiler) | 🔜 | Needs the schema (Phase 2). |
 | 4 — Backtest engine | ✅ DONE | Deterministic engine (guarded accessor, predicate AST, regime hysteresis, drawdown sizing). Proven: no-lookahead, feature-shift, byte-identical reruns, ladder boundaries. `make verify-phase4` passes. |
 | 5 — Flagship strategy | ✅ DONE | Regime Pilot spec (4 regimes, breadth + percentile features, sizing law). Backtest: **−10.4% vs BTC −45%** (a +34.6pp defensive outperformance), 12.4% max DD. Embargo proven untouched. `make verify-phase5` passes. |
-| 6 — Falsification report | 🔜 | Needs strategy results. |
+| 6 — Falsification report | ✅ DONE | Walk-forward, ±20% perturbation (robust), shuffle canary (edge vanished — no leakage), deflated Sharpe (0.01 — honestly fails the multiple-testing bar over the bear-market window), feature ablation. `make verify-phase6` passes. |
 | 7 — On-chain attestation | ✅ LIVE (mainnet) | SignalAttestor deployed to **BSC mainnet** (`0xB874…21c1`); commit→reveal→verify proven on real bytecode; 2 commits made, hashes reproduce from public data. **Needs you to push to GitHub + add 3 secrets to keep the hourly cron running** (see below). `make verify-phase7` passes. |
 | 8 — x402 data plan | 🔜 | Can capture published prices now; one real $0.01 payment needs USDC-on-Base from you (optional). |
 | 9 — Packaging/demo | 🔜 | End. |
