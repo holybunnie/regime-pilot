@@ -1,0 +1,19 @@
+{
+  "avg_gross_exposure": 0.09551,
+  "configurations_tried": 3,
+  "disclaimer": "Backtested performance does not predict live results. Zero trades executed.",
+  "fee_bps": 10,
+  "hours_per_regime": {
+    "risk_off": 5769,
+    "risk_on": 3422
+  },
+  "max_drawdown": 0.151998,
+  "sharpe_annualized": -0.615815,
+  "slippage_bps_floor": 5,
+  "spec_name": "Simple BTC Momentum",
+  "spec_version": "0.1.0",
+  "total_return": -0.064899,
+  "trade_count": 3462,
+  "window_end": "2026-06-13T07:00:00+00:00",
+  "window_start": "2025-05-26T08:00:00+00:00"
+}
