@@ -5,7 +5,8 @@ name: hourly-attestation
 # signal's effective hour (a true forward prediction). Manual run also allowed.
 on:
   schedule:
-    - cron: "5 * * * *"
+    # :23 — avoid the congested :00/:05 slots where GitHub delays/skips scheduled runs
+    - cron: "23 * * * *"
   workflow_dispatch:
 
 permissions:
