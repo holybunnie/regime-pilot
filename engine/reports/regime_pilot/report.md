@@ -1,13 +1,13 @@
 # Backtest Report — Regime Pilot v1.0.0
 
-**Window:** 2025-09-16T06:00 → 2026-06-13T07:00 UTC
+**Window:** 2025-09-16T09:00 → 2026-06-13T10:00 UTC
 
 ## Headline (net of costs)
 | Metric | Strategy | BTC buy & hold |
 |--------|---------:|---------------:|
-| Total return | -10.38% | -44.96% |
+| Total return | -10.38% | -44.71% |
 | Max drawdown | 12.43% | 52.86% |
-| Excess return vs BTC | **+34.57%** | — |
+| Excess return vs BTC | **+34.33%** | — |
 | Annualized Sharpe | -2.20 | — |
 | Trades | 2402 | — |
 | Avg gross exposure | 7.6% | 100% |

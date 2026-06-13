@@ -1,77 +1,54 @@
 # STATUS — Regime Pilot (plain English, for the operator)
 
-**Last updated:** 2026-06-13 07:00 UTC
-**Days to freeze:** submission freezes **2026-06-21 13:00 UTC** → ~8 days left.
+**Last updated:** 2026-06-13 ~13:30 UTC · **Freeze:** 2026-06-21 13:00 UTC (~8 days out).
+**Repo:** https://github.com/holybunnie/regime-pilot · **Contract:** [`0xB874…21c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
+
+## Bottom line
+**All 10 phases are built, tested, and committed.** `make verify` passes top to bottom. The
+on-chain attestation runs itself every hour. Two items remain, both external/time-gated: BscScan
+source verification (needs a free API key from you) and the reveal on June 20–21.
 
 ## Scoreboard
 | Phase | State | One-line summary |
 |-------|-------|------------------|
-| 0 — Environment discovery | ✅ DONE | Machine, network, gas, SDK, CMC skill format, key tier + wallet all verified with real calls. `make verify-phase0` passes. |
-| 1 — Data layer | ✅ DONE | 15 tokens × 9,361 hourly bars (390 days) + CMC Fear&Greed history cached; 0 gaps, 0 dups, cache matches live, embargo set. `make verify-phase1` passes. *(Universe is interim — see note below.)* |
-| 2 — Spec schema | ✅ DONE | JSON Schema + validator + 1 example + 8 malformed-rejection tests. `make verify-phase2` passes. |
-| 3 — Skill (compiler) | ✅ DONE | Installable CMC-format `skill/SKILL.md` + `compiler_prompt.md` + 3 worked example intents (flagship, momentum, impossible/refusal). `make verify-phase3` passes (specs validate; downstream byte-identical). |
-| 4 — Backtest engine | ✅ DONE | Deterministic engine (guarded accessor, predicate AST, regime hysteresis, drawdown sizing). Proven: no-lookahead, feature-shift, byte-identical reruns, ladder boundaries. `make verify-phase4` passes. |
-| 5 — Flagship strategy | ✅ DONE | Regime Pilot spec (4 regimes, breadth + percentile features, sizing law). Backtest: **−10.4% vs BTC −45%** (a +34.6pp defensive outperformance), 12.4% max DD. Embargo proven untouched. `make verify-phase5` passes. |
-| 6 — Falsification report | ✅ DONE | Walk-forward, ±20% perturbation (robust), shuffle canary (edge vanished — no leakage), deflated Sharpe (0.01 — honestly fails the multiple-testing bar over the bear-market window), feature ablation. `make verify-phase6` passes. |
-| 7 — On-chain attestation | ✅ LIVE (mainnet) | SignalAttestor deployed to **BSC mainnet** (`0xB874…21c1`); commit→reveal→verify proven on real bytecode; 2 commits made, hashes reproduce from public data. **Needs you to push to GitHub + add 3 secrets to keep the hourly cron running** (see below). `make verify-phase7` passes. |
-| 8 — x402 data plan | ✅ DONE | Captured the LIVE x402 price and executed ONE real $0.01 USDC payment on Base (gasless, settled, data delivered). Data plan recomputes feed costs + net-of-cost OOS + break-even capital from real numbers. `make verify-phase8` passes. |
-| 9 — Packaging/demo | ✅ DONE | Judge-facing README; `make demo` regenerates equity/regime charts + report bundle offline; `make verify-phase9` confirms zero secret leaks in repo + history. |
-| 10 — Verify harness | ✅ DONE | `make verify` runs all phase gates 0–9 as one scoreboard. Remaining: BscScan source verification (needs BSCSCAN_API_KEY) + reveal on June 20–21. |
+| 0 — Environment discovery | ✅ DONE | Machine, APIs, BSC chains, wallet, CMC tier all verified live. `make verify-phase0`. |
+| 1 — Data layer | ✅ DONE | 15 tokens × 9,361 hourly bars + CMC Fear&Greed; 0 gaps, live spot-check. `make verify-phase1`. |
+| 2 — Spec schema | ✅ DONE | Closed-grammar JSON schema; 8 malformed specs rejected. `make verify-phase2`. |
+| 3 — Skill (compiler) | ✅ DONE | Installable CMC-format SKILL.md + compiler prompt + 3 example intents. `make verify-phase3`. |
+| 4 — Backtest engine | ✅ DONE | Deterministic + no-lookahead, proven by tests. `make verify-phase4`. |
+| 5 — Flagship strategy | ✅ DONE | v1 (−10.4% vs BTC −45%) + v2 (long/short). Embargo enforced. `make verify-phase5`. |
+| 6 — Falsification | ✅ DONE | Walk-forward, perturbation, shuffle canary (passed), deflated Sharpe, ablation. `make verify-phase6`. |
+| 7 — On-chain attestation | ✅ LIVE | Contract on BSC mainnet; hourly cron (cron-job.org); commits verify. `make verify-phase7`. |
+| 8 — x402 data plan | ✅ DONE | Real $0.01 USDC paid on Base (settled); cost plan recomputes. `make verify-phase8`. |
+| 9 — Packaging/demo | ✅ DONE | Judge README, offline demo charts, secret-leak gate. `make verify-phase9`. |
+| 10 — Verify harness | ✅ DONE | `make verify` = one scoreboard across all phases. |
 
-## Key fact discovered: your CMC plan blocks price history
-Your CMC key works but is the **free tier**, which does **not** allow historical price data (only
-live prices + Fear & Greed history). You chose the **hybrid** plan: the backtest's historical
-prices come from Binance's free public data, the sentiment signal from CMC's Fear & Greed history,
-and the live on-chain proof stays 100% CMC. Cost: $0. This is documented openly in DECISIONS.md.
+## The honest headline
+In a market that fell **45%**, the long-only v1 lost only **10.4%** (capital preservation); the
+live long/short v2 did better out-of-sample (+1.8%, Sharpe ~3.0). But the **deflated Sharpe ≈ 0.01**
+for both — meaning **no statistically significant directional edge** over this bear window. We report
+that plainly. The differentiator is the *rigor* and the *un-fakeable on-chain forward test*, which is
+accruing now and will be the real arbiter.
 
-## Wallet (verified on-chain)
-Address `0x73C0152a7dB01Cb11E257A8C82366B3EEaF53Ae1`: 0.009 BNB on BSC (attestation gas — enough at
-current low gas; top up to ~0.03 BNB if you want a spike buffer) + 1.50 USDC on Base (x402, ~150
-calls). No Base ETH needed (x402 is gasless for the payer).
+## Attestation — live and hands-off
+- Hourly via **cron-job.org → GitHub `workflow_dispatch` → commit on BSC** (GitHub's own cron was
+  unreliable for a new repo, so we drive it externally; verified working).
+- Check anytime: `make attest-status` · on-chain: the contract link above · public log:
+  `attest/commits_public.csv`.
+- Honest record: id=0 is a late manual bootstrap (flagged ⚠️ not-prompt); one early hour is logged
+  MISSED (an env-var bug, since fixed). Nothing hidden.
 
-## What I verified in Phase 0 (all with real calls, evidence in `evidence/`)
-- This machine: Ubuntu 24.04, Python 3.12.1, Node 24.14, 7.8 GB RAM, 20 GB free disk. Good enough.
-- CMC REST API is reachable (returns 401 = "needs your key").
-- CMC MCP server is reachable at `https://mcp.coinmarketcap.com/mcp` (POST-only).
-- BSC mainnet AND testnet RPC both reachable and answering. Mainnet chain id confirmed (56).
-- The BNB AI Agent SDK is a real, active Python project (last updated 3 days ago).
-- The official CMC skills repo is `openCMC/skills-for-ai-agents-by-CoinMarketCap`; I saved 5 real
-  skill files to copy the exact installable format. Confirmed x402 = $0.01/request on Base.
+## 🙋 What I need from you (both optional / non-blocking)
+1. **BscScan API key** → paste into `.env` as `BSCSCAN_API_KEY`, then I auto-verify the contract
+   source so judges can read it. Get it at https://etherscan.io/myapikey (one key works for BSC).
+2. **The official 149-token universe list** → drop into `spec/universe.json`; everything re-derives
+   (the engine is universe-agnostic). Until then we run a verified interim set of 15 liquid majors.
 
-## 💰 Money / wallet estimate (verified against live gas)
-- Running ~200 hourly commits + reveals + one contract deploy costs roughly **0.0186 BNB** worst
-  case (~$11), and as little as ~$0.56 at the gas price the network reported just now.
-- **Please fund a brand-new wallet with 0.05 BNB** (≈ $30) — comfortable safety margin. Anything
-  left over is yours; this project never spends BNB on anything but its own gas and executes ZERO
-  trades.
-
-## 🚨 ONE STEP LEFT to keep the hourly commits running automatically
-Repo is live and public: **https://github.com/holybunnie/regime-pilot**
-The hourly cron is installed (`.github/workflows/attest.yml`) but it needs 3 secrets to run.
-Add them once:
-1. Open **https://github.com/holybunnie/regime-pilot/settings/secrets/actions**
-2. Click **New repository secret** and add these three (exact names, values from your `.env`):
-   - `CMC_API_KEY`
-   - `ATTEST_PRIVATE_KEY`  (your wallet private key)
-   - `ATTEST_SALT_SEED`    (the `ATTEST_SALT_SEED=` value in `.env`)
-3. Then go to the **Actions** tab → "hourly-attestation" → **Run workflow** to fire it once now,
-   and it will auto-run every hour at HH:05 after that.
-- Until secrets are added the workflow will fail (no key) — that's expected; it starts working
-  the moment the 3 secrets exist.
-
-## 🙋 OTHER (non-blocking)
-- **The official 149-token BEP-20 universe list** from the hackathon brief, when convenient.
-  I've built and tested everything on a verified interim set of 15 liquid majors (BNB, BTC, ETH,
-  …). The moment you paste the official list into `spec/universe.json`, `make data` re-pulls it and
-  everything downstream uses it — no code changes needed. Not blocking; the engine is universe-agnostic.
-- **Nothing else blocking.** CMC key, wallet (BNB + USDC) all provided and verified.
-- *(Optional)* Top up the wallet to ~0.03 BNB if you want a comfortable buffer against a gas
-  spike during the ~8 days of hourly commits. Not urgent at current gas prices.
-
-## How to see the work for yourself
-```
+## How to see it all
+```bash
 cd regime-pilot
-make verify-phase0     # live-checks every dependency + your credentials
-make verify-phase2     # proves the spec schema accepts valid + rejects broken specs
-make verify            # runs all gates that exist so far
+make verify            # full PASS/FAIL scoreboard
+make attest-status     # one-line attestation liveness
+make demo              # regenerate charts + report bundle offline
+cat AGENTS.md          # full audit guide
 ```
