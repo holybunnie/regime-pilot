@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://regime-pilot/spec/schema.json",
+  "title": "Regime Pilot Strategy Spec",
+  "description": "A deterministic, machine-readable trading-strategy specification. The LLM Skill authors this file; the engine executes it. Predicates are a CLOSED abstract syntax tree (no free-form code) so every spec is safe, auditable, and deterministic.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "universe", "features", "regimes", "playbooks", "sizing", "risk", "costs"],
+
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "author", "created_at", "configurations_tried"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "author": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "format": "date-time", "description": "UTC ISO-8601, e.g. 2026-06-13T06:30:00Z"},
+        "description": {"type": "string"},
+        "configurations_tried": {
+          "type": "integer", "minimum": 1,
+          "description": "Total number of distinct parameter configurations evaluated across the whole research process. REQUIRED for the deflated Sharpe ratio. Honesty rule: count every grid point you tried, not just the winner."
+        }
+      }
+    },
+
+    "universe": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Which assets the strategy may trade, as filters over the eligible token list (spec/universe.json).",
+      "required": ["source"],
+      "properties": {
+        "source": {"type": "string", "enum": ["eligible_list", "explicit"], "description": "eligible_list = the hackathon BEP-20 universe; explicit = use the 'symbols' list verbatim."},
+        "symbols": {"type": "array", "items": {"type": "string"}, "description": "Used when source=explicit, or as an allow-filter on eligible_list."},
+        "max_market_cap_rank": {"type": "integer", "minimum": 1, "description": "Keep only assets with CMC rank <= this."},
+        "min_volume_24h_usd": {"type": "number", "minimum": 0},
+        "exclude_symbols": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Named, typed derived series. Each references a raw data field and a transformation. The engine computes these per-hour using ONLY data strictly before the current hour (no lookahead).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "source", "transform"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "Unique snake_case id; referenced by predicates."},
+          "source": {
+            "type": "string",
+            "enum": ["price", "volume_24h", "market_cap", "btc_price", "global_market_cap", "global_volume", "fear_greed", "funding_rate", "open_interest"],
+            "description": "Raw data field. Availability depends on the data tier; the engine errors if a referenced source was not fetched (no silent zero-fill)."
+          },
+          "asset": {"type": "string", "description": "Optional symbol this feature is computed for (e.g. BTC). Omit for market-wide sources or per-universe breadth."},
+          "transform": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": {"type": "string", "enum": ["raw", "sma", "realized_vol", "percentile_rank", "breadth", "delta"]},
+              "window": {"type": "integer", "minimum": 1, "description": "Lookback length in hours. Required for sma/realized_vol/percentile_rank/breadth/delta."},
+              "threshold_kind": {"type": "string", "enum": ["above_mean"], "description": "For breadth: the per-asset condition counted across the universe."},
+              "threshold_window": {"type": "integer", "minimum": 1, "description": "For breadth: window of the per-asset mean (e.g. 30d)."}
+            },
+            "allOf": [
+              {"if": {"properties": {"kind": {"enum": ["sma", "realized_vol", "percentile_rank", "delta"]}}}, "then": {"required": ["window"]}},
+              {"if": {"properties": {"kind": {"const": "breadth"}}}, "then": {"required": ["threshold_kind", "threshold_window"]}}
+            ]
+          }
+        }
+      }
+    },
+
+    "regimes": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Mutually-evaluated regime definitions. The engine assigns the FIRST regime whose predicate holds for >= persistence_hours consecutive hours (hysteresis). The last regime SHOULD be a catch-all 'chop' with predicate {const_bool:true}.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "predicate", "persistence_hours"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "predicate": {"$ref": "#/$defs/predicate"},
+          "persistence_hours": {"type": "integer", "minimum": 1, "description": "Consecutive hours the predicate must hold before the regime activates (hysteresis)."}
+        }
+      }
+    },
+
+    "playbooks": {
+      "type": "object",
+      "description": "One playbook per regime name. Keys MUST match regime names; the engine validates this cross-reference.",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action"],
+        "properties": {
+          "action": {"type": "string", "enum": ["hold_assets", "flat", "staged_reentry", "mean_revert"], "description": "flat = no positions (modeled as stables). hold_assets = hold the selected assets. staged_reentry = scale in as a feature recovers. mean_revert = single-pair MR."},
+          "select": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "How assets are chosen from the universe for hold_assets.",
+            "properties": {
+              "rank_by": {"type": "string", "enum": ["market_cap", "volume_24h", "feature"]},
+              "feature": {"type": "string", "description": "Required when rank_by=feature."},
+              "top_n": {"type": "integer", "minimum": 1}
+            }
+          },
+          "assets": {"type": "array", "items": {"type": "string"}, "description": "Explicit asset list for staged_reentry / mean_revert."},
+          "entry": {"$ref": "#/$defs/predicate"},
+          "exit": {"$ref": "#/$defs/predicate"},
+          "min_hold_hours": {"type": "integer", "minimum": 0},
+          "reentry_feature": {"type": "string", "description": "For staged_reentry: feature whose percentile recovery scales exposure in."}
+        }
+      }
+    },
+
+    "sizing": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Drawdown-budget sizing law: position_size = min(vol_target_size, k * remaining_drawdown_budget / asset_vol).",
+      "required": ["k", "vol_target_annual", "asset_vol_feature"],
+      "properties": {
+        "k": {"type": "number", "exclusiveMinimum": 0, "description": "Aggressiveness multiplier on the drawdown-budget term. Conservative default <= 1."},
+        "vol_target_annual": {"type": "number", "exclusiveMinimum": 0, "description": "Target annualized portfolio volatility, e.g. 0.20 for 20%."},
+        "asset_vol_feature": {"type": "string", "description": "Name of a realized_vol feature used as asset_vol in the denominator."},
+        "max_position_weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.5}
+      }
+    },
+
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_drawdown_budget", "per_asset_cap", "max_gross_exposure", "derisk_ladder"],
+      "properties": {
+        "max_drawdown_budget": {"type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "Total drawdown the strategy is allowed to spend, e.g. 0.20 = 20%."},
+        "per_asset_cap": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "max_gross_exposure": {"type": "number", "exclusiveMinimum": 0, "description": "Max sum of absolute weights, e.g. 1.0 = fully invested, no leverage."},
+        "derisk_ladder": {
+          "type": "array",
+          "description": "Rungs that cut exposure as the drawdown budget is consumed. Evaluated in order; the engine applies the highest-consumption rung whose trigger is met.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["budget_consumed", "gross_exposure_multiplier"],
+            "properties": {
+              "budget_consumed": {"type": "number", "minimum": 0, "maximum": 1, "description": "Fraction of the drawdown budget used up (e.g. 0.5, 0.75, 0.9)."},
+              "gross_exposure_multiplier": {"type": "number", "minimum": 0, "maximum": 1, "description": "Multiply gross exposure by this (e.g. 0.5 = halve, 0.0 = flat)."},
+              "except_regimes": {"type": "array", "items": {"type": "string"}, "description": "Regimes exempt from this rung, e.g. capitulation re-entry."}
+            }
+          }
+        }
+      }
+    },
+
+    "costs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fee_bps", "slippage_bps_floor", "slippage_size_coeff", "latency_minutes"],
+      "properties": {
+        "fee_bps": {"type": "number", "minimum": 0, "description": "Per-side fee in basis points."},
+        "slippage_bps_floor": {"type": "number", "minimum": 0, "description": "Fixed slippage floor per fill, in bps."},
+        "slippage_size_coeff": {"type": "number", "minimum": 0, "description": "Size-aware slippage: extra bps = coeff * (order_notional / asset_volume_24h). Conservative; not an order-book model."},
+        "latency_minutes": {"type": "integer", "minimum": 0, "description": "Delay from signal at hour T to fill, in minutes. Fill price is taken at T + latency."}
+      }
+    }
+  },
+
+  "$defs": {
+    "feature_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["feature"],
+      "properties": {"feature": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "Must match a features[].name."}}
+    },
+    "const": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["const"],
+      "properties": {"const": {"type": "number"}}
+    },
+    "operand": {
+      "oneOf": [
+        {"$ref": "#/$defs/feature_ref"},
+        {"$ref": "#/$defs/const"}
+      ]
+    },
+    "predicate": {
+      "description": "Closed boolean AST. Either a boolean literal, a logical node (and/or/not), or a comparison node.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["const_bool"],
+          "properties": {"const_bool": {"type": "boolean"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "args"],
+          "properties": {
+            "op": {"type": "string", "enum": ["and", "or"]},
+            "args": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/predicate"}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "args"],
+          "properties": {
+            "op": {"type": "string", "const": "not"},
+            "args": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/predicate"}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "left", "right"],
+          "properties": {
+            "op": {"type": "string", "enum": [">", "<", ">=", "<=", "crosses_above", "crosses_below"]},
+            "left": {"$ref": "#/$defs/operand"},
+            "right": {"$ref": "#/$defs/operand"}
+          }
+        }
+      ]
+    }
+  }
+}
