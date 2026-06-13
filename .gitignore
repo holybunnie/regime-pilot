@@ -1,0 +1,27 @@
+# Secrets — NEVER commit
+.env
+*.key
+*.pem
+attest/log.jsonl          # contains salts + payloads pre-reveal; keep private until reveal
+wallet*.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+artifacts/
+cache/
+out/
+
+# Data cache (regenerable, can be large)
+engine/data/cache/
+*.parquet
+*.sqlite
+
+# OS
+.DS_Store
