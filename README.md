@@ -10,7 +10,7 @@ test provably cannot be curve-fit after the fact.
 
 | | |
 |---|---|
-| **Contract (BSC mainnet)** | [`0xB87481e29b0Dce9545b1B00b8526810679B521c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1) |
+| **Contract (BSC mainnet)** | [`0xB87481e29b0Dce9545b1B00b8526810679B521c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1) — ✅ source-verified on BscScan |
 | **Repo** | https://github.com/holybunnie/regime-pilot |
 | **One-command proof** | `make verify` (full PASS/FAIL scoreboard) |
 | **For auditors** | see [`AGENTS.md`](AGENTS.md) |
@@ -128,4 +128,5 @@ derivatives (funding/OI) that the free REST tier blocks — material for a futur
 ## Status & reveal
 See `STATUS.md` for the live scoreboard. The reveal (`make attest-reveal`) runs **June 20–21**,
 after the forward record accumulates; it publishes payloads+salts and writes `attest/VERIFICATION.md`.
-Contract source verification on BscScan is pending a `BSCSCAN_API_KEY`.
+The contract source is **verified on BscScan** (exact bytecode + ABI match) — readable on the
+contract's "Contract" tab.
