@@ -10,8 +10,8 @@
 | 1 — Data layer | ✅ DONE | 15 tokens × 9,361 hourly bars (390 days) + CMC Fear&Greed history cached; 0 gaps, 0 dups, cache matches live, embargo set. `make verify-phase1` passes. *(Universe is interim — see note below.)* |
 | 2 — Spec schema | ✅ DONE | JSON Schema + validator + 1 example + 8 malformed-rejection tests. `make verify-phase2` passes. |
 | 3 — Skill (compiler) | 🔜 | Needs the schema (Phase 2). |
-| 4 — Backtest engine | 🔜 | Needs schema + some cached data. |
-| 5 — Flagship strategy | 🔜 | Needs engine + data. |
+| 4 — Backtest engine | ✅ DONE | Deterministic engine (guarded accessor, predicate AST, regime hysteresis, drawdown sizing). Proven: no-lookahead, feature-shift, byte-identical reruns, ladder boundaries. `make verify-phase4` passes. |
+| 5 — Flagship strategy | 🔜 NEXT | Write Regime Pilot as a spec file (4 regimes, breadth feature, sizing law). Engine is ready. |
 | 6 — Falsification report | 🔜 | Needs strategy results. |
 | 7 — On-chain attestation | ⏳ PARTIAL / URGENT | Can deploy to **testnet today** with no input from you. Mainnet + live hourly commits need a funded wallet. **Every day of delay shrinks the forward-test proof.** |
 | 8 — x402 data plan | 🔜 | Can capture published prices now; one real $0.01 payment needs USDC-on-Base from you (optional). |

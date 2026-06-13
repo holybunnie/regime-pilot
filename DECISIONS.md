@@ -33,6 +33,19 @@
    openly in the reports per honesty rule R8. Alternatives (pay to upgrade CMC; forward-only) were
    presented and declined.
 
-6. **Solidity toolchain: TBD.** Neither `solc` nor Foundry is installed. Leaning toward `py-solc-x`
+6. **Engine execution model.** Decisions at hour T use features built from data ≤ T-1h (every
+   feature series is shifted by 1 hour); the resulting target weights fill at the close of hour T.
+   At hourly granularity this models ~1h signal-to-fill latency (costs.latency_minutes ≈ 60).
+   Costs = turnover × (fee_bps + slippage)/1e4, slippage = floor + coeff×(order_notional/24h_$vol).
+   No-lookahead is enforced both by the shift AND a GuardedAccessor that raises on any raw read at
+   index ≥ T (tested). 'flat' positions sit in cash (0 return). *Why:* simple, conservative,
+   provably leak-free, and deterministic.
+
+7. **Asset ranking uses 24h dollar-volume, not market cap.** Binance gives price+volume but not
+   circulating supply, and CMC market-cap history is blocked on the free tier. So `rank_by:
+   market_cap` raises a clear error; `volume_24h` (liquidity) is the supported ranking. Documented
+   in ASSUMPTIONS.md; the flagship's playbooks use volume_24h / breadth.
+
+8. **Solidity toolchain: TBD.** Neither `solc` nor Foundry is installed. Leaning toward `py-solc-x`
    (pip-installable solc) + `web3.py` to keep the whole stack Python and reproducible with one
    lockfile; will confirm in Phase 7. *Why:* one language, one lockfile, easier determinism story.
