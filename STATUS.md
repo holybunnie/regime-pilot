@@ -7,7 +7,7 @@
 | Phase | State | One-line summary |
 |-------|-------|------------------|
 | 0 — Environment discovery | ✅ DONE | Machine, network, gas, SDK, CMC skill format, key tier + wallet all verified with real calls. `make verify-phase0` passes. |
-| 1 — Data layer | 🔜 NEXT | Unblocked. Data plan decided (hybrid: Binance hourly prices + CMC Fear&Greed history + CMC live quotes). |
+| 1 — Data layer | ✅ DONE | 15 tokens × 9,361 hourly bars (390 days) + CMC Fear&Greed history cached; 0 gaps, 0 dups, cache matches live, embargo set. `make verify-phase1` passes. *(Universe is interim — see note below.)* |
 | 2 — Spec schema | ✅ DONE | JSON Schema + validator + 1 example + 8 malformed-rejection tests. `make verify-phase2` passes. |
 | 3 — Skill (compiler) | 🔜 | Needs the schema (Phase 2). |
 | 4 — Backtest engine | 🔜 | Needs schema + some cached data. |
@@ -46,7 +46,11 @@ calls). No Base ETH needed (x402 is gasless for the payer).
   trades.
 
 ## 🙋 WHAT I NEED FROM YOU
-- **Nothing blocking right now.** CMC key, wallet (BNB + USDC) all provided and verified.
+- **The official 149-token BEP-20 universe list** from the hackathon brief, when convenient.
+  I've built and tested everything on a verified interim set of 15 liquid majors (BNB, BTC, ETH,
+  …). The moment you paste the official list into `spec/universe.json`, `make data` re-pulls it and
+  everything downstream uses it — no code changes needed. Not blocking; the engine is universe-agnostic.
+- **Nothing else blocking.** CMC key, wallet (BNB + USDC) all provided and verified.
 - *(Optional)* Top up the wallet to ~0.03 BNB if you want a comfortable buffer against a gas
   spike during the ~8 days of hourly commits. Not urgent at current gas prices.
 

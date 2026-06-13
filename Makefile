@@ -25,13 +25,21 @@ setup:
 verify-phase0:
 	$(PY) cli/verify_phase0.py
 
+verify-phase1:
+	$(PY) cli/verify_phase1.py
+
 verify-phase2:
 	$(PY) tests/test_schema.py
+
+data:
+	$(PY) engine/data/fetch.py
 
 # Aggregate gate — grows as phases land. Runs every gate that currently exists.
 verify:
 	@echo "######## REGIME PILOT — VERIFICATION SCOREBOARD ########"
 	@$(PY) cli/verify_phase0.py || true
+	@echo
+	@$(PY) cli/verify_phase1.py || true
 	@echo
 	@$(PY) tests/test_schema.py || true
 	@echo "#######################################################"

@@ -1,0 +1,23 @@
+{
+  "_note": "INTERIM universe. The hackathon brief specifies an exact 149 BEP-20 token list; paste it here to replace this set (keep the same shape: symbol + binance_pair + cmc_symbol). Until then this is a verified set of liquid majors that all (a) have a Binance USDT spot pair for historical OHLCV and (b) resolve on CoinMarketCap. Non-resolvable / non-ASCII tickers from the official list will be logged and excluded, not crashed (see engine/data/fetch.py).",
+  "_status": "INTERIM — pending official 149-token list from the brief",
+  "quote": "USDT",
+  "benchmark_symbol": "BTC",
+  "tokens": [
+    {"symbol": "BNB",  "binance_pair": "BNBUSDT",  "cmc_symbol": "BNB"},
+    {"symbol": "BTC",  "binance_pair": "BTCUSDT",  "cmc_symbol": "BTC"},
+    {"symbol": "ETH",  "binance_pair": "ETHUSDT",  "cmc_symbol": "ETH"},
+    {"symbol": "XRP",  "binance_pair": "XRPUSDT",  "cmc_symbol": "XRP"},
+    {"symbol": "SOL",  "binance_pair": "SOLUSDT",  "cmc_symbol": "SOL"},
+    {"symbol": "ADA",  "binance_pair": "ADAUSDT",  "cmc_symbol": "ADA"},
+    {"symbol": "DOGE", "binance_pair": "DOGEUSDT", "cmc_symbol": "DOGE"},
+    {"symbol": "TRX",  "binance_pair": "TRXUSDT",  "cmc_symbol": "TRX"},
+    {"symbol": "DOT",  "binance_pair": "DOTUSDT",  "cmc_symbol": "DOT"},
+    {"symbol": "LINK", "binance_pair": "LINKUSDT", "cmc_symbol": "LINK"},
+    {"symbol": "AVAX", "binance_pair": "AVAXUSDT", "cmc_symbol": "AVAX"},
+    {"symbol": "LTC",  "binance_pair": "LTCUSDT",  "cmc_symbol": "LTC"},
+    {"symbol": "UNI",  "binance_pair": "UNIUSDT",  "cmc_symbol": "UNI"},
+    {"symbol": "ATOM", "binance_pair": "ATOMUSDT", "cmc_symbol": "ATOM"},
+    {"symbol": "CAKE", "binance_pair": "CAKEUSDT", "cmc_symbol": "CAKE"}
+  ]
+}
