@@ -15,8 +15,8 @@
 | 6 — Falsification report | ✅ DONE | Walk-forward, ±20% perturbation (robust), shuffle canary (edge vanished — no leakage), deflated Sharpe (0.01 — honestly fails the multiple-testing bar over the bear-market window), feature ablation. `make verify-phase6` passes. |
 | 7 — On-chain attestation | ✅ LIVE (mainnet) | SignalAttestor deployed to **BSC mainnet** (`0xB874…21c1`); commit→reveal→verify proven on real bytecode; 2 commits made, hashes reproduce from public data. **Needs you to push to GitHub + add 3 secrets to keep the hourly cron running** (see below). `make verify-phase7` passes. |
 | 8 — x402 data plan | ✅ DONE | Captured the LIVE x402 price and executed ONE real $0.01 USDC payment on Base (gasless, settled, data delivered). Data plan recomputes feed costs + net-of-cost OOS + break-even capital from real numbers. `make verify-phase8` passes. |
-| 9 — Packaging/demo | 🔜 | End. |
-| 10 — Verify harness | 🔜 | Built incrementally per phase. |
+| 9 — Packaging/demo | ✅ DONE | Judge-facing README; `make demo` regenerates equity/regime charts + report bundle offline; `make verify-phase9` confirms zero secret leaks in repo + history. |
+| 10 — Verify harness | ✅ DONE | `make verify` runs all phase gates 0–9 as one scoreboard. Remaining: BscScan source verification (needs BSCSCAN_API_KEY) + reveal on June 20–21. |
 
 ## Key fact discovered: your CMC plan blocks price history
 Your CMC key works but is the **free tier**, which does **not** allow historical price data (only
