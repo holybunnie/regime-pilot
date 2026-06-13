@@ -2,7 +2,10 @@
 .env
 *.key
 *.pem
-attest/log.jsonl          # contains salts + payloads pre-reveal; keep private until reveal
+# Private until reveal day (these contain salts/payloads)
+attest/log.jsonl
+attest/reveals.json
+attest/revealed_payloads.json
 wallet*.json
 
 # Python
