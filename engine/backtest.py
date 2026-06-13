@@ -226,6 +226,14 @@ def target_weights(spec, row, panels, t, regime, dd, ladder, universe):
                                row, panels, t, universe)
         for a in chosen:
             w[a] = min(gross * 0.5, risk["per_asset_cap"])
+    elif pb["action"] == "short_assets":
+        # NEGATIVE weights = short exposure (profits when price falls). New in v2; v1
+        # specs never use this action, so v1 signals are unchanged.
+        chosen = select_assets(pb, row, panels, t, universe)
+        if chosen:
+            wt = min(gross / len(chosen), risk["per_asset_cap"])
+            for a in chosen:
+                w[a] = -wt
     return w
 
 
@@ -287,6 +295,11 @@ def run(spec, universe=None, end=None, panels=None, feats=None):
                 cost += notional * (costs["fee_bps"] + slip) / 1e4
                 trade_rows.append({"ts": t.isoformat(), "asset": a,
                                    "dw": round(dw, ROUND), "regime": regime})
+        # optional short-borrow/funding cost (v2). Key absent in v1 -> no change.
+        borrow_bps_day = costs.get("short_borrow_bps_per_day", 0)
+        if borrow_bps_day:
+            short_notional = sum(-w_target[a] for a in universe if w_target[a] < 0) * equity
+            cost += short_notional * borrow_bps_day / 24.0 / 1e4
         equity -= cost
 
         # ----- hold from close[t] to close[t+1] -----
@@ -298,7 +311,7 @@ def run(spec, universe=None, end=None, panels=None, feats=None):
         w_prev = w_target
         eq_rows.append({"ts": t_next.isoformat(), "equity": round(equity, ROUND),
                         "drawdown": round((peak - equity) / peak, ROUND), "regime": regime,
-                        "gross": round(sum(w_target.values()), ROUND)})
+                        "gross": round(sum(abs(v) for v in w_target.values()), ROUND)})
 
     bw = panels["btc"].loc[start:hours[-1]]
     bench_ret = float(bw.iloc[-1] / bw.iloc[0] - 1.0)
