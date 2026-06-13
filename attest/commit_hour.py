@@ -28,7 +28,10 @@ from attest import chain                                       # noqa: E402
 from attest.hashing import commit_hash, canonical_json, deterministic_salt  # noqa: E402
 from attest.live_signal import compute_signal                  # noqa: E402
 
-SPEC = REPO / "spec" / "regime_pilot.spec.json"
+# Frozen spec attested going forward. Switched v1 -> v2 (long/short) on 2026-06-13.
+# Past v1 commits stay verifiable: attest/verify.py matches each commit to whichever
+# spec reproduces its on-chain hash.
+SPEC = REPO / "spec" / "regime_pilot_v2.spec.json"
 LOG = REPO / "attest" / "log.jsonl"
 PUBLIC = REPO / "attest" / "commits_public.csv"
 HEARTBEAT = REPO / "attest" / "heartbeat.txt"

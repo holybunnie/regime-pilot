@@ -28,7 +28,10 @@ from attest.hashing import commit_hash, deterministic_salt        # noqa: E402
 from attest.live_signal import compute_signal                     # noqa: E402
 from engine import backtest as bt                                 # noqa: E402
 
-SPEC = REPO / "spec" / "regime_pilot.spec.json"
+# Candidate frozen specs, tried in order. Each commit is matched to whichever spec
+# reproduces its on-chain hash — so a v1->v2 switch leaves all past commits verifiable.
+SPECS = [REPO / "spec" / "regime_pilot.spec.json",
+         REPO / "spec" / "regime_pilot_v2.spec.json"]
 PUBLIC = REPO / "attest" / "commits_public.csv"
 REVEALS = REPO / "attest" / "reveals.json"
 OUT = REPO / "attest" / "VERIFICATION.md"
@@ -71,7 +74,6 @@ def main():
     for row in rows:
         ts = row["timestamp_utc"]
         cid = int(row["commit_id"])
-        payload = compute_signal(SPEC, ts)
         if reveals and str(cid) in reveals:
             salt = bytes.fromhex(reveals[str(cid)]["salt"][2:])
         elif seed:
@@ -79,13 +81,23 @@ def main():
         else:
             print("FATAL: no reveals.json and no ATTEST_SALT_SEED")
             return 1
-        h = commit_hash(payload, salt)
         onchain_hash, block_ts, revealed = c.functions.getCommit(cid).call()
-        match = ("0x" + h.hex()) == ("0x" + onchain_hash.hex())
+        target = "0x" + onchain_hash.hex()
+        # try each candidate spec; the one that reproduces the on-chain hash is the
+        # spec that was frozen when this commit was made (handles the v1->v2 switch)
+        payload, match = None, False
+        for sp in SPECS:
+            p = compute_signal(sp, ts)
+            if ("0x" + commit_hash(p, salt).hex()) == target:
+                payload, match = p, True
+                break
+        if payload is None:
+            payload = compute_signal(SPECS[0], ts)  # for display only
         eff = pd.Timestamp(ts).timestamp()
         prompt = eff <= block_ts < eff + 3600
         results.append({"cid": cid, "ts": ts, "tx": row["tx"], "regime": payload["regime"],
-                        "match": match, "prompt": prompt, "block_ts": block_ts})
+                        "match": match, "prompt": prompt, "block_ts": block_ts,
+                        "spec_version": payload.get("spec_version")})
         enriched.append({"payload": payload})
 
     matched = sum(r["match"] for r in results)

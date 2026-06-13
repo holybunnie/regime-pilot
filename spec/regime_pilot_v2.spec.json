@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "name": "Regime Pilot v2 (long/short)",
+    "version": "2.0.0",
+    "author": "holybunnie",
+    "created_at": "2026-06-13T11:00:00Z",
+    "description": "Two-sided regime router. Adds disciplined short exposure to v1: it goes LONG only in confirmed uptrends, SHORT only in confirmed downtrends (breadth breakdown AND price below its 30-day trend AND volatility not extreme), and stays FLAT in chop, euphoria, and capitulation. It deliberately does NOT fade euphoria or short into capitulation, where short squeezes are most violent. Shorts carry a realistic borrow/funding cost (20 bps/day). Thresholds are set by economic logic and symmetry with the long side (e.g. downtrend breadth < 40 mirrors uptrend breadth > 60), not by parameter search, so the honest trials count stays 27 (persistence x k x long-breadth threshold). Funding/OI features omitted (not on the CMC tier).",
+    "configurations_tried": 27
+  },
+  "universe": {
+    "source": "eligible_list",
+    "max_market_cap_rank": 50,
+    "min_volume_24h_usd": 5000000
+  },
+  "features": [
+    {"name": "breadth_30d", "source": "price", "transform": {"kind": "breadth", "threshold_kind": "above_mean", "threshold_window": 720}},
+    {"name": "breadth_pct", "source": "price", "transform": {"kind": "breadth", "threshold_kind": "above_mean", "threshold_window": 720, "rank_window": 2160}},
+    {"name": "fg_level", "source": "fear_greed", "transform": {"kind": "raw"}},
+    {"name": "fg_delta_7d", "source": "fear_greed", "transform": {"kind": "delta", "window": 168}},
+    {"name": "btc_vol", "source": "btc_price", "transform": {"kind": "realized_vol", "window": 168}},
+    {"name": "btc_vol_pct", "source": "btc_price", "transform": {"kind": "realized_vol", "window": 168, "rank_window": 2160}},
+    {"name": "btc_now", "source": "btc_price", "transform": {"kind": "raw"}},
+    {"name": "btc_sma_30d", "source": "btc_price", "transform": {"kind": "sma", "window": 720}}
+  ],
+  "regimes": [
+    {
+      "name": "capitulation",
+      "persistence_hours": 8,
+      "predicate": {
+        "op": "and",
+        "args": [
+          {"op": "<", "left": {"feature": "fg_level"}, "right": {"const": 20}},
+          {"op": ">", "left": {"feature": "btc_vol_pct"}, "right": {"const": 85}}
+        ]
+      }
+    },
+    {
+      "name": "downtrend",
+      "persistence_hours": 8,
+      "predicate": {
+        "op": "and",
+        "args": [
+          {"op": "<", "left": {"feature": "breadth_pct"}, "right": {"const": 40}},
+          {"op": "<", "left": {"feature": "btc_now"}, "right": {"feature": "btc_sma_30d"}},
+          {"op": "<", "left": {"feature": "btc_vol_pct"}, "right": {"const": 85}}
+        ]
+      }
+    },
+    {
+      "name": "crowded_fragile",
+      "persistence_hours": 8,
+      "predicate": {
+        "op": "and",
+        "args": [
+          {"op": ">", "left": {"feature": "fg_level"}, "right": {"const": 80}},
+          {"op": ">", "left": {"feature": "btc_vol_pct"}, "right": {"const": 70}}
+        ]
+      }
+    },
+    {
+      "name": "trend_up",
+      "persistence_hours": 8,
+      "predicate": {
+        "op": "and",
+        "args": [
+          {"op": ">", "left": {"feature": "breadth_pct"}, "right": {"const": 60}},
+          {"op": ">", "left": {"feature": "btc_now"}, "right": {"feature": "btc_sma_30d"}},
+          {"op": ">", "left": {"feature": "fg_delta_7d"}, "right": {"const": 0}}
+        ]
+      }
+    },
+    {
+      "name": "chop",
+      "persistence_hours": 4,
+      "predicate": {"const_bool": true}
+    }
+  ],
+  "playbooks": {
+    "trend_up": {
+      "action": "hold_assets",
+      "select": {"rank_by": "volume_24h", "top_n": 5},
+      "min_hold_hours": 4
+    },
+    "downtrend": {
+      "action": "short_assets",
+      "select": {"rank_by": "volume_24h", "top_n": 5},
+      "min_hold_hours": 4
+    },
+    "crowded_fragile": {"action": "flat"},
+    "capitulation": {
+      "action": "staged_reentry",
+      "assets": ["BTC", "BNB"],
+      "reentry_feature": "fg_level",
+      "min_hold_hours": 4
+    },
+    "chop": {"action": "flat"}
+  },
+  "sizing": {
+    "k": 0.5,
+    "vol_target_annual": 0.20,
+    "asset_vol_feature": "btc_vol",
+    "max_position_weight": 0.4
+  },
+  "risk": {
+    "max_drawdown_budget": 0.20,
+    "per_asset_cap": 0.25,
+    "max_gross_exposure": 1.0,
+    "derisk_ladder": [
+      {"budget_consumed": 0.5, "gross_exposure_multiplier": 0.5},
+      {"budget_consumed": 0.75, "gross_exposure_multiplier": 0.0, "except_regimes": ["capitulation"]},
+      {"budget_consumed": 0.9, "gross_exposure_multiplier": 0.0}
+    ]
+  },
+  "costs": {
+    "fee_bps": 10,
+    "slippage_bps_floor": 5,
+    "slippage_size_coeff": 50,
+    "latency_minutes": 60,
+    "short_borrow_bps_per_day": 20
+  }
+}

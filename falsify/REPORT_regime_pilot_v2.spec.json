@@ -1,0 +1,245 @@
+{
+  "ablation": {
+    "full_oos_return": 0.0179,
+    "full_oos_sharpe": 2.9778,
+    "rows": [
+      {
+        "degradation_return": 0.0,
+        "dropped_feature": "breadth_30d",
+        "oos_return": 0.0179,
+        "oos_sharpe": 2.9778
+      },
+      {
+        "degradation_return": -0.0113,
+        "dropped_feature": "breadth_pct",
+        "oos_return": 0.0292,
+        "oos_sharpe": 4.6495
+      },
+      {
+        "degradation_return": 0.0021,
+        "dropped_feature": "fg_level",
+        "oos_return": 0.0159,
+        "oos_sharpe": 2.6238
+      },
+      {
+        "degradation_return": 0.0259,
+        "dropped_feature": "fg_delta_7d",
+        "oos_return": -0.008,
+        "oos_sharpe": -3.343
+      },
+      {
+        "degradation_return": 0.0,
+        "dropped_feature": "btc_vol",
+        "oos_return": 0.0179,
+        "oos_sharpe": 2.9778
+      },
+      {
+        "degradation_return": 0.0173,
+        "dropped_feature": "btc_vol_pct",
+        "oos_return": 0.0006,
+        "oos_sharpe": 0.9911
+      },
+      {
+        "degradation_return": 0.0181,
+        "dropped_feature": "btc_now",
+        "oos_return": -0.0001,
+        "oos_sharpe": -0.211
+      },
+      {
+        "degradation_return": 0.0181,
+        "dropped_feature": "btc_sma_30d",
+        "oos_return": -0.0001,
+        "oos_sharpe": -0.211
+      }
+    ]
+  },
+  "deflated_sharpe": {
+    "deflated_benchmark_sr_per_period": 0.009675,
+    "deflated_sharpe_ratio": 0.013,
+    "interpretation": "does NOT clear the multiple-testing bar (likely no real edge)",
+    "kurt": 41.0081,
+    "n_obs": 6481,
+    "observed_sharpe_annual": -1.6941,
+    "observed_sharpe_per_period": -0.0181,
+    "reference": "Bailey & Lopez de Prado (2014), The Deflated Sharpe Ratio",
+    "skew": 0.2244,
+    "trials": 27,
+    "var_sr_trials": 2.2722395292640726e-05
+  },
+  "embargo_start": "2026-05-14 10:00:00+00:00",
+  "perturbation": {
+    "baseline_return": -0.1247,
+    "baseline_sharpe": -2.1767,
+    "max_abs_return_swing": 0.0264,
+    "rows": [
+      {
+        "d_return": -0.0035,
+        "max_dd": 0.1409,
+        "param": "k -20%",
+        "return": -0.1282,
+        "sharpe": -2.3069
+      },
+      {
+        "d_return": 0.0017,
+        "max_dd": 0.1388,
+        "param": "vol_target -20%",
+        "return": -0.1231,
+        "sharpe": -2.2216
+      },
+      {
+        "d_return": 0.0077,
+        "max_dd": 0.1204,
+        "param": "max_dd_budget -20%",
+        "return": -0.117,
+        "sharpe": -2.4346
+      },
+      {
+        "d_return": 0.0032,
+        "max_dd": 0.1372,
+        "param": "fg_extremes -20%",
+        "return": -0.1215,
+        "sharpe": -2.0848
+      },
+      {
+        "d_return": 0.0017,
+        "max_dd": 0.1385,
+        "param": "vol_pct_thr -20%",
+        "return": -0.1231,
+        "sharpe": -2.4416
+      },
+      {
+        "d_return": 0.0264,
+        "max_dd": 0.129,
+        "param": "breadth_thr -20%",
+        "return": -0.0983,
+        "sharpe": -1.6223
+      },
+      {
+        "d_return": 0.0016,
+        "max_dd": 0.1393,
+        "param": "k +20%",
+        "return": -0.1231,
+        "sharpe": -2.1424
+      },
+      {
+        "d_return": -0.0066,
+        "max_dd": 0.1452,
+        "param": "vol_target +20%",
+        "return": -0.1313,
+        "sharpe": -2.312
+      },
+      {
+        "d_return": -0.0137,
+        "max_dd": 0.1543,
+        "param": "max_dd_budget +20%",
+        "return": -0.1384,
+        "sharpe": -2.2889
+      },
+      {
+        "d_return": 0.003,
+        "max_dd": 0.1374,
+        "param": "fg_extremes +20%",
+        "return": -0.1217,
+        "sharpe": -2.0636
+      },
+      {
+        "d_return": -0.0092,
+        "max_dd": 0.148,
+        "param": "vol_pct_thr +20%",
+        "return": -0.1339,
+        "sharpe": -1.659
+      },
+      {
+        "d_return": 0.0002,
+        "max_dd": 0.1332,
+        "param": "breadth_thr +20%",
+        "return": -0.1245,
+        "sharpe": -1.9628
+      }
+    ],
+    "verdict": "ROBUST (degrades smoothly)"
+  },
+  "shuffle_canary": {
+    "edge_survived_shuffle": false,
+    "real_return": -0.1247,
+    "real_sharpe": -2.1767,
+    "seed": 20260613,
+    "shuffled_return": -0.0612,
+    "shuffled_sharpe": -1.6484,
+    "verdict": "PASS \u2014 edge vanished on shuffled data (as it should)"
+  },
+  "spec": "Regime Pilot v2 (long/short)",
+  "version": "2.0.0",
+  "walk_forward": {
+    "embargo_oos": {
+      "hours": 721,
+      "max_dd": 0.0145,
+      "return": 0.0128,
+      "sharpe": 1.9491
+    },
+    "embargo_selected": "p12_k0.3_b55",
+    "folds": [
+      {
+        "fold": 1,
+        "selected": "p12_k0.3_b55",
+        "train_end": "2025-11-03",
+        "val_end": "2025-12-21",
+        "val_return": -0.0687,
+        "val_sharpe": -5.3187
+      },
+      {
+        "fold": 2,
+        "selected": "p12_k0.3_b55",
+        "train_end": "2025-12-21",
+        "val_end": "2026-02-07",
+        "val_return": -0.0138,
+        "val_sharpe": -0.8378
+      },
+      {
+        "fold": 3,
+        "selected": "p12_k0.5_b55",
+        "train_end": "2026-02-07",
+        "val_end": "2026-03-27",
+        "val_return": -0.0262,
+        "val_sharpe": -3.0168
+      },
+      {
+        "fold": 4,
+        "selected": "p12_k0.3_b55",
+        "train_end": "2026-03-27",
+        "val_end": "2026-05-14",
+        "val_return": -0.0027,
+        "val_sharpe": -0.3832
+      }
+    ],
+    "grid_sharpes": {
+      "p12_k0.3_b55": -1.88,
+      "p12_k0.3_b60": -2.115,
+      "p12_k0.3_b65": -1.9691,
+      "p12_k0.5_b55": -1.9089,
+      "p12_k0.5_b60": -1.9345,
+      "p12_k0.5_b65": -2.0281,
+      "p12_k0.7_b55": -1.9074,
+      "p12_k0.7_b60": -1.9345,
+      "p12_k0.7_b65": -2.0283,
+      "p4_k0.3_b55": -2.808,
+      "p4_k0.3_b60": -2.9499,
+      "p4_k0.3_b65": -3.2189,
+      "p4_k0.5_b55": -2.9123,
+      "p4_k0.5_b60": -3.0277,
+      "p4_k0.5_b65": -3.0721,
+      "p4_k0.7_b55": -2.8788,
+      "p4_k0.7_b60": -2.9881,
+      "p4_k0.7_b65": -3.0707,
+      "p8_k0.3_b55": -2.2562,
+      "p8_k0.3_b60": -2.2913,
+      "p8_k0.3_b65": -2.4787,
+      "p8_k0.5_b55": -2.3682,
+      "p8_k0.5_b60": -2.1767,
+      "p8_k0.5_b65": -2.5435,
+      "p8_k0.7_b55": -2.2803,
+      "p8_k0.7_b60": -2.1424,
+      "p8_k0.7_b65": -2.491
+    }
+  }
+}

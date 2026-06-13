@@ -100,7 +100,7 @@
         "additionalProperties": false,
         "required": ["action"],
         "properties": {
-          "action": {"type": "string", "enum": ["hold_assets", "flat", "staged_reentry", "mean_revert"], "description": "flat = no positions (modeled as stables). hold_assets = hold the selected assets. staged_reentry = scale in as a feature recovers. mean_revert = single-pair MR."},
+          "action": {"type": "string", "enum": ["hold_assets", "flat", "staged_reentry", "mean_revert", "short_assets"], "description": "flat = no positions (modeled as stables). hold_assets = hold the selected assets long. short_assets = hold the selected assets SHORT (negative weights; profits when price falls). staged_reentry = scale in as a feature recovers. mean_revert = single-pair MR."},
           "select": {
             "type": "object",
             "additionalProperties": false,
@@ -167,7 +167,8 @@
         "fee_bps": {"type": "number", "minimum": 0, "description": "Per-side fee in basis points."},
         "slippage_bps_floor": {"type": "number", "minimum": 0, "description": "Fixed slippage floor per fill, in bps."},
         "slippage_size_coeff": {"type": "number", "minimum": 0, "description": "Size-aware slippage: extra bps = coeff * (order_notional / asset_volume_24h). Conservative; not an order-book model."},
-        "latency_minutes": {"type": "integer", "minimum": 0, "description": "Delay from signal at hour T to fill, in minutes. Fill price is taken at T + latency."}
+        "latency_minutes": {"type": "integer", "minimum": 0, "description": "Delay from signal at hour T to fill, in minutes. Fill price is taken at T + latency."},
+        "short_borrow_bps_per_day": {"type": "number", "minimum": 0, "description": "Borrow/funding cost in bps per day applied to short notional (short_assets). Absent/0 = no short cost (long-only specs)."}
       }
     }
   },

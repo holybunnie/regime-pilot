@@ -40,7 +40,16 @@ Freeze (submission): **2026-06-21 13:00 UTC**.
 - `make attest-status` = one-line liveness. `make attest-verify` = recompute+check all on-chain hashes.
 - Salt is deterministic: keccak(ATTEST_SALT_SEED || timestamp), so reveals are reproducible.
 
-## IN PROGRESS — v2 shorting strategy (operator wants this)
+## DONE — v2 long/short re-froze the live attestation (2026-06-13)
+v2 (`spec/regime_pilot_v2.spec.json`) adds disciplined shorting; tested better OOS without
+overfitting (deflated Sharpe unchanged ~0.01 — no version has a *significant* edge over the bear
+window; live forward test arbitrates). The cron now attests v2 (commit_hour SPEC -> v2). v1 file
+is untouched; `attest/verify.py`/`reveal.py` match each commit to the spec that reproduces its
+on-chain hash, so commits 0-3 (v1) + 4+ (v2) all verify. v1 is the fallback: to revert, repoint
+`attest/commit_hour.py` SPEC back to regime_pilot.spec.json. v2 falsification:
+`falsify/REPORT_regime_pilot_v2.spec.md`.
+
+## (history) v2 shorting strategy build
 Operator asked to make the bear-market edge significant WITHOUT p-hacking. The only honest lever:
 let the strategy go SHORT in bear regimes (not just flat). Decision made: **if v2 genuinely tests
 better out-of-sample, RE-FREEZE the live attestation to v2** (we're early, ~3 commits in).
