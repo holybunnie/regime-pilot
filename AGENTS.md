@@ -4,83 +4,116 @@ This file lets a fresh agent (or human auditor) understand exactly what exists, 
 claim independently, and continue the work without breaking the live system. Read it fully before
 acting. The operator reviews via plain-English reports and PASS/FAIL scripts.
 
+> **Pickup note (pre-submission hardening, branch `fixes/pre-submission`):** a hardening pass is
+> in progress. See **§9 — Resume here** for exactly what is done and what remains.
+
 ## 1. What this is (one paragraph)
-**Regime Pilot** is a CoinMarketCap "Strategy Skill" (BNB Hack Track 2). It compiles natural-language
-trading intent into a strict JSON **strategy spec** (closed predicate AST, no code), executes it in a
+**Regime Pilot** is an **honest, tamper-evident measurement system for AI-authored trading
+strategies** (CoinMarketCap Strategy Skill, BNB Hack Track 2). It compiles natural-language intent
+into a strict JSON **strategy spec** (closed predicate AST, no code), executes it in a
 **deterministic, lookahead-proof backtest engine**, runs a **falsification battery** against it, and
 **notarizes its live hourly signals on BNB Smart Chain** via commit-reveal so the forward test cannot
-be curve-fit. It also includes an **x402** data-cost analysis with one real on-chain micro-payment.
-An LLM appears in exactly one place — authoring the spec — and never touches execution or results.
+be curve-fit. It includes an **x402** data-cost analysis with one real on-chain micro-payment. An LLM
+appears in exactly one place — authoring the spec — and never touches execution or results. **The
+contribution is the trustworthy measurement; the strategy is the test subject** (it has no
+statistically significant edge, stated plainly).
 
 ## 2. One-command audit
 ```bash
-make setup && make data && make verify
+make setup && make verify        # OFFLINE — no secrets, no network, no downloaded data
+make verify-full                 # adds live checks (needs CMC key + make data)
 ```
-`make verify` runs every phase gate and prints a PASS/FAIL scoreboard. Expected: all PASS.
-Individual gates: `make verify-phase{0,1,3,4,5,6,7,8,9}` (and `make falsify` regenerates Phase 6).
+`make verify` prints a single PASS/FAIL scoreboard, one line per submission item. Expected: all
+PASS (13 offline gates). Claim-based individual gates are listed by `make help`.
 
 ## 3. Claim → evidence map (how to verify each headline)
 | Claim | Where | How to verify independently |
 |------|-------|------------------------------|
-| Specs are safe/closed-grammar; bad specs rejected | `spec/schema.json`, `cli/validate_spec.py` | `make verify-phase2` (8 malformed specs rejected) |
-| Backtest is deterministic | `engine/backtest.py` | `make verify-phase4` → "byte-identical" test runs the same spec twice |
-| No lookahead | `engine/backtest.py` (`GuardedAccessor` + 1-hour feature shift) | `make verify-phase4` → guard rejects future/at-T reads; feature[T] uses data ≤ T-1 |
-| Sizing law + de-risk ladder correct | `engine/sizing.py` | `make verify-phase4` → ladder boundary tests (incl. the float-epsilon edge) |
-| Data integrity | `engine/data/`, `cli/verify_phase1.py` | `make verify-phase1` → no gaps/dupes, UTC, live Binance spot-check |
-| Strategy results honest | `engine/reports/*/report.md`, `falsify/REPORT*.md` | `make falsify`; deflated Sharpe ≈ 0.01 (no overstated edge); shuffle canary passes |
-| Skill is installable + LLM quarantined | `skill/SKILL.md`, `skill/compiler_prompt.md`, `skill/examples/` | `make verify-phase3` (CMC frontmatter, 3 intents incl. refusal, downstream byte-identical) |
-| On-chain attestation real | `attest/`, contract on BSC | see §4 — verify a commit yourself |
-| x402 real payment | `x402plan/`, `evidence/x402_executed_payment.json` | balance 1.5000→1.4900 USDC, HTTP 200, settled; `make verify-phase8` |
-| Repo is secret-free | `cli/verify_phase9.py` | `make verify-phase9` greps tracked files + full git history |
+| Specs are safe/closed-grammar; bad specs rejected | `spec/schema.json`, `cli/validate_spec.py` | `make verify-spec` |
+| Backtest deterministic + no-lookahead + sizing | `engine/backtest.py`, `engine/sizing.py` | `make verify-engine` (offline, uses committed fixture) |
+| Data integrity | `engine/data/`, `cli/verify_phase1.py` | `make verify-data` (live) |
+| Strategy results honest | `engine/reports/*`, `falsify/REPORT*` | `make verify-falsification`; deflated Sharpe ≈ 0.01; shuffle canary passes |
+| Skill installable + LLM quarantined | `skill/` | `make verify-skill` (live/data) |
+| Every on-chain commit accounted for | `attest/verify.py`, `attest/onchain_ledger.json` | `make attest-verify` (offline-capable; iterates `commitCount()`) |
+| Duplicate-commit race closed | `attest/single_flight.py` | `make verify-attest-race` |
+| Reveal works end-to-end | `attest/dryrun_reveal.py`, `attest/REVEAL_DRYRUN.md` | `PYTHONPATH=. python attest/dryrun_reveal.py` (real in-memory EVM) |
+| x402 real payment | `x402plan/`, `evidence/x402_executed_payment.json` | `make verify-x402` |
+| Repo secret-free | `cli/verify_phase9.py` | `make verify-secrets` (tracked files + full git history) |
+| Data sources/credentials mapped to real call sites | `DATA_SOURCES.md` | `make verify-datasources` |
+| Framing honest; README self-contained | `README.md`, `STATUS.md` | `make verify-framing`, `make verify-readme` |
+| 149-token universe ready; CMC Pro optional | `spec/universe_official_149.json`, `engine/datasource.py` | `make verify-universe`, `make verify-datasource` |
 
 ## 4. Auditing the on-chain attestation (the differentiator)
-- Contract (BSC mainnet): **0xB87481e29b0Dce9545b1B00b8526810679B521c1**
-  (https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
-- Hash recipe: `commit_hash = keccak256( canonical_json(signal) || salt )`,
-  `salt = keccak256( ATTEST_SALT_SEED || timestamp_utc )`. Signal =
-  `{spec_version, spec_hash, universe_hash, timestamp_utc, regime, target_weights}`.
-- `make attest-verify` recomputes every commit's hash from public data + the frozen spec and checks
-  it against the chain, and checks the block timestamp predates the signal's outcome ("prompt").
-  It auto-selects, per commit, whichever spec (v1 or v2) reproduces the on-chain hash.
-- Honest record: commit id=0 is a manual bootstrap committed late (flagged not-prompt ⚠️); one early
-  hour is logged as MISSED (the env-var bug, since fixed). Gaps/misses are recorded, never hidden.
-- Scheduling: GitHub's native cron is unreliable for new repos, so an external pinger (cron-job.org)
-  POSTs the `workflow_dispatch` API hourly; `.github/workflows/attest.yml` runs `attest/commit_hour.py`.
+- Contract (BSC mainnet): **0xB87481e29b0Dce9545b1B00b8526810679B521c1**.
+- Recipe: `commit_hash = keccak256(canonical_json(signal) || salt)`,
+  `salt = keccak256(ATTEST_SALT_SEED || timestamp_utc)`.
+- `make attest-verify` iterates the contract's own `commitCount()` and classifies EVERY on-chain id
+  (RECORDED / REPRODUCED / DOCUMENTED-DUPLICATE). Pass = zero unaccounted. Works offline from the
+  committed snapshot `attest/onchain_ledger.json`.
+- **Honest record:** 34 commits on-chain; ids **7 and 26** are exact-duplicate commits (same hash,
+  second hourly run for the same hour) — fully documented in `attest/RECONCILIATION.md`; the race that
+  caused them is closed. One early hour logged MISSED (since fixed). Nothing hidden.
 
-## 5. Honest limitations (an auditor should know these up front)
-- **No statistically significant edge.** Over the bear-market backtest window, deflated Sharpe ≈ 0.01
-  for both v1 and v2. The value proposition is capital preservation + the *verifiable forward test*,
-  not a proven alpha. This is stated everywhere; do not "fix" it by tuning (that inflates trials and
-  the deflated-Sharpe bar — and the shuffle canary/forward record would expose it).
-- **Hybrid data.** Backtest prices = Binance public hourly OHLCV (the operator's CMC tier blocks price
-  history); sentiment = CMC Fear & Greed; live attestation signals = CMC. Documented in `DECISIONS.md`.
-- **Interim universe.** 15 liquid majors pending the brief's official 149-token list (engine is
-  universe-agnostic; replace `spec/universe.json` and re-run `make data`).
-- **Ranking** by 24h dollar-volume (market-cap history not on the free tier).
-- **Not yet done:** the reveal step (June 20–21). (Contract source is verified on BscScan — exact match.)
+## 5. Honest limitations
+- **No statistically significant edge** (deflated Sharpe ≈ 0.01 both versions). Do NOT "fix" by
+  tuning — that inflates trials and the shuffle canary/forward record would expose it.
+- **Hybrid data:** backtest prices = Binance public OHLCV; sentiment + live signal = CMC. CMC Pro is
+  a wired-but-optional upgrade (`engine/datasource.py`, `DATA_PLAN.md`). Full map: `DATA_SOURCES.md`.
+- **Interim 15-token universe** pending the official 149-list (`spec/universe_official_149.json` ready).
+- **Ranking** by 24h dollar-volume. **Reveal** runs June 20–21 (rehearsed: `attest/REVEAL_DRYRUN.md`).
 
 ## 6. Architecture / data flow
 intent → `skill/` (LLM authors spec) → `spec/*.spec.json` → `engine/` (deterministic backtest)
-→ `falsify/` (walk-forward, perturbation, shuffle canary, deflated Sharpe, ablation)
-→ frozen spec → `attest/commit_hour.py` (hourly) → `SignalAttestor.sol` on BSC → reveal + verify.
-`x402plan/` prices the data feeds. `evidence/` holds raw API/tx proofs. `cli/` holds the gates.
+→ `falsify/` → frozen spec → `attest/commit_hour.py` (hourly) → `SignalAttestor.sol` on BSC →
+reveal + verify. `x402plan/` prices feeds. `evidence/` holds proofs + the frozen-set baseline.
 
 ## 7. 🔴 Operational rules (do not break the live system)
-- **Commits:** author `holybunnie` only; clean conventional messages; **no** co-author / "generated"
-  trailers; **no** "Phase N" in messages; keep any authoring-tool name out of messages/files.
-- **Push:** PAT is in `.env` as `GH_PAT` (Codespaces token can't push). ALWAYS `git pull --rebase`
-  (with the PAT URL) before pushing — the hourly cron also pushes to main. Never print/commit `GH_PAT`
-  or any `.env` value; scan the staged diff for secret values first.
-- **Mainnet only**, never testnet. Wallet `0x73C0152a7dB01Cb11E257A8C82366B3EEaF53Ae1`.
-- **FROZEN — do not change behavior of:** `spec/regime_pilot.spec.json`,
-  `spec/regime_pilot_v2.spec.json`, `spec/universe.json`, and the engine signal path
-  (`compute_signal`, `build_features`, `assign_regimes`, `target_weights`, `indicators.py`,
-  `sizing.py`). Changing them breaks re-verification of past on-chain commits. New work must be
-  ADDITIVE. After any engine edit run `make verify-phase4 && make verify-phase5` and
-  `PYTHONPATH=. python attest/verify.py` (the last MUST still show all on-chain hashes match).
+- **Commits:** author `holybunnie` only; clean messages; **no** co-author / "generated" trailers;
+  **no** build-order/"phase N" scaffolding or authoring-tool names in judge-facing files.
+- **Push:** PAT in `.env` as `GH_PAT`. ALWAYS `git pull --rebase` before pushing — the hourly cron
+  also pushes to main. Never print/commit `GH_PAT` or any `.env` value; scan the staged diff first.
+- **Mainnet for the live record.** Wallet `0x73C0152a7dB01Cb11E257A8C82366B3EEaF53Ae1`. Testnet/
+  in-memory EVM is used ONLY for the reveal rehearsal — never the attested record.
+- **FROZEN SET — do not change the *meaning* of:** `spec/regime_pilot.spec.json`,
+  `spec/regime_pilot_v2.spec.json`, `spec/universe.json`, `attest/{commit_hour,chain,hashing,
+  live_signal}.py`, `engine/{backtest,sizing,indicators}.py`, `engine/data/fetch.py`,
+  `attest/deployment.json`, `.github/workflows/attest.yml`. Baseline: `evidence/frozen_set_baseline.txt`;
+  approved exceptions: `evidence/frozen_set_changes.md` (only the duplicate-guard added to
+  `commit_hour.py`, skip-logic only). After any change run `make verify` and
+  `PYTHONPATH=. python attest/verify.py`.
 
 ## 8. Environment
-Python 3.12; deps in `requirements.txt`. solc 0.8.24 lives at `~/.solcx` (fetched from GitHub
-releases — the default solc host is DNS-blocked in this sandbox). Run engine/attest scripts with
-`PYTHONPATH=.`. The cron's GitHub Actions secrets: `CMC_API_KEY`, `ATTEST_PRIVATE_KEY`,
-`ATTEST_SALT_SEED`.
+Python 3.12; deps in `requirements.txt` (incl. `eth-tester[py-evm]`, `pytest`). solc 0.8.24 at
+`~/.solcx`. Run engine/attest scripts with `PYTHONPATH=.`. Cron GitHub Actions secrets:
+`CMC_API_KEY`, `ATTEST_PRIVATE_KEY`, `ATTEST_SALT_SEED`.
+
+## 9. Resume here — pre-submission hardening status (branch `fixes/pre-submission`)
+**DONE and verified (each has a runnable gate; `make verify` = 13/13 PASS offline):**
+- Item 1 — reconciled on-chain commits 7 & 26 (documented duplicates); chain-complete `attest/verify.py`
+  (+ `onchain_ledger.json`, `RECONCILIATION.md`, `commits_reconciliation.csv`).
+- Item 2 — duplicate-commit race closed: `attest/single_flight.py` (lock + on-chain pre-send guard),
+  wired into `commit_hour.py` (operator-approved, signal/hash bytes unchanged), `make verify-attest-race`.
+- Item 4/7 — honest framing (full-window first; "no statistically significant"; precise timing) +
+  `make verify-framing`. Item 9/10 — README rewritten system-first, Binance own-goal removed,
+  `make verify-readme`.
+- Item 5 — `make verify` is now an OFFLINE scoreboard (`cli/verify.py`) using committed fixtures
+  (`tests/fixtures/cache_csv/`, builder `cli/build_fixtures.py`).
+- Item 6 — `eth-tester[py-evm]` + `pytest` pinned; `tests/test_attest.py` runs; `.github/workflows/ci.yml` added.
+- Item 8 — `spec/universe_official_149.json` (149 tokens) + `make verify-universe`.
+- Item 11 — `engine/datasource.py` (CMC Pro optional) + `DATA_PLAN.md` + `make verify-datasource`.
+- Item 12 — HANDOFF aligned with STATUS + `make verify-docs-consistency`.
+- Item 13 — `make verify-secrets` (files + full git history).
+- Item 14 — Makefile targets renamed to claim-based names; zero `phase[0-9]` in judge-facing files.
+- Item 15 — `DATA_SOURCES.md` (code-verified) + `make verify-datasources`.
+
+**REMAINING (do these next):**
+1. **Item 3 finish** — `attest/dryrun_reveal.py` reveal rehearsal works (5/5 reproduce on in-memory
+   EVM); add Makefile target `attest-dryrun-verify` and (optional) public BSC-testnet tx links if a
+   funded testnet key is provided.
+2. **Verify-full cold path** — confirm `make verify-full` behaves on a machine with a CMC key + `make data`.
+3. **CI green** — push and confirm `.github/workflows/ci.yml` passes on GitHub.
+4. **SELF_AUDIT.md** — write the 10 hostile-judge questions + answers/residual-risks (mandate requirement).
+5. **Final gate** — fresh-clone `make setup && make verify`; re-confirm FROZEN SET via
+   `sha256sum -c evidence/frozen_set_baseline.txt` (expect 12 OK + `commit_hour.py` = approved change).
+6. **Item 13 (optional deepening)** — extend the secret scan with explicit salt-seed/key regexes if desired.
+7. At submission: strip this file, HANDOFF.md, and any scaffolding (operator's call).
