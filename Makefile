@@ -7,6 +7,7 @@ PY := python3
         verify-environment verify-data verify-skill verify-strategy verify-attestation \
         verify-framing verify-readme verify-universe verify-datasource \
         verify-docs-consistency verify-datasources verify-attest-race \
+        attest-dryrun-verify verify-self-audit \
         data backtest falsify demo clean \
         attest-deploy attest-commit attest-status attest-reveal attest-verify x402-pay x402-plan
 
@@ -23,6 +24,7 @@ help:
 	@echo "  make verify-secrets         No secrets in files or git history"
 	@echo "  make verify-attest-race     Duplicate-commit race is closed"
 	@echo "  make attest-verify          Every on-chain commit accounted for (offline snapshot)"
+	@echo "  make attest-dryrun-verify   Reveal rehearsal: commit->reveal->verify on in-memory EVM"
 	@echo "  -- claim-based gates (live; part of verify-full) --"
 	@echo "  make verify-environment     External deps + credentials reachable"
 	@echo "  make verify-data            Cached data has no gaps/dupes; matches source"
@@ -64,6 +66,9 @@ verify-datasource:
 verify-docs-consistency:
 	$(PY) cli/verify_docs_consistency.py
 
+verify-self-audit:
+	$(PY) cli/verify_self_audit.py
+
 verify-datasources:
 	$(PY) cli/verify_datasources.py
 
@@ -72,6 +77,9 @@ verify-attest-race:
 
 attest-verify:
 	PYTHONPATH=. $(PY) attest/verify.py
+
+attest-dryrun-verify:
+	PYTHONPATH=. $(PY) attest/dryrun_reveal.py
 
 # ---- claim-based verification gates (live; require credentials/data) ----
 verify-environment:
