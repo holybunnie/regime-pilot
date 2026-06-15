@@ -97,6 +97,13 @@ def main():
         except Exception:
             reproduce = None
 
+    # Highest id this checkout's public ledger knows about. The live committer keeps adding
+    # commits hourly, so the chain can be AHEAD of a static checkout. An on-chain id beyond this
+    # high-water mark is a newer hourly commit (accounted, pending the next ledger sync) — NOT a
+    # gap. A truly unaccounted id is one WITHIN the known range with no explanation (how 7/26 were
+    # found). This keeps a live `make attest-verify` from flapping to FAIL between hourly commits.
+    max_csv_id = max(csv_rows) if csv_rows else -1
+
     first_hash = {}      # hash -> first on-chain id that carried it
     results = []
     for row in ledger:
@@ -123,20 +130,24 @@ def main():
                 else:
                     status = "MISMATCH"
                     note = "commits_public.csv hash disagrees with on-chain hash"
+            elif cid > max_csv_id:
+                status = "PENDING-NEWER"
+                note = ("newer hourly commit made after this checkout's ledger — re-run "
+                        "`make attest-snapshot` / pull latest to fold it in; not a gap")
             else:
                 status = "UNACCOUNTED"
                 note = "on-chain id not in CSV and not a known duplicate"
         results.append({**row, "status": status, "note": note, "ts": ts})
 
     order = {"REPRODUCED": 0, "RECORDED": 0, "DOCUMENTED-DUPLICATE": 0,
-             "BOOTSTRAP": 0, "MISMATCH": 1, "UNACCOUNTED": 1}
+             "BOOTSTRAP": 0, "PENDING-NEWER": 0, "MISMATCH": 1, "UNACCOUNTED": 1}
     bad = [r for r in results if order.get(r["status"], 1) == 1]
     counts = {}
     for r in results:
         counts[r["status"]] = counts.get(r["status"], 0) + 1
 
     icon = {"REPRODUCED": "✅", "RECORDED": "✅", "DOCUMENTED-DUPLICATE": "⚠️",
-            "BOOTSTRAP": "🟦", "MISMATCH": "❌", "UNACCOUNTED": "❌"}
+            "BOOTSTRAP": "🟦", "PENDING-NEWER": "🕒", "MISMATCH": "❌", "UNACCOUNTED": "❌"}
     lines = ["# On-Chain Attestation Verification", "",
              f"- Source: {source}",
              f"- On-chain commits (commitCount): **{len(results)}**",
@@ -147,16 +158,19 @@ def main():
         lines.append(f"| {r['id']} | {r['ts'] or '—'} | {r['block_timestamp_utc']} | "
                      f"{r['status']} {icon.get(r['status'],'')} | {r['note']} |")
     accounted = not bad
+    pending = counts.get("PENDING-NEWER", 0)
+    pending_note = f" ({pending} newer than this checkout's ledger — pending sync)" if pending else ""
     lines += ["",
               f"**{len(results)} on-chain commits, "
-              + ("all accounted for." if accounted else f"{len(bad)} UNACCOUNTED/MISMATCH — FAIL.")
+              + (f"all accounted for{pending_note}." if accounted
+                 else f"{len(bad)} UNACCOUNTED/MISMATCH — FAIL.")
               + "**"]
     OUT.write_text("\n".join(lines) + "\n")
 
     print(f"Chain-complete verify via {source}")
     print("  " + " | ".join(f"{k}:{counts[k]}" for k in sorted(counts)))
     if accounted:
-        print(f"PASS: {len(results)} on-chain commits, all accounted for -> {OUT}")
+        print(f"PASS: {len(results)} on-chain commits, all accounted for{pending_note} -> {OUT}")
         return 0
     print(f"FAIL: {len(bad)} unaccounted/mismatch ids: {[r['id'] for r in bad]}")
     return 1
