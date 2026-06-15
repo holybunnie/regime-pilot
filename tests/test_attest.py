@@ -20,14 +20,14 @@ KAT_SALT = bytes.fromhex("00" * 31 + "01")
 KAT_HASH = "0x7afc73b86475e098f34b1cc785196adcbb5277c37a5f9a4c99c86f76afe5146b"
 
 
-def test_kat():
+def check_kat():
     h = "0x" + commit_hash(KAT_PAYLOAD, KAT_SALT).hex()
     ok = h == KAT_HASH
     print(f"  [{'PASS' if ok else 'FAIL'}] hash known-answer: {h[:18]}…")
     return ok
 
 
-def test_canonical_key_order():
+def check_canonical_key_order():
     a = canonical_json({"b": 1, "a": 2})
     b = canonical_json({"a": 2, "b": 1})
     ok = a == b == b'{"a":2,"b":1}'
@@ -35,13 +35,13 @@ def test_canonical_key_order():
     return ok
 
 
-def test_salt_length():
+def check_salt_length():
     ok = len(new_salt()) == 32
     print(f"  [{'PASS' if ok else 'FAIL'}] salt is 32 bytes")
     return ok
 
 
-def test_mock_chain():
+def check_mock_chain():
     from web3 import Web3, EthereumTesterProvider
     art = json.loads((REPO / "attest" / "build" / "SignalAttestor.json").read_text())
     w3 = Web3(EthereumTesterProvider())
@@ -93,8 +93,15 @@ def test_mock_chain():
     return ok
 
 
+# pytest entrypoints: assert the helper results so `pytest` collects + checks them cleanly
+def test_kat(): assert check_kat()
+def test_canonical_key_order(): assert check_canonical_key_order()
+def test_salt_length(): assert check_salt_length()
+def test_mock_chain(): assert check_mock_chain()
+
+
 def main():
-    results = [test_kat(), test_canonical_key_order(), test_salt_length(), test_mock_chain()]
+    results = [check_kat(), check_canonical_key_order(), check_salt_length(), check_mock_chain()]
     print()
     if all(results):
         print("ALL ATTESTATION TESTS PASS")

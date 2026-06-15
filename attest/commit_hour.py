@@ -27,6 +27,8 @@ sys.path.insert(0, str(REPO))
 from attest import chain                                       # noqa: E402
 from attest.hashing import commit_hash, canonical_json, deterministic_salt  # noqa: E402
 from attest.live_signal import compute_signal                  # noqa: E402
+from attest.single_flight import (acquire_hour_lock,           # noqa: E402
+                                  release_hour_lock, onchain_hash_exists)
 
 # Frozen spec attested going forward. Switched v1 -> v2 (long/short) on 2026-06-13.
 # Past v1 commits stay verifiable: attest/verify.py matches each commit to whichever
@@ -69,6 +71,7 @@ def main():
     if not seed:
         print("FATAL: ATTEST_SALT_SEED not set — cannot make reproducible commits.")
         return 1
+    locked_hour = None
     try:
         # 1) refresh data
         import importlib
@@ -81,6 +84,12 @@ def main():
             print(f"Hour {ts} already committed — nothing to do (idempotent).")
             HEARTBEAT.write_text(f"{now_iso()} alive; last decision {ts}; no-op (already committed)\n")
             return 0
+        # single-flight: only the first run for this decision hour proceeds (stops the
+        # id-7/id-26 duplicate race). A concurrent second run fails to acquire and exits.
+        if not acquire_hour_lock(ts):
+            print(f"Another run holds hour {ts} — skipping (single-flight lock).")
+            return 0
+        locked_hour = ts
         # 3) salt + hash
         salt = deterministic_salt(seed, ts)
         h = commit_hash(payload, salt)
@@ -92,6 +101,12 @@ def main():
             print("FATAL: no deployment.json — deploy the contract first.")
             return 1
         c = w3.eth.contract(address=w3.to_checksum_address(d["address"]), abi=d["abi"])
+        # authoritative pre-send guard: never double-commit a hour already on-chain.
+        # Holds even across cancelled/separate runners where the local lock cannot help.
+        if onchain_hash_exists(c, h):
+            print(f"Hour {ts} already committed on-chain (hash present) — skipping.")
+            HEARTBEAT.write_text(f"{now_iso()} alive; last decision {ts}; no-op (already on-chain)\n")
+            return 0
         rcpt = chain.send_tx(w3, acct, {"to": c.address,
                                         "data": c.encode_abi("commit", [h])})
         ev = c.events.Committed().process_receipt(rcpt)[0]["args"]
@@ -101,6 +116,9 @@ def main():
         print(f"MISSED this slot: {e}")
         log_missed(str(e).replace("\n", " ")[:200])
         return 1
+    finally:
+        if locked_hour is not None:
+            release_hour_lock(locked_hour)
 
     # 6) records
     append_public({"timestamp_utc": ts, "commit_id": cid, "hash": "0x" + h.hex(),

@@ -1,0 +1,2 @@
+SYNTHETIC FIXTURE — NOT A RESULT
+15 symbols x 720 hourly rows + fear_greed, seeded (deterministic). Regenerate: python cli/build_fixtures.py

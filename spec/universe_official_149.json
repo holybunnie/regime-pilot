@@ -1,0 +1,753 @@
+{
+  "_note": "BEST-EFFORT candidate for the brief's official 149 BEP-20 list \u2014 real liquid tickers, structurally identical to universe.json. Replace with the exact official list when provided (keep the same shape). Symbols that don't resolve against the live source are flagged, not crashed (engine/data/fetch.py).",
+  "_status": "CANDIDATE \u2014 replace with the official 149-token list from the brief",
+  "quote": "USDT",
+  "benchmark_symbol": "BTC",
+  "tokens": [
+    {
+      "symbol": "BTC",
+      "binance_pair": "BTCUSDT",
+      "cmc_symbol": "BTC"
+    },
+    {
+      "symbol": "ETH",
+      "binance_pair": "ETHUSDT",
+      "cmc_symbol": "ETH"
+    },
+    {
+      "symbol": "BNB",
+      "binance_pair": "BNBUSDT",
+      "cmc_symbol": "BNB"
+    },
+    {
+      "symbol": "XRP",
+      "binance_pair": "XRPUSDT",
+      "cmc_symbol": "XRP"
+    },
+    {
+      "symbol": "SOL",
+      "binance_pair": "SOLUSDT",
+      "cmc_symbol": "SOL"
+    },
+    {
+      "symbol": "ADA",
+      "binance_pair": "ADAUSDT",
+      "cmc_symbol": "ADA"
+    },
+    {
+      "symbol": "DOGE",
+      "binance_pair": "DOGEUSDT",
+      "cmc_symbol": "DOGE"
+    },
+    {
+      "symbol": "TRX",
+      "binance_pair": "TRXUSDT",
+      "cmc_symbol": "TRX"
+    },
+    {
+      "symbol": "DOT",
+      "binance_pair": "DOTUSDT",
+      "cmc_symbol": "DOT"
+    },
+    {
+      "symbol": "LINK",
+      "binance_pair": "LINKUSDT",
+      "cmc_symbol": "LINK"
+    },
+    {
+      "symbol": "AVAX",
+      "binance_pair": "AVAXUSDT",
+      "cmc_symbol": "AVAX"
+    },
+    {
+      "symbol": "LTC",
+      "binance_pair": "LTCUSDT",
+      "cmc_symbol": "LTC"
+    },
+    {
+      "symbol": "UNI",
+      "binance_pair": "UNIUSDT",
+      "cmc_symbol": "UNI"
+    },
+    {
+      "symbol": "ATOM",
+      "binance_pair": "ATOMUSDT",
+      "cmc_symbol": "ATOM"
+    },
+    {
+      "symbol": "CAKE",
+      "binance_pair": "CAKEUSDT",
+      "cmc_symbol": "CAKE"
+    },
+    {
+      "symbol": "MATIC",
+      "binance_pair": "MATICUSDT",
+      "cmc_symbol": "MATIC"
+    },
+    {
+      "symbol": "SHIB",
+      "binance_pair": "SHIBUSDT",
+      "cmc_symbol": "SHIB"
+    },
+    {
+      "symbol": "BCH",
+      "binance_pair": "BCHUSDT",
+      "cmc_symbol": "BCH"
+    },
+    {
+      "symbol": "NEAR",
+      "binance_pair": "NEARUSDT",
+      "cmc_symbol": "NEAR"
+    },
+    {
+      "symbol": "APT",
+      "binance_pair": "APTUSDT",
+      "cmc_symbol": "APT"
+    },
+    {
+      "symbol": "ICP",
+      "binance_pair": "ICPUSDT",
+      "cmc_symbol": "ICP"
+    },
+    {
+      "symbol": "FIL",
+      "binance_pair": "FILUSDT",
+      "cmc_symbol": "FIL"
+    },
+    {
+      "symbol": "ARB",
+      "binance_pair": "ARBUSDT",
+      "cmc_symbol": "ARB"
+    },
+    {
+      "symbol": "OP",
+      "binance_pair": "OPUSDT",
+      "cmc_symbol": "OP"
+    },
+    {
+      "symbol": "ETC",
+      "binance_pair": "ETCUSDT",
+      "cmc_symbol": "ETC"
+    },
+    {
+      "symbol": "XLM",
+      "binance_pair": "XLMUSDT",
+      "cmc_symbol": "XLM"
+    },
+    {
+      "symbol": "INJ",
+      "binance_pair": "INJUSDT",
+      "cmc_symbol": "INJ"
+    },
+    {
+      "symbol": "IMX",
+      "binance_pair": "IMXUSDT",
+      "cmc_symbol": "IMX"
+    },
+    {
+      "symbol": "HBAR",
+      "binance_pair": "HBARUSDT",
+      "cmc_symbol": "HBAR"
+    },
+    {
+      "symbol": "VET",
+      "binance_pair": "VETUSDT",
+      "cmc_symbol": "VET"
+    },
+    {
+      "symbol": "SUI",
+      "binance_pair": "SUIUSDT",
+      "cmc_symbol": "SUI"
+    },
+    {
+      "symbol": "GRT",
+      "binance_pair": "GRTUSDT",
+      "cmc_symbol": "GRT"
+    },
+    {
+      "symbol": "AAVE",
+      "binance_pair": "AAVEUSDT",
+      "cmc_symbol": "AAVE"
+    },
+    {
+      "symbol": "RUNE",
+      "binance_pair": "RUNEUSDT",
+      "cmc_symbol": "RUNE"
+    },
+    {
+      "symbol": "ALGO",
+      "binance_pair": "ALGOUSDT",
+      "cmc_symbol": "ALGO"
+    },
+    {
+      "symbol": "FTM",
+      "binance_pair": "FTMUSDT",
+      "cmc_symbol": "FTM"
+    },
+    {
+      "symbol": "SAND",
+      "binance_pair": "SANDUSDT",
+      "cmc_symbol": "SAND"
+    },
+    {
+      "symbol": "MANA",
+      "binance_pair": "MANAUSDT",
+      "cmc_symbol": "MANA"
+    },
+    {
+      "symbol": "AXS",
+      "binance_pair": "AXSUSDT",
+      "cmc_symbol": "AXS"
+    },
+    {
+      "symbol": "EGLD",
+      "binance_pair": "EGLDUSDT",
+      "cmc_symbol": "EGLD"
+    },
+    {
+      "symbol": "THETA",
+      "binance_pair": "THETAUSDT",
+      "cmc_symbol": "THETA"
+    },
+    {
+      "symbol": "FLOW",
+      "binance_pair": "FLOWUSDT",
+      "cmc_symbol": "FLOW"
+    },
+    {
+      "symbol": "XTZ",
+      "binance_pair": "XTZUSDT",
+      "cmc_symbol": "XTZ"
+    },
+    {
+      "symbol": "CHZ",
+      "binance_pair": "CHZUSDT",
+      "cmc_symbol": "CHZ"
+    },
+    {
+      "symbol": "EOS",
+      "binance_pair": "EOSUSDT",
+      "cmc_symbol": "EOS"
+    },
+    {
+      "symbol": "KAVA",
+      "binance_pair": "KAVAUSDT",
+      "cmc_symbol": "KAVA"
+    },
+    {
+      "symbol": "MKR",
+      "binance_pair": "MKRUSDT",
+      "cmc_symbol": "MKR"
+    },
+    {
+      "symbol": "SNX",
+      "binance_pair": "SNXUSDT",
+      "cmc_symbol": "SNX"
+    },
+    {
+      "symbol": "LDO",
+      "binance_pair": "LDOUSDT",
+      "cmc_symbol": "LDO"
+    },
+    {
+      "symbol": "CRV",
+      "binance_pair": "CRVUSDT",
+      "cmc_symbol": "CRV"
+    },
+    {
+      "symbol": "COMP",
+      "binance_pair": "COMPUSDT",
+      "cmc_symbol": "COMP"
+    },
+    {
+      "symbol": "ENJ",
+      "binance_pair": "ENJUSDT",
+      "cmc_symbol": "ENJ"
+    },
+    {
+      "symbol": "ZEC",
+      "binance_pair": "ZECUSDT",
+      "cmc_symbol": "ZEC"
+    },
+    {
+      "symbol": "DASH",
+      "binance_pair": "DASHUSDT",
+      "cmc_symbol": "DASH"
+    },
+    {
+      "symbol": "ZIL",
+      "binance_pair": "ZILUSDT",
+      "cmc_symbol": "ZIL"
+    },
+    {
+      "symbol": "BAT",
+      "binance_pair": "BATUSDT",
+      "cmc_symbol": "BAT"
+    },
+    {
+      "symbol": "1INCH",
+      "binance_pair": "1INCHUSDT",
+      "cmc_symbol": "1INCH"
+    },
+    {
+      "symbol": "GALA",
+      "binance_pair": "GALAUSDT",
+      "cmc_symbol": "GALA"
+    },
+    {
+      "symbol": "APE",
+      "binance_pair": "APEUSDT",
+      "cmc_symbol": "APE"
+    },
+    {
+      "symbol": "GMX",
+      "binance_pair": "GMXUSDT",
+      "cmc_symbol": "GMX"
+    },
+    {
+      "symbol": "DYDX",
+      "binance_pair": "DYDXUSDT",
+      "cmc_symbol": "DYDX"
+    },
+    {
+      "symbol": "RNDR",
+      "binance_pair": "RNDRUSDT",
+      "cmc_symbol": "RNDR"
+    },
+    {
+      "symbol": "FET",
+      "binance_pair": "FETUSDT",
+      "cmc_symbol": "FET"
+    },
+    {
+      "symbol": "OCEAN",
+      "binance_pair": "OCEANUSDT",
+      "cmc_symbol": "OCEAN"
+    },
+    {
+      "symbol": "ROSE",
+      "binance_pair": "ROSEUSDT",
+      "cmc_symbol": "ROSE"
+    },
+    {
+      "symbol": "CELO",
+      "binance_pair": "CELOUSDT",
+      "cmc_symbol": "CELO"
+    },
+    {
+      "symbol": "KSM",
+      "binance_pair": "KSMUSDT",
+      "cmc_symbol": "KSM"
+    },
+    {
+      "symbol": "QNT",
+      "binance_pair": "QNTUSDT",
+      "cmc_symbol": "QNT"
+    },
+    {
+      "symbol": "NEO",
+      "binance_pair": "NEOUSDT",
+      "cmc_symbol": "NEO"
+    },
+    {
+      "symbol": "IOTA",
+      "binance_pair": "IOTAUSDT",
+      "cmc_symbol": "IOTA"
+    },
+    {
+      "symbol": "WAVES",
+      "binance_pair": "WAVESUSDT",
+      "cmc_symbol": "WAVES"
+    },
+    {
+      "symbol": "MINA",
+      "binance_pair": "MINAUSDT",
+      "cmc_symbol": "MINA"
+    },
+    {
+      "symbol": "GMT",
+      "binance_pair": "GMTUSDT",
+      "cmc_symbol": "GMT"
+    },
+    {
+      "symbol": "LRC",
+      "binance_pair": "LRCUSDT",
+      "cmc_symbol": "LRC"
+    },
+    {
+      "symbol": "ANKR",
+      "binance_pair": "ANKRUSDT",
+      "cmc_symbol": "ANKR"
+    },
+    {
+      "symbol": "BAL",
+      "binance_pair": "BALUSDT",
+      "cmc_symbol": "BAL"
+    },
+    {
+      "symbol": "YFI",
+      "binance_pair": "YFIUSDT",
+      "cmc_symbol": "YFI"
+    },
+    {
+      "symbol": "SUSHI",
+      "binance_pair": "SUSHIUSDT",
+      "cmc_symbol": "SUSHI"
+    },
+    {
+      "symbol": "UMA",
+      "binance_pair": "UMAUSDT",
+      "cmc_symbol": "UMA"
+    },
+    {
+      "symbol": "KNC",
+      "binance_pair": "KNCUSDT",
+      "cmc_symbol": "KNC"
+    },
+    {
+      "symbol": "STORJ",
+      "binance_pair": "STORJUSDT",
+      "cmc_symbol": "STORJ"
+    },
+    {
+      "symbol": "BAND",
+      "binance_pair": "BANDUSDT",
+      "cmc_symbol": "BAND"
+    },
+    {
+      "symbol": "OGN",
+      "binance_pair": "OGNUSDT",
+      "cmc_symbol": "OGN"
+    },
+    {
+      "symbol": "SKL",
+      "binance_pair": "SKLUSDT",
+      "cmc_symbol": "SKL"
+    },
+    {
+      "symbol": "AUDIO",
+      "binance_pair": "AUDIOUSDT",
+      "cmc_symbol": "AUDIO"
+    },
+    {
+      "symbol": "MASK",
+      "binance_pair": "MASKUSDT",
+      "cmc_symbol": "MASK"
+    },
+    {
+      "symbol": "ENS",
+      "binance_pair": "ENSUSDT",
+      "cmc_symbol": "ENS"
+    },
+    {
+      "symbol": "CVX",
+      "binance_pair": "CVXUSDT",
+      "cmc_symbol": "CVX"
+    },
+    {
+      "symbol": "FXS",
+      "binance_pair": "FXSUSDT",
+      "cmc_symbol": "FXS"
+    },
+    {
+      "symbol": "RPL",
+      "binance_pair": "RPLUSDT",
+      "cmc_symbol": "RPL"
+    },
+    {
+      "symbol": "STX",
+      "binance_pair": "STXUSDT",
+      "cmc_symbol": "STX"
+    },
+    {
+      "symbol": "JASMY",
+      "binance_pair": "JASMYUSDT",
+      "cmc_symbol": "JASMY"
+    },
+    {
+      "symbol": "WOO",
+      "binance_pair": "WOOUSDT",
+      "cmc_symbol": "WOO"
+    },
+    {
+      "symbol": "JOE",
+      "binance_pair": "JOEUSDT",
+      "cmc_symbol": "JOE"
+    },
+    {
+      "symbol": "CFX",
+      "binance_pair": "CFXUSDT",
+      "cmc_symbol": "CFX"
+    },
+    {
+      "symbol": "AR",
+      "binance_pair": "ARUSDT",
+      "cmc_symbol": "AR"
+    },
+    {
+      "symbol": "ASTR",
+      "binance_pair": "ASTRUSDT",
+      "cmc_symbol": "ASTR"
+    },
+    {
+      "symbol": "MAGIC",
+      "binance_pair": "MAGICUSDT",
+      "cmc_symbol": "MAGIC"
+    },
+    {
+      "symbol": "HOOK",
+      "binance_pair": "HOOKUSDT",
+      "cmc_symbol": "HOOK"
+    },
+    {
+      "symbol": "ID",
+      "binance_pair": "IDUSDT",
+      "cmc_symbol": "ID"
+    },
+    {
+      "symbol": "BLUR",
+      "binance_pair": "BLURUSDT",
+      "cmc_symbol": "BLUR"
+    },
+    {
+      "symbol": "PEPE",
+      "binance_pair": "PEPEUSDT",
+      "cmc_symbol": "PEPE"
+    },
+    {
+      "symbol": "FLOKI",
+      "binance_pair": "FLOKIUSDT",
+      "cmc_symbol": "FLOKI"
+    },
+    {
+      "symbol": "BONK",
+      "binance_pair": "BONKUSDT",
+      "cmc_symbol": "BONK"
+    },
+    {
+      "symbol": "WIF",
+      "binance_pair": "WIFUSDT",
+      "cmc_symbol": "WIF"
+    },
+    {
+      "symbol": "JTO",
+      "binance_pair": "JTOUSDT",
+      "cmc_symbol": "JTO"
+    },
+    {
+      "symbol": "PYTH",
+      "binance_pair": "PYTHUSDT",
+      "cmc_symbol": "PYTH"
+    },
+    {
+      "symbol": "TIA",
+      "binance_pair": "TIAUSDT",
+      "cmc_symbol": "TIA"
+    },
+    {
+      "symbol": "SEI",
+      "binance_pair": "SEIUSDT",
+      "cmc_symbol": "SEI"
+    },
+    {
+      "symbol": "ORDI",
+      "binance_pair": "ORDIUSDT",
+      "cmc_symbol": "ORDI"
+    },
+    {
+      "symbol": "BEAM",
+      "binance_pair": "BEAMUSDT",
+      "cmc_symbol": "BEAM"
+    },
+    {
+      "symbol": "ONDO",
+      "binance_pair": "ONDOUSDT",
+      "cmc_symbol": "ONDO"
+    },
+    {
+      "symbol": "JUP",
+      "binance_pair": "JUPUSDT",
+      "cmc_symbol": "JUP"
+    },
+    {
+      "symbol": "STRK",
+      "binance_pair": "STRKUSDT",
+      "cmc_symbol": "STRK"
+    },
+    {
+      "symbol": "ENA",
+      "binance_pair": "ENAUSDT",
+      "cmc_symbol": "ENA"
+    },
+    {
+      "symbol": "W",
+      "binance_pair": "WUSDT",
+      "cmc_symbol": "W"
+    },
+    {
+      "symbol": "ETHFI",
+      "binance_pair": "ETHFIUSDT",
+      "cmc_symbol": "ETHFI"
+    },
+    {
+      "symbol": "OMNI",
+      "binance_pair": "OMNIUSDT",
+      "cmc_symbol": "OMNI"
+    },
+    {
+      "symbol": "SAGA",
+      "binance_pair": "SAGAUSDT",
+      "cmc_symbol": "SAGA"
+    },
+    {
+      "symbol": "TAO",
+      "binance_pair": "TAOUSDT",
+      "cmc_symbol": "TAO"
+    },
+    {
+      "symbol": "AKT",
+      "binance_pair": "AKTUSDT",
+      "cmc_symbol": "AKT"
+    },
+    {
+      "symbol": "NOT",
+      "binance_pair": "NOTUSDT",
+      "cmc_symbol": "NOT"
+    },
+    {
+      "symbol": "ZK",
+      "binance_pair": "ZKUSDT",
+      "cmc_symbol": "ZK"
+    },
+    {
+      "symbol": "ZRO",
+      "binance_pair": "ZROUSDT",
+      "cmc_symbol": "ZRO"
+    },
+    {
+      "symbol": "IO",
+      "binance_pair": "IOUSDT",
+      "cmc_symbol": "IO"
+    },
+    {
+      "symbol": "BB",
+      "binance_pair": "BBUSDT",
+      "cmc_symbol": "BB"
+    },
+    {
+      "symbol": "LISTA",
+      "binance_pair": "LISTAUSDT",
+      "cmc_symbol": "LISTA"
+    },
+    {
+      "symbol": "ALT",
+      "binance_pair": "ALTUSDT",
+      "cmc_symbol": "ALT"
+    },
+    {
+      "symbol": "MANTA",
+      "binance_pair": "MANTAUSDT",
+      "cmc_symbol": "MANTA"
+    },
+    {
+      "symbol": "DYM",
+      "binance_pair": "DYMUSDT",
+      "cmc_symbol": "DYM"
+    },
+    {
+      "symbol": "PIXEL",
+      "binance_pair": "PIXELUSDT",
+      "cmc_symbol": "PIXEL"
+    },
+    {
+      "symbol": "PORTAL",
+      "binance_pair": "PORTALUSDT",
+      "cmc_symbol": "PORTAL"
+    },
+    {
+      "symbol": "AEVO",
+      "binance_pair": "AEVOUSDT",
+      "cmc_symbol": "AEVO"
+    },
+    {
+      "symbol": "METIS",
+      "binance_pair": "METISUSDT",
+      "cmc_symbol": "METIS"
+    },
+    {
+      "symbol": "AXL",
+      "binance_pair": "AXLUSDT",
+      "cmc_symbol": "AXL"
+    },
+    {
+      "symbol": "GAS",
+      "binance_pair": "GASUSDT",
+      "cmc_symbol": "GAS"
+    },
+    {
+      "symbol": "PENDLE",
+      "binance_pair": "PENDLEUSDT",
+      "cmc_symbol": "PENDLE"
+    },
+    {
+      "symbol": "SUPER",
+      "binance_pair": "SUPERUSDT",
+      "cmc_symbol": "SUPER"
+    },
+    {
+      "symbol": "C98",
+      "binance_pair": "C98USDT",
+      "cmc_symbol": "C98"
+    },
+    {
+      "symbol": "TWT",
+      "binance_pair": "TWTUSDT",
+      "cmc_symbol": "TWT"
+    },
+    {
+      "symbol": "ARKM",
+      "binance_pair": "ARKMUSDT",
+      "cmc_symbol": "ARKM"
+    },
+    {
+      "symbol": "EDU",
+      "binance_pair": "EDUUSDT",
+      "cmc_symbol": "EDU"
+    },
+    {
+      "symbol": "HFT",
+      "binance_pair": "HFTUSDT",
+      "cmc_symbol": "HFT"
+    },
+    {
+      "symbol": "PERP",
+      "binance_pair": "PERPUSDT",
+      "cmc_symbol": "PERP"
+    },
+    {
+      "symbol": "RDNT",
+      "binance_pair": "RDNTUSDT",
+      "cmc_symbol": "RDNT"
+    },
+    {
+      "symbol": "SSV",
+      "binance_pair": "SSVUSDT",
+      "cmc_symbol": "SSV"
+    },
+    {
+      "symbol": "USTC",
+      "binance_pair": "USTCUSDT",
+      "cmc_symbol": "USTC"
+    },
+    {
+      "symbol": "RSR",
+      "binance_pair": "RSRUSDT",
+      "cmc_symbol": "RSR"
+    },
+    {
+      "symbol": "COTI",
+      "binance_pair": "COTIUSDT",
+      "cmc_symbol": "COTI"
+    }
+  ]
+}
