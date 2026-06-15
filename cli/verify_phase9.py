@@ -23,6 +23,25 @@ def sh(*args):
 SECRET_KEYS = {"CMC_API_KEY", "X402_BASE_PRIVATE_KEY", "ATTEST_PRIVATE_KEY",
                "ATTEST_SALT_SEED", "GH_PAT", "BSCSCAN_API_KEY"}
 
+# Pattern-based deep scan (independent of .env — works on a fresh clone with no secrets).
+# A secret leaks as an ASSIGNMENT `KEY=<value>`; the on-chain commit hashes that fill the repo are
+# 64-hex too but never appear in that form, so this catches real leaks with zero hash false-positives.
+SECRET_ASSIGN = re.compile(
+    r"(CMC_API_KEY|X402_BASE_PRIVATE_KEY|ATTEST_PRIVATE_KEY|ATTEST_SALT_SEED|GH_PAT|"
+    r"BSCSCAN_API_KEY|PRIVATE_KEY|SALT_SEED)"
+    r"['\"]?\s*[:=]\s*['\"]?"
+    # value must itself be credential-SHAPED, so code refs (os.environ["ATTEST_PRIVATE_KEY"]) and
+    # empty placeholders (CMC_API_KEY=) never match — only a real leaked value does:
+    r"(0x[0-9a-fA-F]{40,}|[0-9a-fA-F]{64}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+    r"|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{50,})",
+    re.IGNORECASE)
+# CoinMarketCap Pro keys are UUIDs. Allowlist known PUBLIC uuids that are not secrets.
+CMC_UUID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.I)
+PUBLIC_UUID_ALLOW = {"dd5a9ce9-bece-405e-b73e-66638b976e01"}  # x402 flow id (public, in prices.json)
+# Bare salt-seed / private-key shaped tokens scanned ONLY in env-style files (commit hashes live in
+# .json/.csv/.md ledgers and must not trip this), so the seed can't hide in a stray .env-like file.
+HEX32 = re.compile(r"\b(0x)?[0-9a-fA-F]{64}\b")
+
 
 def load_secret_values():
     vals = []
@@ -70,6 +89,19 @@ def main():
     for pat in patterns:
         hits = re.findall(pat, blob)
         check(not hits, f"no token-shaped strings matching /{pat[:18]}…/ in tracked files")
+
+    # ---- deep, .env-independent scan of tracked files AND full git history ----
+    # (catches a leaked salt seed / private key / CMC key even if .env is absent on this clone)
+    full_history = full_history or sh("git", "log", "--all", "-p")
+    for label, corpus in (("tracked files", blob), ("full git history", full_history)):
+        assigns = [m.group(0) for m in SECRET_ASSIGN.finditer(corpus)]
+        check(not assigns,
+              f"no secret-shaped KEY=value assignment in {label}"
+              + (f" (found: {assigns[0][:40]}…)" if assigns else ""))
+        uuids = {u for u in CMC_UUID.findall(corpus)} - PUBLIC_UUID_ALLOW
+        check(not uuids,
+              f"no unknown CMC-key-shaped UUID in {label}"
+              + (f" (found: {next(iter(uuids))})" if uuids else ""))
 
     print()
     if fails:
