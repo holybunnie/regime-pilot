@@ -54,7 +54,7 @@ All components are built, tested, and committed — consistent with STATUS.md:
   `attest/commit_hour.py`, run hourly by `.github/workflows/attest.yml`. Repo secrets:
   `CMC_API_KEY`, `ATTEST_PRIVATE_KEY`, `ATTEST_SALT_SEED`.
 - Salt is deterministic `keccak(ATTEST_SALT_SEED || timestamp)` so reveals are reproducible.
-- The chain holds 34 commits; ids 7 and 26 are documented exact-duplicates (see
+- The chain grows hourly (live count in `attest/onchain_ledger.json`); ids 7 and 26 are documented exact-duplicates (see
   `attest/RECONCILIATION.md`), and the duplicate-race is now closed (single-flight lock +
   on-chain pre-send guard in `attest/single_flight.py`).
 - `make attest-status` (liveness) · `make attest-verify` (chain-complete accounting, offline-capable

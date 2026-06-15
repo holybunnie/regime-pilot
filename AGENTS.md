@@ -50,9 +50,10 @@ PASS (13 offline gates). Claim-based individual gates are listed by `make help`.
 - `make attest-verify` iterates the contract's own `commitCount()` and classifies EVERY on-chain id
   (RECORDED / REPRODUCED / DOCUMENTED-DUPLICATE). Pass = zero unaccounted. Works offline from the
   committed snapshot `attest/onchain_ledger.json`.
-- **Honest record:** 34 commits on-chain; ids **7 and 26** are exact-duplicate commits (same hash,
-  second hourly run for the same hour) — fully documented in `attest/RECONCILIATION.md`; the race that
-  caused them is closed. One early hour logged MISSED (since fixed). Nothing hidden.
+- **Honest record:** the chain grows by one commit per hour (live count in `onchain_ledger.json` /
+  `VERIFICATION.md`); ids **7 and 26** are exact-duplicate commits (same hash, second hourly run for
+  the same hour) — fully documented in `attest/RECONCILIATION.md`; the race that caused them is
+  closed. One early hour logged MISSED (since fixed). Nothing hidden.
 
 ## 5. Honest limitations
 - **No statistically significant edge** (deflated Sharpe ≈ 0.01 both versions). Do NOT "fix" by

@@ -41,9 +41,10 @@ forward test*, which is accruing now and will be the real arbiter.
 - Hourly via GitHub Actions (`.github/workflows/attest.yml`) → `attest/commit_hour.py` → commit on BSC.
 - Check anytime: `make attest-status` · on-chain: the contract link above · public log:
   `attest/commits_public.csv` · full per-id ledger: `attest/onchain_ledger.json`.
-- **Honest record:** the chain holds 34 commits; two of them (ids **7** and **26**) are exact
-  duplicates of the commits before them — a second hourly run for the same hour produced the same
-  deterministic hash. They sign nothing new and are fully documented in `attest/RECONCILIATION.md`.
+- **Honest record:** the chain grows by one commit per hour (live count tracked in
+  `attest/onchain_ledger.json`); two ids (**7** and **26**) are exact duplicates of the commits
+  before them — a second hourly run for the same hour produced the same deterministic hash. They
+  sign nothing new and are fully documented in `attest/RECONCILIATION.md`.
   The duplicate-commit race that caused them is now closed (`make verify-attest-race`). One early
   hour is logged MISSED (an env-var bug, since fixed). Nothing hidden — `make attest-verify` accounts
   for every on-chain id.

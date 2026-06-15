@@ -1,8 +1,8 @@
 # On-Chain Attestation Verification
 
 - Source: committed snapshot onchain_ledger.json
-- On-chain commits (commitCount): **34**
-- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 32
+- On-chain commits (commitCount): **56**
+- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 54
 
 | id | decision hour (UTC) | block ts (UTC) | status | note |
 |--:|---------------------|----------------|--------|------|
@@ -40,5 +40,27 @@
 | 31 | 2026-06-14T12:00:00Z | 2026-06-14T12:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-14T12:00:00Z; payload sealed until reveal |
 | 32 | 2026-06-14T13:00:00Z | 2026-06-14T13:03:21Z | RECORDED ✅ | primary forward commit for 2026-06-14T13:00:00Z; payload sealed until reveal |
 | 33 | 2026-06-14T14:00:00Z | 2026-06-14T14:02:53Z | RECORDED ✅ | primary forward commit for 2026-06-14T14:00:00Z; payload sealed until reveal |
+| 34 | 2026-06-14T15:00:00Z | 2026-06-14T15:03:47Z | RECORDED ✅ | primary forward commit for 2026-06-14T15:00:00Z; payload sealed until reveal |
+| 35 | 2026-06-14T16:00:00Z | 2026-06-14T16:03:42Z | RECORDED ✅ | primary forward commit for 2026-06-14T16:00:00Z; payload sealed until reveal |
+| 36 | 2026-06-14T17:00:00Z | 2026-06-14T17:03:13Z | RECORDED ✅ | primary forward commit for 2026-06-14T17:00:00Z; payload sealed until reveal |
+| 37 | 2026-06-14T18:00:00Z | 2026-06-14T18:03:48Z | RECORDED ✅ | primary forward commit for 2026-06-14T18:00:00Z; payload sealed until reveal |
+| 38 | 2026-06-14T19:00:00Z | 2026-06-14T19:03:03Z | RECORDED ✅ | primary forward commit for 2026-06-14T19:00:00Z; payload sealed until reveal |
+| 39 | 2026-06-14T20:00:00Z | 2026-06-14T20:03:40Z | RECORDED ✅ | primary forward commit for 2026-06-14T20:00:00Z; payload sealed until reveal |
+| 40 | 2026-06-14T21:00:00Z | 2026-06-14T21:03:42Z | RECORDED ✅ | primary forward commit for 2026-06-14T21:00:00Z; payload sealed until reveal |
+| 41 | 2026-06-14T22:00:00Z | 2026-06-14T22:03:26Z | RECORDED ✅ | primary forward commit for 2026-06-14T22:00:00Z; payload sealed until reveal |
+| 42 | 2026-06-14T23:00:00Z | 2026-06-14T23:02:53Z | RECORDED ✅ | primary forward commit for 2026-06-14T23:00:00Z; payload sealed until reveal |
+| 43 | 2026-06-15T00:00:00Z | 2026-06-15T00:03:13Z | RECORDED ✅ | primary forward commit for 2026-06-15T00:00:00Z; payload sealed until reveal |
+| 44 | 2026-06-15T01:00:00Z | 2026-06-15T01:03:47Z | RECORDED ✅ | primary forward commit for 2026-06-15T01:00:00Z; payload sealed until reveal |
+| 45 | 2026-06-15T02:00:00Z | 2026-06-15T02:03:39Z | RECORDED ✅ | primary forward commit for 2026-06-15T02:00:00Z; payload sealed until reveal |
+| 46 | 2026-06-15T03:00:00Z | 2026-06-15T03:03:39Z | RECORDED ✅ | primary forward commit for 2026-06-15T03:00:00Z; payload sealed until reveal |
+| 47 | 2026-06-15T04:00:00Z | 2026-06-15T04:03:13Z | RECORDED ✅ | primary forward commit for 2026-06-15T04:00:00Z; payload sealed until reveal |
+| 48 | 2026-06-15T05:00:00Z | 2026-06-15T05:02:55Z | RECORDED ✅ | primary forward commit for 2026-06-15T05:00:00Z; payload sealed until reveal |
+| 49 | 2026-06-15T06:00:00Z | 2026-06-15T06:03:44Z | RECORDED ✅ | primary forward commit for 2026-06-15T06:00:00Z; payload sealed until reveal |
+| 50 | 2026-06-15T07:00:00Z | 2026-06-15T07:02:52Z | RECORDED ✅ | primary forward commit for 2026-06-15T07:00:00Z; payload sealed until reveal |
+| 51 | 2026-06-15T08:00:00Z | 2026-06-15T08:03:44Z | RECORDED ✅ | primary forward commit for 2026-06-15T08:00:00Z; payload sealed until reveal |
+| 52 | 2026-06-15T09:00:00Z | 2026-06-15T09:03:04Z | RECORDED ✅ | primary forward commit for 2026-06-15T09:00:00Z; payload sealed until reveal |
+| 53 | 2026-06-15T10:00:00Z | 2026-06-15T10:03:40Z | RECORDED ✅ | primary forward commit for 2026-06-15T10:00:00Z; payload sealed until reveal |
+| 54 | 2026-06-15T11:00:00Z | 2026-06-15T11:03:45Z | RECORDED ✅ | primary forward commit for 2026-06-15T11:00:00Z; payload sealed until reveal |
+| 55 | 2026-06-15T12:00:00Z | 2026-06-15T12:03:45Z | RECORDED ✅ | primary forward commit for 2026-06-15T12:00:00Z; payload sealed until reveal |
 
-**34 on-chain commits, all accounted for.**
+**56 on-chain commits, all accounted for.**

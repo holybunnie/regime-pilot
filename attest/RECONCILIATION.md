@@ -14,9 +14,9 @@ not appear as separate rows in `commits_public.csv` (which records one row per d
 | 6 | 7 | `0x1e9282b1360befb96eb307a2b916c1182ca6cfa00e6d74691ee5f15107bbabb2` | 2026-06-13T13:03:24Z | 2026-06-13T13:06:45Z | 3m21s |
 | 25 | 26 | `0x5e09d4edda10a6c8b26456d035c0c102c12c787c53f29735dbc5fd8ab018c6e0` | 2026-06-14T07:03:52Z | 2026-06-14T07:07:23Z | 3m31s |
 
-Full per-id ledger: [`onchain_ledger.json`](onchain_ledger.json) — 34 on-chain commits
-(`commitCount = 34`, ids 0–33); the only two ids absent from `commits_public.csv` are 7 and 26,
-both documented here.
+Full per-id ledger: [`onchain_ledger.json`](onchain_ledger.json), regenerated directly from the
+contract's own `commitCount()` (the chain grows by one commit per hour). The only two ids absent
+from `commits_public.csv` are 7 and 26, both documented here.
 
 ## Why identical hashes prove they are duplicates (not tampering)
 
