@@ -81,7 +81,7 @@ ITEMS = [
       ("engine-fixture", lambda: run_pyfile("tests/test_engine.py")),
       ("sizing", lambda: run_pyfile("tests/test_sizing.py")),
       ("deflated-sharpe", lambda: run_pyfile("tests/test_deflated_sharpe.py")),
-      ("falsification", lambda: run_pyfile("cli/verify_phase6.py"))]),
+      ("falsification", lambda: run_pyfile("cli/verify_falsification.py"))]),
     ("6", "Attestation unit test runs on pinned deps (in-memory EVM)",
      [("test_attest", lambda: run_pyfile("tests/test_attest.py"))]),
     ("8", "Universe: 149-token file valid; one-switch swap",
@@ -93,11 +93,11 @@ ITEMS = [
     ("12", "HANDOFF consistent with STATUS",
      [("docs", lambda: run_pyfile("cli/verify_docs_consistency.py"))]),
     ("13", "No secrets/salt seed in files or history",
-     [("secrets", lambda: run_pyfile("cli/verify_phase9.py"))]),
+     [("secrets", lambda: run_pyfile("cli/verify_secrets.py"))]),
     ("15", "Data-source & credential map matches real call sites",
      [("datasources", lambda: run_pyfile("cli/verify_datasources.py"))]),
     ("x402", "x402 data-cost plan integrity",
-     [("x402", lambda: run_pyfile("cli/verify_phase8.py"))]),
+     [("x402", lambda: run_pyfile("cli/verify_x402.py"))]),
 ]
 
 

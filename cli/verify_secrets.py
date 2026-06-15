@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Phase 9 verification: the repo is public-safe (no secret leaks).
+"""Secrets verification: the repo is public-safe (no secret leaks).
 
   - .env is git-ignored and was NEVER committed (checked across full history)
   - no secret VALUES from .env appear in any tracked file or anywhere in git history
   - no token-shaped strings (ghp_/github_pat_/0x<64 hex> private keys) in tracked files
 
-Run: python cli/verify_phase9.py   (or: make verify-phase9)
+Run: python cli/verify_secrets.py   (or: make verify-secrets)
 """
 import re
 import subprocess

@@ -43,13 +43,13 @@ verify-engine:
 	PYTHONPATH=. $(PY) cli/verify_engine.py
 
 verify-falsification:
-	PYTHONPATH=. $(PY) cli/verify_phase6.py
+	PYTHONPATH=. $(PY) cli/verify_falsification.py
 
 verify-x402:
-	$(PY) cli/verify_phase8.py
+	$(PY) cli/verify_x402.py
 
 verify-secrets:
-	$(PY) cli/verify_phase9.py
+	$(PY) cli/verify_secrets.py
 
 verify-framing:
 	$(PY) cli/verify_framing.py
@@ -86,19 +86,19 @@ attest-snapshot:
 
 # ---- claim-based verification gates (live; require credentials/data) ----
 verify-environment:
-	$(PY) cli/verify_phase0.py
+	$(PY) cli/verify_environment.py
 
 verify-data:
-	$(PY) cli/verify_phase1.py
+	$(PY) cli/verify_data.py
 
 verify-skill:
-	$(PY) cli/verify_phase3.py
+	$(PY) cli/verify_skill.py
 
 verify-strategy:
-	$(PY) cli/verify_phase5.py
+	$(PY) cli/verify_strategy.py
 
 verify-attestation:
-	PYTHONPATH=. $(PY) cli/verify_phase7.py
+	PYTHONPATH=. $(PY) cli/verify_attestation.py
 
 # ---- the headline: one offline scoreboard ----
 verify:
@@ -108,15 +108,15 @@ verify:
 verify-full: verify
 	@echo
 	@echo "######## LIVE CHECKS (need CMC key + make data) ########"
-	@$(PY) cli/verify_phase0.py || true
+	@$(PY) cli/verify_environment.py || true
 	@echo
-	@$(PY) cli/verify_phase1.py || true
+	@$(PY) cli/verify_data.py || true
 	@echo
-	@$(PY) cli/verify_phase3.py || true
+	@$(PY) cli/verify_skill.py || true
 	@echo
-	@$(PY) cli/verify_phase5.py || true
+	@$(PY) cli/verify_strategy.py || true
 	@echo
-	@PYTHONPATH=. $(PY) cli/verify_phase7.py || true
+	@PYTHONPATH=. $(PY) cli/verify_attestation.py || true
 	@echo "#######################################################"
 
 # ---- build / run ----

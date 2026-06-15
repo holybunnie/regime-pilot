@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Phase 0 live verification: external dependencies + credentials.
+"""Environment live verification: external dependencies + credentials.
 
 Prints a plain-English table of REACHABLE/UNREACHABLE and PRESENT/MISSING.
 Exit 0 if every REQUIRED dependency is reachable and the CMC key is present+valid.
 Optional items (wallet, x402) print status but never fail the gate.
 
-Run: python cli/verify_phase0.py   (or: make verify-phase0)
+Run: python cli/verify_environment.py   (or: make verify-environment)
 """
 import json
 import os

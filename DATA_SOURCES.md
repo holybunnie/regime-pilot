@@ -8,8 +8,8 @@ the code and that no code call-site host is missing from this table.
 |---|---|---|---|---|---|
 | `data-api.binance.vision` `/api/v3/klines` | none | Historical hourly **OHLCV (close + volume)** for the backtest **and** the live attested signal's prices | free | cached (incremental) | `engine/data/fetch.py` (BINANCE, `_fetch_klines_page`) |
 | `pro-api.coinmarketcap.com` `/v3/fear-and-greed/historical` | `CMC_API_KEY` (`X-CMC_PRO_API_KEY`) | The **Fear & Greed sentiment** series → `fg_level` / `fg_delta_7d` features → regime → **the attested signal** | free tier | cached | `engine/data/fetch.py` (`fetch_fear_greed`) |
-| `pro-api.coinmarketcap.com` `/v1/key/info` | `CMC_API_KEY` | Key-validity check only (environment gate) | free | live | `cli/verify_phase0.py` |
-| `mcp.coinmarketcap.com` `/mcp` | none | Reachability probe only (environment gate) | free | live | `cli/verify_phase0.py` |
+| `pro-api.coinmarketcap.com` `/v1/key/info` | `CMC_API_KEY` | Key-validity check only (environment gate) | free | live | `cli/verify_environment.py` |
+| `mcp.coinmarketcap.com` `/mcp` | none | Reachability probe only (environment gate) | free | live | `cli/verify_environment.py` |
 | `mcp.coinmarketcap.com` `/x402/mcp` | `X402_BASE_PRIVATE_KEY` (Base wallet, EIP-3009) | The one **real $0.01 USDC** paid request (CMC derivatives proof) | paid $0.01 | live, one-shot (evidence saved) | `x402plan/pay_x402.py` |
 | `bsc-dataseed.bnbchain.org` / `bsc-dataseed1.binance.org` / `bsc.publicnode.com` (BSC mainnet RPC) | `ATTEST_PRIVATE_KEY` (to send tx; reads need no key) | On-chain **commit / read** of the signal hash | free RPC + gas | live | `attest/chain.py` |
 | `base.publicnode.com` (Base mainnet RPC) | `X402_BASE_PRIVATE_KEY` | Base-chain settlement of the x402 payment (gasless EIP-3009) | free RPC | live, one-shot | `x402plan/pay_x402.py` |
@@ -38,4 +38,4 @@ edge, and the attested forward record stands either way.
 
 **FROZEN-SET note.** `engine/data/fetch.py` is on the live committer's path, so both Binance
 (prices) and CMC (Fear & Greed) feed the attested signals. The CMC key therefore matters to the
-forward record; the Base wallet key (x402) and the verify-phase0 probes do **not**.
+forward record; the Base wallet key (x402) and the `verify-environment` probes do **not**.

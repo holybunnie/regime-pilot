@@ -36,8 +36,10 @@ Idempotency was checked against `commits_public.csv` ("is this decision hour alr
 That row is written and pushed only *after* the on-chain send. Two overlapping hourly runs for
 one decision hour both passed the "not recorded yet" check and both sent. The workflow's
 `concurrency.cancel-in-progress: false` queued the second run instead of cancelling it, so it
-executed later and double-stamped. Fix tracked in **Item 2** (single-flight lock + pre-send
-on-chain duplicate guard + `cancel-in-progress: true`).
+executed later and double-stamped. Fixed in **Item 2** by a single-flight hour lock plus a
+pre-send on-chain duplicate guard (`onchain_hash_exists`), so a queued second run becomes a
+harmless no-op. We deliberately **keep `cancel-in-progress: false`** — no run is ever cancelled
+mid-transaction; the guards (not cancellation) are what make a duplicate impossible.
 
 ## Disclosure
 

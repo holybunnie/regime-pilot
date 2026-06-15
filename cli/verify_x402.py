@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Phase 8 verification: x402 data-cost plan integrity.
+"""x402 verification: x402 data-cost plan integrity.
 
   - prices.json has a real per-request price and records an EXECUTED payment
   - the executed-payment evidence shows HTTP 200 + settled
   - DATA_PLAN.json numbers RECOMPUTE from prices + cadence (not hand-typed)
   - minimal viable feed set is non-empty
 
-Run: python cli/verify_phase8.py   (or: make verify-phase8)
+Run: python cli/verify_x402.py   (or: make verify-x402)
 """
 import json
 import sys

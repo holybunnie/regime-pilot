@@ -2,7 +2,7 @@
 """Build the x402 data-cost plan from real prices + the falsification ablation.
 
 Every number is recomputed from x402plan/prices.json and falsify/REPORT_*.json — none are
-hand-typed (verify_phase8 re-derives them). Writes x402plan/DATA_PLAN.md + DATA_PLAN.json.
+hand-typed (`make verify-x402` re-derives them). Writes x402plan/DATA_PLAN.md + DATA_PLAN.json.
 
 Run: python x402plan/build_plan.py
 """
@@ -94,8 +94,16 @@ def _md(p):
         for f in p["feeds"])
     md = f"""# x402 Data-Cost Plan
 
+## Why this exists
+We paid one **real** x402 micro-payment so the data cost here is *measured, not estimated*, and every
+figure below is reported **net of that real cost**. The point is **agent-pays-its-own-data**: an
+autonomous runner can buy exactly the feeds it needs over x402 with **no API key**, and the same rail
+**unlocks first-party CMC derivatives** (funding / open interest) the free REST tier blocks. One
+settled payment is **proof-of-capability, not a full production pipeline** — everything here recomputes
+deterministically from the saved price and the ablation via `make verify-x402`.
+
 All figures derive from a **real, live** x402 price ($0.01/request, captured from CMC's live 402
-challenge) and the v2 falsification ablation — recomputed by `make verify-phase8`, not hand-typed.
+challenge) and the v2 falsification ablation — recomputed by `make verify-x402`, not hand-typed.
 
 ## Real payment executed
 A single **$0.01 USDC** request was paid and **settled on Base** (gasless, EIP-3009) — wallet went
@@ -106,7 +114,13 @@ A single **$0.01 USDC** request was paid and **settled on Base** (gasless, EIP-3
 |------|-----------|---------|------------:|---------------------------:|:-------:|
 {rows}
 
+*"OOS return lost if dropped"* is a **single-feed ablation sensitivity** — the out-of-sample return
+forfeited when that feed's features are removed and the strategy is re-run with everything else held
+fixed (the worst case across the feed's features). It measures the feed's importance, not its price.
+
 - **Minimal viable feed set:** {", ".join(p["minimal_viable_feed_set"])}.
+- **Sourcing (see `DATA_SOURCES.md`):** price = Binance klines (backtest) + CMC free tier (live);
+  Fear & Greed = CMC free REST; x402 proof + CMC derivatives = CoinMarketCap.
 - Fear & Greed is **not** sold via x402; it stays free on the CMC v3 REST endpoint.
 - x402 additionally **unlocks** {p["x402_unlocks_beyond_free"]} — useful for a future strategy version.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 6 verification: falsification report completeness + integrity.
+"""Falsification verification: falsification report completeness + integrity.
 
   - deflated-Sharpe known-answer tests pass
   - REPORT.md and REPORT.json exist
@@ -8,7 +8,7 @@
   - the shuffle canary passed (edge vanished on shuffled data)
   - a key number in the Markdown matches the JSON (deflated Sharpe ratio)
 
-Run: python cli/verify_phase6.py   (or: make verify-phase6)
+Run: python cli/verify_falsification.py   (or: make verify-falsification)
 """
 import json
 import sys

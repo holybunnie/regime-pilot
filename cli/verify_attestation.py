@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Phase 7 verification: attestation system.
+"""Attestation verification: attestation system.
 
   - hash known-answer + full local mock-chain commit->reveal->verify pass
   - contract is deployed on BSC mainnet and has live code
   - at least one hourly commit exists
   - every on-chain commit's hash is reproducible from public data (verify.py)
 
-Run: python cli/verify_phase7.py   (or: make verify-phase7)
+Run: python cli/verify_attestation.py   (or: make verify-attestation)
 """
 import csv
 import runpy

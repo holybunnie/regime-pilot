@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 5 verification: the flagship strategy.
+"""Strategy verification: the flagship strategy.
 
   - flagship spec validates (schema + semantic)
   - full backtest runs end-to-end and writes summary + report
@@ -7,7 +7,7 @@
     after the embargo boundary (proven by the run's reported window_end)
   - no $1 dust: normalized equity never collapses toward zero
 
-Run: python cli/verify_phase5.py   (or: make verify-phase5)
+Run: python cli/verify_strategy.py   (or: make verify-strategy)
 """
 import json
 import sys

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 3 verification: the Skill (compiler layer).
+"""Skill verification: the Skill (compiler layer).
 
   - SKILL.md exists with the CMC-format frontmatter fields
   - compiler_prompt.md exists
@@ -8,7 +8,7 @@
   - determinism: the SAME spec backtested twice gives byte-identical output
     (proves the LLM's nondeterminism is quarantined upstream of the spec file)
 
-Run: python cli/verify_phase3.py   (or: make verify-phase3)
+Run: python cli/verify_skill.py   (or: make verify-skill)
 """
 import hashlib
 import json

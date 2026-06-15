@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 1 verification: data integrity.
+"""Data verification: data integrity.
 
 Checks every cached OHLCV series and the Fear & Greed series for:
   - no duplicate timestamps
@@ -9,7 +9,7 @@ Checks every cached OHLCV series and the Fear & Greed series for:
   - spot-check: 5 cached prices for the most-liquid symbol against a fresh live
     Binance call for the same hours (proves the cache matches the source)
 
-Exit 0 = pass. Run: python cli/verify_phase1.py   (or: make verify-phase1)
+Exit 0 = pass. Run: python cli/verify_data.py   (or: make verify-data)
 """
 import json
 import sys
