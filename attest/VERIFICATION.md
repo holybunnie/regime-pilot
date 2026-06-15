@@ -1,6 +1,6 @@
 # On-Chain Attestation Verification
 
-- Source: live BSC RPC (contract 0xB87481e29b0Dce9545b1B00b8526810679B521c1)
+- Source: committed snapshot onchain_ledger.json
 - On-chain commits (commitCount): **57**
 - Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 55
 
