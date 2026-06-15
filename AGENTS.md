@@ -106,15 +106,20 @@ Python 3.12; deps in `requirements.txt` (incl. `eth-tester[py-evm]`, `pytest`). 
 - Item 13 — `make verify-secrets` (files + full git history).
 - Item 14 — Makefile targets renamed to claim-based names; zero `phase[0-9]` in judge-facing files.
 - Item 15 — `DATA_SOURCES.md` (code-verified) + `make verify-datasources`.
+- Item 3 — reveal rehearsal: `attest/dryrun_reveal.py` + `make attest-dryrun-verify` (5/5 reproduce on
+  the real compiled contract via in-memory EVM). Public BSC-testnet tx links intentionally skipped
+  (operator decision) — the script is identical with a funded testnet key.
+- SELF_AUDIT — `SELF_AUDIT.md` (10 hostile questions, answers, residual risks) + `make verify-self-audit`.
+- CI — confirmed green on GitHub (`.github/workflows/ci.yml`: setup, offline scoreboard, attest unit
+  test, race guard).
+- Ledger drift fix — `attest/snapshot_ledger.py` + `make attest-snapshot` regenerate the offline
+  snapshot from the chain's own `commitCount()` (read-only); `make attest-verify` passes online AND
+  offline. Commit-count claims in the docs no longer pin a fixed number the hourly committer outgrows.
+- Final gate — fresh-clone `make setup && make verify` = 13/13; FROZEN SET = 12 byte-identical +
+  `commit_hour.py` (approved). Done.
 
-**REMAINING (do these next):**
-1. **Item 3 finish** — `attest/dryrun_reveal.py` reveal rehearsal works (5/5 reproduce on in-memory
-   EVM); add Makefile target `attest-dryrun-verify` and (optional) public BSC-testnet tx links if a
-   funded testnet key is provided.
-2. **Verify-full cold path** — confirm `make verify-full` behaves on a machine with a CMC key + `make data`.
-3. **CI green** — push and confirm `.github/workflows/ci.yml` passes on GitHub.
-4. **SELF_AUDIT.md** — write the 10 hostile-judge questions + answers/residual-risks (mandate requirement).
-5. **Final gate** — fresh-clone `make setup && make verify`; re-confirm FROZEN SET via
-   `sha256sum -c evidence/frozen_set_baseline.txt` (expect 12 OK + `commit_hour.py` = approved change).
-6. **Item 13 (optional deepening)** — extend the secret scan with explicit salt-seed/key regexes if desired.
+**REMAINING (optional):**
+1. **Verify-full cold path** — confirm `make verify-full` behaves on a machine with a CMC key + `make data`.
+2. **Secret scan deepening** — extend the scan with explicit salt-seed/key regexes if desired.
+3. At submission: strip this file, HANDOFF.md, and any scaffolding (operator's call).
 7. At submission: strip this file, HANDOFF.md, and any scaffolding (operator's call).
