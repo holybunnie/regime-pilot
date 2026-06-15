@@ -58,7 +58,7 @@
   {
     "id": 7,
     "hash": "0x1e9282b1360befb96eb307a2b916c1182ca6cfa00e6d74691ee5f15107bbabb2",
-    "block_number": 103995520,
+    "block_number": null,
     "block_timestamp_utc": "2026-06-13T13:06:45Z",
     "revealed": false,
     "present_in_csv": false
@@ -210,7 +210,7 @@
   {
     "id": 26,
     "hash": "0x5e09d4edda10a6c8b26456d035c0c102c12c787c53f29735dbc5fd8ab018c6e0",
-    "block_number": 104139568,
+    "block_number": null,
     "block_timestamp_utc": "2026-06-14T07:07:23Z",
     "revealed": false,
     "present_in_csv": false
@@ -268,6 +268,182 @@
     "hash": "0x9f04b9429ceba4b83875d5ace322e2d6531cbfcda93841d3c911268987c52db0",
     "block_number": 104194954,
     "block_timestamp_utc": "2026-06-14T14:02:53Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 34,
+    "hash": "0x9eae39e2d252052ada3bd66207b5dbb50fa62501e0c8725a63bbdee306cd0d6a",
+    "block_number": 104203072,
+    "block_timestamp_utc": "2026-06-14T15:03:47Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 35,
+    "hash": "0xdf1c98041b790ee15f098380529e8878b71664ca2ff4a1ad3d0b171e23f1919c",
+    "block_number": 104211057,
+    "block_timestamp_utc": "2026-06-14T16:03:42Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 36,
+    "hash": "0x43e24ac8cd01c6e2c2b5c66c573234c17a557e557fdc50a3a0e8d972d525a11e",
+    "block_number": 104218992,
+    "block_timestamp_utc": "2026-06-14T17:03:13Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 37,
+    "hash": "0xb09e71ff6f539c2fd03d52267aa1e92d602a506f43cca05accdeca82a4584236",
+    "block_number": 104227065,
+    "block_timestamp_utc": "2026-06-14T18:03:48Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 38,
+    "hash": "0x90f368e5eb5df0ab4d551ad32126683c3df4a983528d63c41ecc4aaaa1292e8a",
+    "block_number": 104234963,
+    "block_timestamp_utc": "2026-06-14T19:03:03Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 39,
+    "hash": "0x4e891ef9ab9c9ba5d5cebd3f932919988a29682ef9f3e9eb27cc126de91a5bc2",
+    "block_number": 104243046,
+    "block_timestamp_utc": "2026-06-14T20:03:40Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 40,
+    "hash": "0x00a0515389bf7c22ae1dbd4c57b3d0a401453ffd6800a5d58605b8a9612a704d",
+    "block_number": 104251051,
+    "block_timestamp_utc": "2026-06-14T21:03:42Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 41,
+    "hash": "0x59017912e53902699f17179cf0df676f54a8bba756e529131f3ec3542f92367f",
+    "block_number": 104259013,
+    "block_timestamp_utc": "2026-06-14T22:03:26Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 42,
+    "hash": "0xad6f88c22b0bc9e0444b780cbc7a5e67bb0d73c3838343ff693106ed66acd0f1",
+    "block_number": 104266941,
+    "block_timestamp_utc": "2026-06-14T23:02:53Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 43,
+    "hash": "0x989ea8c157c3bf6464fcba964288020addb34cfe3a224a24f11337151bfeb488",
+    "block_number": 104274982,
+    "block_timestamp_utc": "2026-06-15T00:03:13Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 44,
+    "hash": "0x3c125e23034c093dbeaee893c4982beddf1633b904bb5c0f73c900225ea7e03c",
+    "block_number": 104283054,
+    "block_timestamp_utc": "2026-06-15T01:03:47Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 45,
+    "hash": "0x5e1d45254e4edf126736226218ed4377cfa7240eb04dbc41683e350fe590e88d",
+    "block_number": 104291031,
+    "block_timestamp_utc": "2026-06-15T02:03:39Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 46,
+    "hash": "0xdd753a904b81dce901e5a7ca2ece9fe67c593ec2a46e7257972d9cd994b08997",
+    "block_number": 104299028,
+    "block_timestamp_utc": "2026-06-15T03:03:39Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 47,
+    "hash": "0xb4fbaae4b80449a0c4ef410349ba35772f73e639cba259481a00a2eeba2e4e32",
+    "block_number": 104306970,
+    "block_timestamp_utc": "2026-06-15T04:03:13Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 48,
+    "hash": "0x4d55b1a7c5d47a5a093a8cf7257e322056314b2cb0812008a84f5a22d0fcb74f",
+    "block_number": 104314929,
+    "block_timestamp_utc": "2026-06-15T05:02:55Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 49,
+    "hash": "0xbff09f13e8602d72837dac6525367ab2323bec9b70b8d7d976611fc04a056fca",
+    "block_number": 104323034,
+    "block_timestamp_utc": "2026-06-15T06:03:44Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 50,
+    "hash": "0x87f286fe029dea176c8d124750d2ee5e30ad2f5992b7c2e4795087d33cd8da97",
+    "block_number": 104330916,
+    "block_timestamp_utc": "2026-06-15T07:02:52Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 51,
+    "hash": "0xd573d3c80607b2691c9d40b7e2a76ff6da40d5999bfc9a00533b2e79e593ed05",
+    "block_number": 104339028,
+    "block_timestamp_utc": "2026-06-15T08:03:44Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 52,
+    "hash": "0xb608b4587f9b650ec319c2a60be92f2cf9e6cdb2740f747d3ed2cd22911d7efa",
+    "block_number": 104346937,
+    "block_timestamp_utc": "2026-06-15T09:03:04Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 53,
+    "hash": "0xa9964ca00ca9e16ca1ba6891606d817404157ca726d846a70bcfcc0057860a78",
+    "block_number": 104355016,
+    "block_timestamp_utc": "2026-06-15T10:03:40Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 54,
+    "hash": "0xfe1621932be8f0d6a3c25dc9c759604459c6f4fa675acf659c8edd160943773f",
+    "block_number": 104363027,
+    "block_timestamp_utc": "2026-06-15T11:03:45Z",
+    "revealed": false,
+    "present_in_csv": true
+  },
+  {
+    "id": 55,
+    "hash": "0x1e35a35dd4e4a37ab5afa55ebcd83d4b489e2ba430b274dd103c3ef2d4791a29",
+    "block_number": 104371024,
+    "block_timestamp_utc": "2026-06-15T12:03:45Z",
     "revealed": false,
     "present_in_csv": true
   }

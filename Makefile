@@ -81,6 +81,9 @@ attest-verify:
 attest-dryrun-verify:
 	PYTHONPATH=. $(PY) attest/dryrun_reveal.py
 
+attest-snapshot:
+	PYTHONPATH=. $(PY) attest/snapshot_ledger.py
+
 # ---- claim-based verification gates (live; require credentials/data) ----
 verify-environment:
 	$(PY) cli/verify_phase0.py
