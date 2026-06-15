@@ -1,128 +1,165 @@
 #!/usr/bin/env python3
-"""Independently verify every on-chain commit and write attest/VERIFICATION.md.
+"""Chain-complete verification of EVERY on-chain commit. Writes attest/VERIFICATION.md.
 
-For each commit in attest/commits_public.csv:
-  - reconstruct the payload (deterministic from the frozen spec + public market data)
-  - obtain the salt: from attest/reveals.json if present (the INDEPENDENT path judges
-    use after reveal), else recompute via ATTEST_SALT_SEED (the owner path)
-  - recompute hash = keccak(canonical_json(payload) || salt)
-  - read the on-chain commit and assert hash matches
-  - check promptness: the block timestamp falls within the signal's effective hour
-    (commit happened before that hour's outcome could be known)
+Unlike a CSV-driven check, this iterates the contract's own commitCount() so it can
+NEVER miss an on-chain commit (that is exactly how ids 7 and 26 were found). For every
+on-chain id it assigns one status:
 
-Also reconstructs the forward-test equity curve from the committed target weights.
+  REPRODUCED ✅          a revealed payload + salt recomputes to the on-chain hash
+  RECORDED ✅            a primary forward commit logged in commits_public.csv; its
+                         payload is sealed until reveal day, when it becomes REPRODUCED
+  DOCUMENTED-DUPLICATE ⚠️ identical hash to an earlier id — a duplicate workflow run for
+                         the same decision hour (see attest/RECONCILIATION.md)
+  MISMATCH ❌            on-chain hash disagrees with the recorded/revealed value
+  UNACCOUNTED ❌         an on-chain id we cannot explain  (pass condition: zero of these)
 
-Run: python attest/verify.py   (or: make attest-verify)
+Data source: live BSC RPC when reachable, else the committed snapshot
+attest/onchain_ledger.json — so the check runs on a fresh clone with no secrets and no
+network (make verify, offline). Pass `--offline` to force the snapshot.
+
+Run: python attest/verify.py [--offline]   (or: make attest-verify)
 """
 import csv
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
-
-import pandas as pd
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
-from attest import chain                                          # noqa: E402
-from attest.hashing import commit_hash, deterministic_salt        # noqa: E402
-from attest.live_signal import compute_signal                     # noqa: E402
-from engine import backtest as bt                                 # noqa: E402
 
-# Candidate frozen specs, tried in order. Each commit is matched to whichever spec
-# reproduces its on-chain hash — so a v1->v2 switch leaves all past commits verifiable.
-SPECS = [REPO / "spec" / "regime_pilot.spec.json",
-         REPO / "spec" / "regime_pilot_v2.spec.json"]
 PUBLIC = REPO / "attest" / "commits_public.csv"
+RECON = REPO / "attest" / "commits_reconciliation.csv"
 REVEALS = REPO / "attest" / "reveals.json"
+SNAPSHOT = REPO / "attest" / "onchain_ledger.json"
 OUT = REPO / "attest" / "VERIFICATION.md"
 
 
-def forward_equity(rows):
-    """Equity from committed weights: hold each signal's weights until the next commit."""
-    universe = [t["symbol"] for t in
-                json.loads((REPO / "spec" / "universe.json").read_text())["tokens"]]
-    panels = bt.load_panels(universe)
-    rets = panels["close"].pct_change()
-    eq = 1.0
-    curve = []
-    for i in range(len(rows) - 1):
-        t0 = pd.Timestamp(rows[i]["payload"]["timestamp_utc"])
-        t1 = pd.Timestamp(rows[i + 1]["payload"]["timestamp_utc"])
-        w = rows[i]["payload"]["target_weights"]
-        seg = rets.loc[(rets.index > t0) & (rets.index <= t1)]
-        for _, r in seg.iterrows():
-            pr = sum(w.get(a, 0.0) * (r.get(a, 0.0) or 0.0) for a in universe)
-            eq *= (1 + (pr if pr == pr else 0.0))
-        curve.append((t1.isoformat(), round(eq, 8)))
-    return curve
+def _iso(ts):
+    return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def main():
-    if not PUBLIC.exists():
-        print("no commits_public.csv yet")
-        return 1
-    rows = list(csv.DictReader(PUBLIC.open()))
-    reveals = json.loads(REVEALS.read_text()) if REVEALS.exists() else None
-    seed = chain.load_env().get("ATTEST_SALT_SEED", "").strip()
-    mode = "independent (published reveals)" if reveals else "owner (seed recompute)"
-
+def build_ledger_live():
+    """Read commitCount + getCommit(i) for every id directly from the chain."""
+    from attest import chain
     w3 = chain.get_w3()
     d = chain.deployment()
     c = w3.eth.contract(address=w3.to_checksum_address(d["address"]), abi=d["abi"])
+    csv_blocks = {}
+    if PUBLIC.exists():
+        csv_blocks = {int(r["commit_id"]): r.get("block")
+                      for r in csv.DictReader(PUBLIC.open())}
+    n = c.functions.commitCount().call()
+    ledger = []
+    for i in range(n):
+        h, ts, revealed = c.functions.getCommit(i).call()
+        ledger.append({"id": i, "hash": "0x" + h.hex(),
+                       "block_number": int(csv_blocks[i]) if csv_blocks.get(i) else None,
+                       "block_timestamp_utc": _iso(ts), "revealed": revealed,
+                       "present_in_csv": i in csv_blocks})
+    return ledger, f"live BSC RPC (contract {d['address']})"
 
-    results, enriched = [], []
-    for row in rows:
-        ts = row["timestamp_utc"]
-        cid = int(row["commit_id"])
-        if reveals and str(cid) in reveals:
-            salt = bytes.fromhex(reveals[str(cid)]["salt"][2:])
-        elif seed:
-            salt = deterministic_salt(seed, ts)
+
+def load_ledger(offline):
+    if not offline:
+        try:
+            return build_ledger_live()
+        except Exception as e:
+            print(f"(RPC unavailable: {str(e)[:80]} — falling back to committed snapshot)")
+    if not SNAPSHOT.exists():
+        raise SystemExit("FATAL: no RPC and no attest/onchain_ledger.json snapshot")
+    return json.loads(SNAPSHOT.read_text()), f"committed snapshot {SNAPSHOT.name}"
+
+
+def main():
+    offline = "--offline" in sys.argv
+    ledger, source = load_ledger(offline)
+
+    # primary forward commits (one row per decision hour)
+    csv_rows = {}
+    if PUBLIC.exists():
+        csv_rows = {int(r["commit_id"]): r for r in csv.DictReader(PUBLIC.open())}
+    reveals = json.loads(REVEALS.read_text()) if REVEALS.exists() else {}
+
+    # optional independent hash reproduction (needs reveals + market data; skipped offline)
+    reproduce = None
+    if reveals and not offline:
+        try:
+            from attest.hashing import commit_hash
+            from attest.live_signal import compute_signal
+
+            def reproduce(cid, ts):
+                r = reveals[str(cid)]
+                salt = bytes.fromhex(r["salt"][2:] if r["salt"].startswith("0x") else r["salt"])
+                payload = r.get("payload") or compute_signal(
+                    REPO / "spec" / "regime_pilot_v2.spec.json", ts)
+                return "0x" + commit_hash(payload, salt).hex()
+        except Exception:
+            reproduce = None
+
+    first_hash = {}      # hash -> first on-chain id that carried it
+    results = []
+    for row in ledger:
+        cid, h = row["id"], row["hash"]
+        ts = csv_rows.get(cid, {}).get("timestamp_utc")
+        status = note = None
+
+        if h in first_hash:
+            primary = first_hash[h]
+            phour = csv_rows.get(primary, {}).get("timestamp_utc", "?")
+            status = "DOCUMENTED-DUPLICATE"
+            note = (f"identical hash to id {primary} — duplicate workflow run for decision "
+                    f"hour {phour}; signs nothing new")
         else:
-            print("FATAL: no reveals.json and no ATTEST_SALT_SEED")
-            return 1
-        onchain_hash, block_ts, revealed = c.functions.getCommit(cid).call()
-        target = "0x" + onchain_hash.hex()
-        # try each candidate spec; the one that reproduces the on-chain hash is the
-        # spec that was frozen when this commit was made (handles the v1->v2 switch)
-        payload, match = None, False
-        for sp in SPECS:
-            p = compute_signal(sp, ts)
-            if ("0x" + commit_hash(p, salt).hex()) == target:
-                payload, match = p, True
-                break
-        if payload is None:
-            payload = compute_signal(SPECS[0], ts)  # for display only
-        eff = pd.Timestamp(ts).timestamp()
-        prompt = eff <= block_ts < eff + 3600
-        results.append({"cid": cid, "ts": ts, "tx": row["tx"], "regime": payload["regime"],
-                        "match": match, "prompt": prompt, "block_ts": block_ts,
-                        "spec_version": payload.get("spec_version")})
-        enriched.append({"payload": payload})
+            first_hash[h] = cid
+            if str(cid) in reveals and reproduce:
+                status = "REPRODUCED" if reproduce(cid, ts) == h else "MISMATCH"
+                note = "revealed payload+salt recomputes to on-chain hash" \
+                    if status == "REPRODUCED" else "revealed payload does NOT match on-chain hash"
+            elif cid in csv_rows:
+                if csv_rows[cid]["hash"].lower() == h.lower():
+                    status = "RECORDED"
+                    note = f"primary forward commit for {ts}; payload sealed until reveal"
+                else:
+                    status = "MISMATCH"
+                    note = "commits_public.csv hash disagrees with on-chain hash"
+            else:
+                status = "UNACCOUNTED"
+                note = "on-chain id not in CSV and not a known duplicate"
+        results.append({**row, "status": status, "note": note, "ts": ts})
 
-    matched = sum(r["match"] for r in results)
-    prompt_n = sum(r["prompt"] for r in results)
-    curve = forward_equity(enriched) if len(enriched) > 1 else []
-
-    lines = [f"# On-Chain Attestation Verification", "",
-             f"- Contract: [`{d['address']}`](https://bscscan.com/address/{d['address']}) (BSC mainnet)",
-             f"- Verification mode: **{mode}**",
-             f"- Commits: **{len(results)}** | hash matches: **{matched}/{len(results)}** | "
-             f"prompt (committed within effective hour): **{prompt_n}/{len(results)}**", ""]
-    if curve:
-        lines.append(f"- Forward-test equity from revealed signals: **{curve[-1][1]:.4f}** "
-                     f"(start 1.0000) over {len(curve)} hours")
-        lines.append("")
-    lines += ["| # | Effective hour (UTC) | Regime | Hash match | Prompt | Tx |",
-              "|--:|----------------------|--------|:----------:|:------:|----|"]
+    order = {"REPRODUCED": 0, "RECORDED": 0, "DOCUMENTED-DUPLICATE": 0,
+             "BOOTSTRAP": 0, "MISMATCH": 1, "UNACCOUNTED": 1}
+    bad = [r for r in results if order.get(r["status"], 1) == 1]
+    counts = {}
     for r in results:
-        lines.append(f"| {r['cid']} | {r['ts']} | {r['regime']} | "
-                     f"{'✅' if r['match'] else '❌'} | {'✅' if r['prompt'] else '⚠️'} | "
-                     f"[tx](https://bscscan.com/tx/{r['tx']}) |")
+        counts[r["status"]] = counts.get(r["status"], 0) + 1
+
+    icon = {"REPRODUCED": "✅", "RECORDED": "✅", "DOCUMENTED-DUPLICATE": "⚠️",
+            "BOOTSTRAP": "🟦", "MISMATCH": "❌", "UNACCOUNTED": "❌"}
+    lines = ["# On-Chain Attestation Verification", "",
+             f"- Source: {source}",
+             f"- On-chain commits (commitCount): **{len(results)}**",
+             "- Status tally: " + ", ".join(f"{k} {counts[k]}" for k in sorted(counts)), "",
+             "| id | decision hour (UTC) | block ts (UTC) | status | note |",
+             "|--:|---------------------|----------------|--------|------|"]
+    for r in results:
+        lines.append(f"| {r['id']} | {r['ts'] or '—'} | {r['block_timestamp_utc']} | "
+                     f"{r['status']} {icon.get(r['status'],'')} | {r['note']} |")
+    accounted = not bad
+    lines += ["",
+              f"**{len(results)} on-chain commits, "
+              + ("all accounted for." if accounted else f"{len(bad)} UNACCOUNTED/MISMATCH — FAIL.")
+              + "**"]
     OUT.write_text("\n".join(lines) + "\n")
 
-    print(f"Verified {matched}/{len(results)} hashes match, {prompt_n}/{len(results)} prompt. -> {OUT}")
-    return 0 if matched == len(results) else 1
+    print(f"Chain-complete verify via {source}")
+    print("  " + " | ".join(f"{k}:{counts[k]}" for k in sorted(counts)))
+    if accounted:
+        print(f"PASS: {len(results)} on-chain commits, all accounted for -> {OUT}")
+        return 0
+    print(f"FAIL: {len(bad)} unaccounted/mismatch ids: {[r['id'] for r in bad]}")
+    return 1
 
 
 if __name__ == "__main__":

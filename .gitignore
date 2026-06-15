@@ -6,6 +6,7 @@
 attest/log.jsonl
 attest/reveals.json
 attest/revealed_payloads.json
+attest/.locks/
 wallet*.json
 
 # Python
