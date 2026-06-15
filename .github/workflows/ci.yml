@@ -1,0 +1,25 @@
+name: ci
+
+# Offline verification + attestation tests on every push/PR. Independent of the live
+# hourly committer (attest.yml); needs no secrets and no network.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: make setup
+      - name: Offline verification scoreboard
+        run: make verify
+      - name: Attestation unit test (in-memory EVM)
+        run: pytest tests/test_attest.py -q
+      - name: Duplicate-commit race guard
+        run: make verify-attest-race

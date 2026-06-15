@@ -1,53 +1,65 @@
 # STATUS — Regime Pilot (plain English, for the operator)
 
-**Last updated:** 2026-06-13 ~13:30 UTC · **Freeze:** 2026-06-21 13:00 UTC (~8 days out).
+**Last updated:** 2026-06-14 · **Freeze:** 2026-06-21 13:00 UTC.
 **Repo:** https://github.com/holybunnie/regime-pilot · **Contract:** [`0xB874…21c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
 
 ## Bottom line
-**All 10 phases are built, tested, and committed.** `make verify` passes top to bottom. The
-on-chain attestation runs itself every hour, and the **contract source is verified on BscScan**
-(exact bytecode + ABI match). The only remaining item is the **reveal on June 20–21** (scripted, ready).
+**All components are built, tested, and committed.** `make verify` (offline) passes top to bottom
+on a fresh clone with no secrets and no downloaded data. The on-chain attestation runs itself
+every hour, and the **contract source is verified on BscScan** (exact bytecode + ABI match). The
+only remaining live event is the **reveal on June 20–21** — scripted, and already rehearsed
+end-to-end against a real EVM (`attest/REVEAL_DRYRUN.md`).
 
 ## Scoreboard
-| Phase | State | One-line summary |
+| Component | State | One-line summary |
 |-------|-------|------------------|
-| 0 — Environment discovery | ✅ DONE | Machine, APIs, BSC chains, wallet, CMC tier all verified live. `make verify-phase0`. |
-| 1 — Data layer | ✅ DONE | 15 tokens × 9,361 hourly bars + CMC Fear&Greed; 0 gaps, live spot-check. `make verify-phase1`. |
-| 2 — Spec schema | ✅ DONE | Closed-grammar JSON schema; 8 malformed specs rejected. `make verify-phase2`. |
-| 3 — Skill (compiler) | ✅ DONE | Installable CMC-format SKILL.md + compiler prompt + 3 example intents. `make verify-phase3`. |
-| 4 — Backtest engine | ✅ DONE | Deterministic + no-lookahead, proven by tests. `make verify-phase4`. |
-| 5 — Flagship strategy | ✅ DONE | v1 (−10.4% vs BTC −45%) + v2 (long/short). Embargo enforced. `make verify-phase5`. |
-| 6 — Falsification | ✅ DONE | Walk-forward, perturbation, shuffle canary (passed), deflated Sharpe, ablation. `make verify-phase6`. |
-| 7 — On-chain attestation | ✅ LIVE | Contract on BSC mainnet; hourly cron (cron-job.org); commits verify. `make verify-phase7`. |
-| 8 — x402 data plan | ✅ DONE | Real $0.01 USDC paid on Base (settled); cost plan recomputes. `make verify-phase8`. |
-| 9 — Packaging/demo | ✅ DONE | Judge README, offline demo charts, secret-leak gate. `make verify-phase9`. |
-| 10 — Verify harness | ✅ DONE | `make verify` = one scoreboard across all phases. |
+| Environment / credentials | ✅ DONE | Machine, APIs, BSC chains, wallet, CMC tier verified live. `make verify-environment` (live). |
+| Data layer | ✅ DONE | 15 tokens hourly OHLCV + CMC Fear&Greed; 0 gaps, source spot-check. `make verify-data` (live). |
+| Spec schema | ✅ DONE | Closed-grammar JSON schema; malformed specs rejected. `make verify-spec`. |
+| Skill (compiler) | ✅ DONE | Installable CMC-format SKILL.md + compiler prompt + example intents. `make verify-skill`. |
+| Backtest engine | ✅ DONE | Deterministic + no-lookahead, proven on a committed fixture. `make verify-engine`. |
+| Flagship strategy | ✅ DONE | v1 (−10.4%) + v2 (−10.9%) vs BTC −44.7%. Embargo enforced. `make verify-strategy` (live). |
+| Falsification | ✅ DONE | Walk-forward, perturbation, shuffle canary (passed), deflated Sharpe, ablation. `make verify-falsification`. |
+| On-chain attestation | ✅ LIVE | Contract on BSC mainnet; hourly committer; every commit accounted for. `make attest-verify`. |
+| Duplicate-commit guard | ✅ DONE | Single-flight + on-chain pre-send guard close the id-7/26 race. `make verify-attest-race`. |
+| x402 data plan | ✅ DONE | Real $0.01 USDC paid on Base (settled); cost plan recomputes. `make verify-x402`. |
+| Secret-leak gate | ✅ DONE | No secrets in files or full git history. `make verify-secrets`. |
+| Verify harness | ✅ DONE | `make verify` = one offline scoreboard; `make verify-full` = live checks. |
 
-## The honest headline
-In a market that fell **45%**, the long-only v1 lost only **10.4%** (capital preservation); the
-live long/short v2 did better out-of-sample (+1.8%, Sharpe ~3.0). But the **deflated Sharpe ≈ 0.01**
-for both — meaning **no statistically significant directional edge** over this bear window. We report
-that plainly. The differentiator is the *rigor* and the *un-fakeable on-chain forward test*, which is
-accruing now and will be the real arbiter.
+## The honest headline (read in order)
+**1. Full-window result first.** In a market that fell **44.7%**, the long-only **v1 returned −10.4%**
+and the live long/short **v2 returned −10.9%** — v2 is *slightly worse* on the headline number. v1's
+−10.4% is **capital preservation, not alpha** (it routed to cash through the decline).
+**2. Walk-forward selection was all negative** for both versions (grid Sharpes ≈ −1.9 to −3.2).
+**3. The one favourable slice** (+1.8%, Sharpe ~3.0) is a **single out-of-sample window** of ~30 days,
+**not representative** — we do not headline it.
+**4. Deflated Sharpe ≈ 0.01** (v1 0.012, v2 0.013) ⇒ **no statistically significant** directional edge
+over this window, for either version. The differentiator is the *rigor* and the *un-fakeable on-chain
+forward test*, which is accruing now and will be the real arbiter.
 
 ## Attestation — live and hands-off
-- Hourly via **cron-job.org → GitHub `workflow_dispatch` → commit on BSC** (GitHub's own cron was
-  unreliable for a new repo, so we drive it externally; verified working).
+- Hourly via GitHub Actions (`.github/workflows/attest.yml`) → `attest/commit_hour.py` → commit on BSC.
 - Check anytime: `make attest-status` · on-chain: the contract link above · public log:
-  `attest/commits_public.csv`.
-- Honest record: id=0 is a late manual bootstrap (flagged ⚠️ not-prompt); one early hour is logged
-  MISSED (an env-var bug, since fixed). Nothing hidden.
+  `attest/commits_public.csv` · full per-id ledger: `attest/onchain_ledger.json`.
+- **Honest record:** the chain holds 34 commits; two of them (ids **7** and **26**) are exact
+  duplicates of the commits before them — a second hourly run for the same hour produced the same
+  deterministic hash. They sign nothing new and are fully documented in `attest/RECONCILIATION.md`.
+  The duplicate-commit race that caused them is now closed (`make verify-attest-race`). One early
+  hour is logged MISSED (an env-var bug, since fixed). Nothing hidden — `make attest-verify` accounts
+  for every on-chain id.
 
 ## 🙋 What I need from you (optional / non-blocking)
-1. **The official 149-token universe list** → drop into `spec/universe.json`; everything re-derives
-   (the engine is universe-agnostic). Until then we run a verified interim set of 15 liquid majors.
-2. Nothing else. (Contract source is verified on BscScan; the reveal is scripted for June 20–21.)
+1. **The official 149-token universe list** → replace `spec/universe_official_149.json` and flip the
+   one config line (`make verify-universe` validates the swap). Until then we run a verified interim
+   set of 15 liquid majors; the engine is universe-agnostic.
+2. (Optional) a CMC Pro API key — wires in as a config upgrade (`make verify-datasource`); not
+   required, does not change the attested forward record.
 
 ## How to see it all
 ```bash
 cd regime-pilot
-make verify            # full PASS/FAIL scoreboard
+make verify            # OFFLINE PASS/FAIL scoreboard (no secrets, no network)
+make verify-full       # live checks (needs CMC key + make data)
 make attest-status     # one-line attestation liveness
 make demo              # regenerate charts + report bundle offline
-cat AGENTS.md          # full audit guide
 ```
