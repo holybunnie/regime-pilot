@@ -1,16 +1,22 @@
-w# Regime Pilot — an honest, tamper-evident measurement system for AI-authored trading strategies
+# Regime Pilot — a CoinMarketCap Strategy Skill with an honest, tamper-evident measurement system for AI-authored trading strategies
 
-**Regime Pilot is a system that produces an honest, tamper-evident measurement of any
-AI-authored trading strategy's edge** — a deterministic, lookahead-free backtest, a
-falsification battery that actively tries to *disprove* the edge, and an on-chain
-commit-reveal record that proves the live forward test could not be curve-fit after the fact.
-We demonstrate it on our own strategy, which the system correctly shows has **no statistically
-significant edge** over the tested window. **The point is the trustworthy measurement, not the
-strategy. A weak result, honestly measured, is the demonstration working.**
+**Regime Pilot is a [CoinMarketCap](https://coinmarketcap.com/) (CMC) trading-strategy Skill paired
+with a system that produces an honest, tamper-evident measurement of any AI-authored strategy's
+edge.** An LLM-driven CMC Skill turns a plain-English trading idea into a machine-checkable strategy
+spec — drawing market state (price, 24h volume, Fear & Greed, global metrics) from CoinMarketCap's
+API via its MCP tools — and a deterministic system then measures that strategy three ways that are
+each hard to fake: a deterministic, lookahead-free backtest, a falsification battery that actively
+tries to *disprove* the edge, and an on-chain commit-reveal record that proves the live forward test
+could not be curve-fit after the fact. We demonstrate it on our own strategy, which the system
+correctly shows has **no statistically significant edge** over the tested window. **The point is the
+trustworthy measurement, not the strategy. A weak result, honestly measured, is the demonstration
+working.**
 
-> The LLM only authors the strategy *spec*; it never touches execution, data, or results.
-> Everything downstream of the spec file is pure, deterministic Python. That separation is the
-> entire design — the verification system is the contribution; the strategy is just the test subject.
+> The CoinMarketCap Skill (the only LLM in the system) only authors the strategy *spec*; it never
+> touches execution, data, or results. Everything downstream of the spec file is pure, deterministic
+> Python. That separation is the entire design — the verification system is the contribution; the
+> strategy is just the test subject. The Skill lives in `skill/` (`SKILL.md`) and installs as a
+> standalone CoinMarketCap strategy-compiler skill.
 
 | | |
 |---|---|
@@ -40,7 +46,7 @@ that are each hard to fake:
 
 ```
  plain-English intent
-        │   skill/   (the CMC Strategy Skill — the ONLY LLM in the system)
+        │   skill/   (the CoinMarketCap Strategy Skill — the ONLY LLM in the system)
         ▼
    strategy spec (JSON, schema-validated, closed predicate AST)            spec/
         │
@@ -63,6 +69,29 @@ schema-validated JSON spec with a closed predicate grammar. Nothing it emits can
 execution: the engine reads only the validated spec, and the same spec backtested twice produces
 byte-identical output (`make verify-engine`). That is what makes the measurement reproducible by
 anyone.
+
+## The CoinMarketCap Skill
+
+The front door is an installable **CoinMarketCap Strategy Skill** (`skill/SKILL.md`,
+`user-invocable`, MIT). It is the *only* LLM-driven component, and it does exactly one thing:
+compile a user's natural-language trading intent into a strict JSON **strategy spec** validated
+against `spec/schema.json`. It never computes results.
+
+- **CoinMarketCap as the data substrate.** The Skill designs strategies against what CoinMarketCap
+  actually exposes on the operator's tier — per-asset and BTC price, 24h dollar-volume, the CMC
+  **Fear & Greed** index, and **global metrics** — read live through CoinMarketCap's MCP tools
+  (`get_crypto_quotes_latest`, `get_global_metrics_latest`, `get_crypto_metrics`). Features that
+  CMC's free tier does not serve (funding rate, open interest) are rejected by design rather than
+  faked; first-party CMC derivatives are an x402 upgrade path (see below).
+- **Closed, auditable output.** The spec is a small predicate AST — features (`raw | sma |
+  realized_vol | percentile_rank | breadth | delta`), boolean regime trees with hysteresis, a
+  drawdown-budget sizing law, risk limits, and costs — never free-form code. `python
+  cli/validate_spec.py <path>` must print `VALID` before anything runs.
+- **Honest by construction.** The Skill counts every configuration it tries (for the deflated
+  Sharpe), states data sources and date ranges, and prefers *disproving* a strategy over selling it.
+- **Try it:** see `skill/examples/` for worked intents (`momentum.intent.md`,
+  `regime_pilot.intent.md`, and an `impossible.intent.md` showing how unavailable-data requests are
+  handled), then `make verify-skill` to confirm the Skill installs and the LLM is quarantined.
 
 ## The differentiator: a forward test that can't be faked
 
@@ -208,7 +237,7 @@ predates its outcome window — the report ends "N on-chain commits, all account
 
 | Path | Contents |
 |------|----------|
-| `skill/` | the installable CMC Strategy Skill: `SKILL.md`, `compiler_prompt.md`, example intents |
+| `skill/` | the installable CoinMarketCap Strategy Skill: `SKILL.md`, `compiler_prompt.md`, example intents |
 | `spec/` | `schema.json` + `regime_pilot.spec.json` (v1) + `regime_pilot_v2.spec.json` (v2) + `universe.json` + `universe_official_149.json` |
 | `engine/` | deterministic backtester: `backtest.py`, `indicators.py`, `sizing.py`, `data/` fetch+cache, `datasource.py` |
 | `falsify/` | falsification suite + reports + `deflated_sharpe.py` |
