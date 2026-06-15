@@ -1,14 +1,19 @@
 # STATUS — Regime Pilot (plain English, for the operator)
 
-**Last updated:** 2026-06-14 · **Freeze:** 2026-06-21 13:00 UTC.
+**Last updated:** 2026-06-15 · **Freeze:** 2026-06-21 13:00 UTC.
 **Repo:** https://github.com/holybunnie/regime-pilot · **Contract:** [`0xB874…21c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
 
 ## Bottom line
-**All components are built, tested, and committed.** `make verify` (offline) passes top to bottom
-on a fresh clone with no secrets and no downloaded data. The on-chain attestation runs itself
-every hour, and the **contract source is verified on BscScan** (exact bytecode + ABI match). The
-only remaining live event is the **reveal on June 20–21** — scripted, and already rehearsed
-end-to-end against a real EVM (`attest/REVEAL_DRYRUN.md`).
+**All components are built, tested, committed, and live on `main`.** `make verify` (offline) passes
+top to bottom on a fresh clone with no secrets and no downloaded data; `make verify-full` is
+**confirmed passing live** (CMC Basic key + `make data`) — data integrity, skill, strategy, and the
+full chain-complete attestation all green. The on-chain attestation runs itself every hour (now with
+the duplicate-commit guard live), and the **contract source is verified on BscScan** (exact bytecode
++ ABI match). The only remaining live event is the **reveal on June 20–21** — scripted, and already
+rehearsed end-to-end against a real EVM (`attest/REVEAL_DRYRUN.md`).
+
+**Not yet (non-blocking):** CMC **Pro** access (waiting on the team — optional upgrade, not in the
+live committer path); the official **149-token** universe (file ready, interim 15 active).
 
 ## Scoreboard
 | Component | State | One-line summary |
@@ -47,7 +52,8 @@ forward test*, which is accruing now and will be the real arbiter.
   sign nothing new and are fully documented in `attest/RECONCILIATION.md`.
   The duplicate-commit race that caused them is now closed (`make verify-attest-race`). One early
   hour is logged MISSED (an env-var bug, since fixed). Nothing hidden — `make attest-verify` accounts
-  for every on-chain id.
+  for every on-chain id, online and offline, and is robust to the cron adding a new commit
+  mid-check (a newer id is flagged "pending sync," never a false gap).
 
 ## 🙋 What I need from you (optional / non-blocking)
 1. **The official 149-token universe list** → replace `spec/universe_official_149.json` and flip the
