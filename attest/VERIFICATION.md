@@ -1,8 +1,8 @@
 # On-Chain Attestation Verification
 
-- Source: committed snapshot onchain_ledger.json
-- On-chain commits (commitCount): **56**
-- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 54
+- Source: live BSC RPC (contract 0xB87481e29b0Dce9545b1B00b8526810679B521c1)
+- On-chain commits (commitCount): **57**
+- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 55
 
 | id | decision hour (UTC) | block ts (UTC) | status | note |
 |--:|---------------------|----------------|--------|------|
@@ -62,5 +62,6 @@
 | 53 | 2026-06-15T10:00:00Z | 2026-06-15T10:03:40Z | RECORDED ✅ | primary forward commit for 2026-06-15T10:00:00Z; payload sealed until reveal |
 | 54 | 2026-06-15T11:00:00Z | 2026-06-15T11:03:45Z | RECORDED ✅ | primary forward commit for 2026-06-15T11:00:00Z; payload sealed until reveal |
 | 55 | 2026-06-15T12:00:00Z | 2026-06-15T12:03:45Z | RECORDED ✅ | primary forward commit for 2026-06-15T12:00:00Z; payload sealed until reveal |
+| 56 | 2026-06-15T13:00:00Z | 2026-06-15T13:02:58Z | RECORDED ✅ | primary forward commit for 2026-06-15T13:00:00Z; payload sealed until reveal |
 
-**56 on-chain commits, all accounted for.**
+**57 on-chain commits, all accounted for.**
