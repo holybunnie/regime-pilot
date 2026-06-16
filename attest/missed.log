@@ -1,1 +1,2 @@
 2026-06-13T08:56:23Z	MISSED	CMC_API_KEY missing — cannot fetch Fear & Greed (no synthetic fill)
+2026-06-16T12:03:46Z	MISSED	{'code': -32005, 'message': 'limit exceeded'}
