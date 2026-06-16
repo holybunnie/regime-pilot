@@ -1,1 +1,1 @@
-2026-06-16T17:03:35Z alive; committed id=83 hour=2026-06-16T17:00:00Z regime=chop
+2026-06-16T17:28:33Z alive; last decision 2026-06-16T17:00:00Z; no-op (already committed)
