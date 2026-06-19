@@ -1,8 +1,8 @@
 # On-Chain Attestation Verification
 
 - Source: committed snapshot onchain_ledger.json
-- On-chain commits (commitCount): **58**
-- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 56
+- On-chain commits (commitCount): **150**
+- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 148
 
 | id | decision hour (UTC) | block ts (UTC) | status | note |
 |--:|---------------------|----------------|--------|------|
@@ -64,5 +64,97 @@
 | 55 | 2026-06-15T12:00:00Z | 2026-06-15T12:03:45Z | RECORDED ✅ | primary forward commit for 2026-06-15T12:00:00Z; payload sealed until reveal |
 | 56 | 2026-06-15T13:00:00Z | 2026-06-15T13:02:58Z | RECORDED ✅ | primary forward commit for 2026-06-15T13:00:00Z; payload sealed until reveal |
 | 57 | 2026-06-15T14:00:00Z | 2026-06-15T14:03:11Z | RECORDED ✅ | primary forward commit for 2026-06-15T14:00:00Z; payload sealed until reveal |
+| 58 | 2026-06-15T15:00:00Z | 2026-06-15T15:03:56Z | RECORDED ✅ | primary forward commit for 2026-06-15T15:00:00Z; payload sealed until reveal |
+| 59 | 2026-06-15T16:00:00Z | 2026-06-15T16:03:46Z | RECORDED ✅ | primary forward commit for 2026-06-15T16:00:00Z; payload sealed until reveal |
+| 60 | 2026-06-15T17:00:00Z | 2026-06-15T17:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-15T17:00:00Z; payload sealed until reveal |
+| 61 | 2026-06-15T18:00:00Z | 2026-06-15T18:04:12Z | RECORDED ✅ | primary forward commit for 2026-06-15T18:00:00Z; payload sealed until reveal |
+| 62 | 2026-06-15T19:00:00Z | 2026-06-15T19:03:47Z | RECORDED ✅ | primary forward commit for 2026-06-15T19:00:00Z; payload sealed until reveal |
+| 63 | 2026-06-15T20:00:00Z | 2026-06-15T20:03:18Z | RECORDED ✅ | primary forward commit for 2026-06-15T20:00:00Z; payload sealed until reveal |
+| 64 | 2026-06-15T21:00:00Z | 2026-06-15T21:03:34Z | RECORDED ✅ | primary forward commit for 2026-06-15T21:00:00Z; payload sealed until reveal |
+| 65 | 2026-06-15T22:00:00Z | 2026-06-15T22:02:33Z | RECORDED ✅ | primary forward commit for 2026-06-15T22:00:00Z; payload sealed until reveal |
+| 66 | 2026-06-15T23:00:00Z | 2026-06-15T23:03:32Z | RECORDED ✅ | primary forward commit for 2026-06-15T23:00:00Z; payload sealed until reveal |
+| 67 | 2026-06-16T00:00:00Z | 2026-06-16T00:03:53Z | RECORDED ✅ | primary forward commit for 2026-06-16T00:00:00Z; payload sealed until reveal |
+| 68 | 2026-06-16T01:00:00Z | 2026-06-16T01:03:54Z | RECORDED ✅ | primary forward commit for 2026-06-16T01:00:00Z; payload sealed until reveal |
+| 69 | 2026-06-16T02:00:00Z | 2026-06-16T02:03:52Z | RECORDED ✅ | primary forward commit for 2026-06-16T02:00:00Z; payload sealed until reveal |
+| 70 | 2026-06-16T03:00:00Z | 2026-06-16T03:03:53Z | RECORDED ✅ | primary forward commit for 2026-06-16T03:00:00Z; payload sealed until reveal |
+| 71 | 2026-06-16T04:00:00Z | 2026-06-16T04:03:30Z | RECORDED ✅ | primary forward commit for 2026-06-16T04:00:00Z; payload sealed until reveal |
+| 72 | 2026-06-16T05:00:00Z | 2026-06-16T05:03:18Z | RECORDED ✅ | primary forward commit for 2026-06-16T05:00:00Z; payload sealed until reveal |
+| 73 | 2026-06-16T06:00:00Z | 2026-06-16T06:03:11Z | RECORDED ✅ | primary forward commit for 2026-06-16T06:00:00Z; payload sealed until reveal |
+| 74 | 2026-06-16T07:00:00Z | 2026-06-16T07:03:14Z | RECORDED ✅ | primary forward commit for 2026-06-16T07:00:00Z; payload sealed until reveal |
+| 75 | 2026-06-16T08:00:00Z | 2026-06-16T08:03:43Z | RECORDED ✅ | primary forward commit for 2026-06-16T08:00:00Z; payload sealed until reveal |
+| 76 | 2026-06-16T09:00:00Z | 2026-06-16T09:03:43Z | RECORDED ✅ | primary forward commit for 2026-06-16T09:00:00Z; payload sealed until reveal |
+| 77 | 2026-06-16T10:00:00Z | 2026-06-16T10:03:51Z | RECORDED ✅ | primary forward commit for 2026-06-16T10:00:00Z; payload sealed until reveal |
+| 78 | 2026-06-16T11:00:00Z | 2026-06-16T11:03:54Z | RECORDED ✅ | primary forward commit for 2026-06-16T11:00:00Z; payload sealed until reveal |
+| 79 | 2026-06-16T13:00:00Z | 2026-06-16T13:03:40Z | RECORDED ✅ | primary forward commit for 2026-06-16T13:00:00Z; payload sealed until reveal |
+| 80 | 2026-06-16T14:00:00Z | 2026-06-16T14:03:43Z | RECORDED ✅ | primary forward commit for 2026-06-16T14:00:00Z; payload sealed until reveal |
+| 81 | 2026-06-16T15:00:00Z | 2026-06-16T15:03:35Z | RECORDED ✅ | primary forward commit for 2026-06-16T15:00:00Z; payload sealed until reveal |
+| 82 | 2026-06-16T16:00:00Z | 2026-06-16T16:04:03Z | RECORDED ✅ | primary forward commit for 2026-06-16T16:00:00Z; payload sealed until reveal |
+| 83 | 2026-06-16T17:00:00Z | 2026-06-16T17:03:35Z | RECORDED ✅ | primary forward commit for 2026-06-16T17:00:00Z; payload sealed until reveal |
+| 84 | 2026-06-16T18:00:00Z | 2026-06-16T18:03:16Z | RECORDED ✅ | primary forward commit for 2026-06-16T18:00:00Z; payload sealed until reveal |
+| 85 | 2026-06-16T19:00:00Z | 2026-06-16T19:03:58Z | RECORDED ✅ | primary forward commit for 2026-06-16T19:00:00Z; payload sealed until reveal |
+| 86 | 2026-06-16T20:00:00Z | 2026-06-16T20:03:27Z | RECORDED ✅ | primary forward commit for 2026-06-16T20:00:00Z; payload sealed until reveal |
+| 87 | 2026-06-16T21:00:00Z | 2026-06-16T21:03:22Z | RECORDED ✅ | primary forward commit for 2026-06-16T21:00:00Z; payload sealed until reveal |
+| 88 | 2026-06-16T22:00:00Z | 2026-06-16T22:03:33Z | RECORDED ✅ | primary forward commit for 2026-06-16T22:00:00Z; payload sealed until reveal |
+| 89 | 2026-06-16T23:00:00Z | 2026-06-16T23:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-16T23:00:00Z; payload sealed until reveal |
+| 90 | 2026-06-17T00:00:00Z | 2026-06-17T00:03:54Z | RECORDED ✅ | primary forward commit for 2026-06-17T00:00:00Z; payload sealed until reveal |
+| 91 | 2026-06-17T01:00:00Z | 2026-06-17T01:03:15Z | RECORDED ✅ | primary forward commit for 2026-06-17T01:00:00Z; payload sealed until reveal |
+| 92 | 2026-06-17T02:00:00Z | 2026-06-17T02:03:16Z | RECORDED ✅ | primary forward commit for 2026-06-17T02:00:00Z; payload sealed until reveal |
+| 93 | 2026-06-17T03:00:00Z | 2026-06-17T03:03:47Z | RECORDED ✅ | primary forward commit for 2026-06-17T03:00:00Z; payload sealed until reveal |
+| 94 | 2026-06-17T04:00:00Z | 2026-06-17T04:03:39Z | RECORDED ✅ | primary forward commit for 2026-06-17T04:00:00Z; payload sealed until reveal |
+| 95 | 2026-06-17T05:00:00Z | 2026-06-17T05:03:37Z | RECORDED ✅ | primary forward commit for 2026-06-17T05:00:00Z; payload sealed until reveal |
+| 96 | 2026-06-17T06:00:00Z | 2026-06-17T06:03:54Z | RECORDED ✅ | primary forward commit for 2026-06-17T06:00:00Z; payload sealed until reveal |
+| 97 | 2026-06-17T07:00:00Z | 2026-06-17T07:03:17Z | RECORDED ✅ | primary forward commit for 2026-06-17T07:00:00Z; payload sealed until reveal |
+| 98 | 2026-06-17T08:00:00Z | 2026-06-17T08:03:44Z | RECORDED ✅ | primary forward commit for 2026-06-17T08:00:00Z; payload sealed until reveal |
+| 99 | 2026-06-17T10:00:00Z | 2026-06-17T10:03:30Z | RECORDED ✅ | primary forward commit for 2026-06-17T10:00:00Z; payload sealed until reveal |
+| 100 | 2026-06-17T11:00:00Z | 2026-06-17T11:03:39Z | RECORDED ✅ | primary forward commit for 2026-06-17T11:00:00Z; payload sealed until reveal |
+| 101 | 2026-06-17T12:00:00Z | 2026-06-17T12:03:43Z | RECORDED ✅ | primary forward commit for 2026-06-17T12:00:00Z; payload sealed until reveal |
+| 102 | 2026-06-17T13:00:00Z | 2026-06-17T13:03:21Z | RECORDED ✅ | primary forward commit for 2026-06-17T13:00:00Z; payload sealed until reveal |
+| 103 | 2026-06-17T14:00:00Z | 2026-06-17T14:03:49Z | RECORDED ✅ | primary forward commit for 2026-06-17T14:00:00Z; payload sealed until reveal |
+| 104 | 2026-06-17T15:00:00Z | 2026-06-17T15:03:48Z | RECORDED ✅ | primary forward commit for 2026-06-17T15:00:00Z; payload sealed until reveal |
+| 105 | 2026-06-17T16:00:00Z | 2026-06-17T16:04:08Z | RECORDED ✅ | primary forward commit for 2026-06-17T16:00:00Z; payload sealed until reveal |
+| 106 | 2026-06-17T17:00:00Z | 2026-06-17T17:03:53Z | RECORDED ✅ | primary forward commit for 2026-06-17T17:00:00Z; payload sealed until reveal |
+| 107 | 2026-06-17T18:00:00Z | 2026-06-17T18:03:59Z | RECORDED ✅ | primary forward commit for 2026-06-17T18:00:00Z; payload sealed until reveal |
+| 108 | 2026-06-17T20:00:00Z | 2026-06-17T20:03:51Z | RECORDED ✅ | primary forward commit for 2026-06-17T20:00:00Z; payload sealed until reveal |
+| 109 | 2026-06-17T21:00:00Z | 2026-06-17T21:03:51Z | RECORDED ✅ | primary forward commit for 2026-06-17T21:00:00Z; payload sealed until reveal |
+| 110 | 2026-06-17T22:00:00Z | 2026-06-17T22:03:42Z | RECORDED ✅ | primary forward commit for 2026-06-17T22:00:00Z; payload sealed until reveal |
+| 111 | 2026-06-17T23:00:00Z | 2026-06-17T23:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-17T23:00:00Z; payload sealed until reveal |
+| 112 | 2026-06-18T00:00:00Z | 2026-06-18T00:03:44Z | RECORDED ✅ | primary forward commit for 2026-06-18T00:00:00Z; payload sealed until reveal |
+| 113 | 2026-06-18T01:00:00Z | 2026-06-18T01:03:15Z | RECORDED ✅ | primary forward commit for 2026-06-18T01:00:00Z; payload sealed until reveal |
+| 114 | 2026-06-18T02:00:00Z | 2026-06-18T02:03:50Z | RECORDED ✅ | primary forward commit for 2026-06-18T02:00:00Z; payload sealed until reveal |
+| 115 | 2026-06-18T03:00:00Z | 2026-06-18T03:03:55Z | RECORDED ✅ | primary forward commit for 2026-06-18T03:00:00Z; payload sealed until reveal |
+| 116 | 2026-06-18T04:00:00Z | 2026-06-18T04:03:53Z | RECORDED ✅ | primary forward commit for 2026-06-18T04:00:00Z; payload sealed until reveal |
+| 117 | 2026-06-18T05:00:00Z | 2026-06-18T05:03:28Z | RECORDED ✅ | primary forward commit for 2026-06-18T05:00:00Z; payload sealed until reveal |
+| 118 | 2026-06-18T06:00:00Z | 2026-06-18T06:03:39Z | RECORDED ✅ | primary forward commit for 2026-06-18T06:00:00Z; payload sealed until reveal |
+| 119 | 2026-06-18T07:00:00Z | 2026-06-18T07:03:28Z | RECORDED ✅ | primary forward commit for 2026-06-18T07:00:00Z; payload sealed until reveal |
+| 120 | 2026-06-18T08:00:00Z | 2026-06-18T08:03:26Z | RECORDED ✅ | primary forward commit for 2026-06-18T08:00:00Z; payload sealed until reveal |
+| 121 | 2026-06-18T09:00:00Z | 2026-06-18T09:03:36Z | RECORDED ✅ | primary forward commit for 2026-06-18T09:00:00Z; payload sealed until reveal |
+| 122 | 2026-06-18T10:00:00Z | 2026-06-18T10:03:54Z | RECORDED ✅ | primary forward commit for 2026-06-18T10:00:00Z; payload sealed until reveal |
+| 123 | 2026-06-18T11:00:00Z | 2026-06-18T11:03:47Z | RECORDED ✅ | primary forward commit for 2026-06-18T11:00:00Z; payload sealed until reveal |
+| 124 | 2026-06-18T13:00:00Z | 2026-06-18T13:03:46Z | RECORDED ✅ | primary forward commit for 2026-06-18T13:00:00Z; payload sealed until reveal |
+| 125 | 2026-06-18T14:00:00Z | 2026-06-18T14:03:24Z | RECORDED ✅ | primary forward commit for 2026-06-18T14:00:00Z; payload sealed until reveal |
+| 126 | 2026-06-18T15:00:00Z | 2026-06-18T15:03:40Z | RECORDED ✅ | primary forward commit for 2026-06-18T15:00:00Z; payload sealed until reveal |
+| 127 | 2026-06-18T16:00:00Z | 2026-06-18T16:04:00Z | RECORDED ✅ | primary forward commit for 2026-06-18T16:00:00Z; payload sealed until reveal |
+| 128 | 2026-06-18T17:00:00Z | 2026-06-18T17:38:49Z | RECORDED ✅ | primary forward commit for 2026-06-18T17:00:00Z; payload sealed until reveal |
+| 129 | 2026-06-18T18:00:00Z | 2026-06-18T18:03:39Z | RECORDED ✅ | primary forward commit for 2026-06-18T18:00:00Z; payload sealed until reveal |
+| 130 | 2026-06-18T19:00:00Z | 2026-06-18T19:03:48Z | RECORDED ✅ | primary forward commit for 2026-06-18T19:00:00Z; payload sealed until reveal |
+| 131 | 2026-06-18T20:00:00Z | 2026-06-18T20:03:37Z | RECORDED ✅ | primary forward commit for 2026-06-18T20:00:00Z; payload sealed until reveal |
+| 132 | 2026-06-18T21:00:00Z | 2026-06-18T21:03:24Z | RECORDED ✅ | primary forward commit for 2026-06-18T21:00:00Z; payload sealed until reveal |
+| 133 | 2026-06-18T22:00:00Z | 2026-06-18T22:03:51Z | RECORDED ✅ | primary forward commit for 2026-06-18T22:00:00Z; payload sealed until reveal |
+| 134 | 2026-06-18T23:00:00Z | 2026-06-18T23:03:51Z | RECORDED ✅ | primary forward commit for 2026-06-18T23:00:00Z; payload sealed until reveal |
+| 135 | 2026-06-19T00:00:00Z | 2026-06-19T00:03:46Z | RECORDED ✅ | primary forward commit for 2026-06-19T00:00:00Z; payload sealed until reveal |
+| 136 | 2026-06-19T01:00:00Z | 2026-06-19T01:03:30Z | RECORDED ✅ | primary forward commit for 2026-06-19T01:00:00Z; payload sealed until reveal |
+| 137 | 2026-06-19T02:00:00Z | 2026-06-19T02:03:26Z | RECORDED ✅ | primary forward commit for 2026-06-19T02:00:00Z; payload sealed until reveal |
+| 138 | 2026-06-19T03:00:00Z | 2026-06-19T03:03:27Z | RECORDED ✅ | primary forward commit for 2026-06-19T03:00:00Z; payload sealed until reveal |
+| 139 | 2026-06-19T04:00:00Z | 2026-06-19T04:03:30Z | RECORDED ✅ | primary forward commit for 2026-06-19T04:00:00Z; payload sealed until reveal |
+| 140 | 2026-06-19T05:00:00Z | 2026-06-19T05:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-19T05:00:00Z; payload sealed until reveal |
+| 141 | 2026-06-19T06:00:00Z | 2026-06-19T06:03:36Z | RECORDED ✅ | primary forward commit for 2026-06-19T06:00:00Z; payload sealed until reveal |
+| 142 | 2026-06-19T07:00:00Z | 2026-06-19T07:03:46Z | RECORDED ✅ | primary forward commit for 2026-06-19T07:00:00Z; payload sealed until reveal |
+| 143 | 2026-06-19T08:00:00Z | 2026-06-19T08:03:35Z | RECORDED ✅ | primary forward commit for 2026-06-19T08:00:00Z; payload sealed until reveal |
+| 144 | 2026-06-19T09:00:00Z | 2026-06-19T09:03:49Z | RECORDED ✅ | primary forward commit for 2026-06-19T09:00:00Z; payload sealed until reveal |
+| 145 | 2026-06-19T10:00:00Z | 2026-06-19T10:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-19T10:00:00Z; payload sealed until reveal |
+| 146 | 2026-06-19T11:00:00Z | 2026-06-19T11:03:55Z | RECORDED ✅ | primary forward commit for 2026-06-19T11:00:00Z; payload sealed until reveal |
+| 147 | 2026-06-19T12:00:00Z | 2026-06-19T12:03:31Z | RECORDED ✅ | primary forward commit for 2026-06-19T12:00:00Z; payload sealed until reveal |
+| 148 | 2026-06-19T13:00:00Z | 2026-06-19T13:03:48Z | RECORDED ✅ | primary forward commit for 2026-06-19T13:00:00Z; payload sealed until reveal |
+| 149 | 2026-06-19T14:00:00Z | 2026-06-19T14:03:35Z | RECORDED ✅ | primary forward commit for 2026-06-19T14:00:00Z; payload sealed until reveal |
 
-**58 on-chain commits, all accounted for.**
+**150 on-chain commits, all accounted for.**

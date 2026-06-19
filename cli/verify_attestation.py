@@ -4,7 +4,8 @@
   - hash known-answer + full local mock-chain commit->reveal->verify pass
   - contract is deployed on BSC mainnet and has live code
   - at least one hourly commit exists
-  - every on-chain commit's hash is reproducible from public data (verify.py)
+  - every on-chain commit is accounted for against the public ledger (verify.py);
+    after reveal, payloads and salts are also recomputed against the chain
 
 Run: python cli/verify_attestation.py   (or: make verify-attestation)
 """
@@ -47,9 +48,10 @@ def main():
         n = 0
     check(n >= 1, f"hourly commits recorded ({n})")
 
-    # 4) every commit reproducible + matches chain
+    # 4) every on-chain id is accounted for; revealed ids are also recomputed
     import attest.verify as v
-    check(v.main(["--no-write"]) == 0, "all on-chain hashes reproduced from public data")
+    check(v.main(["--no-write"]) == 0,
+          "all on-chain commits accounted for; revealed payloads recompute when present")
 
     print()
     if fails:

@@ -60,10 +60,13 @@ forward test*, which is accruing now and will be the real arbiter.
   `attest/onchain_ledger.json`); two ids (**7** and **26**) are exact duplicates of the commits
   before them — a second hourly run for the same hour produced the same deterministic hash. They
   sign nothing new and are fully documented in `attest/RECONCILIATION.md`.
-  The duplicate-commit race that caused them is now closed (`make verify-attest-race`). One early
-  hour is logged MISSED (an env-var bug, since fixed). Nothing hidden — `make attest-verify` accounts
-  for every on-chain id, online and offline, and is robust to the cron adding a new commit
-  mid-check (a newer id is flagged "pending sync," never a false gap).
+  The duplicate-commit race that caused them is now closed (`make verify-attest-race`). Through
+  2026-06-19T14:00Z, the public record contains 148 primary predictions across 152 decision hours:
+  four hours are missing (97.4% coverage). `missed.log` contains six failure entries because some
+  entries are retries for the same hour; one skipped scheduler hour produced no log entry. Nothing
+  hidden — `make attest-verify` accounts for every on-chain id, online and offline, and is robust
+  to the cron adding a new commit mid-check (a newer id is flagged "pending sync," never a false
+  gap).
 
 ## 🙋 What I need from you (optional / non-blocking)
 1. **The official 149-token universe list** → replace `spec/universe_official_149.json` and flip the

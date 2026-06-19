@@ -135,13 +135,13 @@ data-cmc:
 	$(PY) engine/data/cmc_pro.py
 
 backtest:
-	$(PY) engine/backtest.py
+	$(PY) engine/backtest.py spec/regime_pilot_v2.spec.json engine/reports/latest
 
 falsify:
 	PYTHONPATH=. $(PY) falsify/report.py
 
 demo:
-	$(PY) demo/build_demo.py
+	MPLCONFIGDIR=/tmp/regime-pilot-matplotlib $(PY) demo/build_demo.py
 
 x402-pay:
 	PYTHONPATH=. $(PY) x402plan/pay_x402.py
