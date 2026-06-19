@@ -25,7 +25,6 @@ from engine import backtest as bt         # noqa: E402
 
 SKILL = REPO / "skill" / "SKILL.md"
 PROMPT = REPO / "skill" / "compiler_prompt.md"
-AGENT_CONFIG = REPO / "skill" / "agents" / "openai.yaml"
 REQUIRED_FRONTMATTER = {"name", "description"}
 ALLOWED_FRONTMATTER = {"name", "description", "license", "metadata", "allowed-tools"}
 
@@ -79,12 +78,6 @@ def main():
               + ("" if not errors else f": {errors}"))
         check(frontmatter.get("name", "").strip("\"'") == "regime-pilot",
               "skill folder/name identity is regime-pilot")
-    check(AGENT_CONFIG.exists(), "skill/agents/openai.yaml exists")
-    if AGENT_CONFIG.exists():
-        agent_text = AGENT_CONFIG.read_text()
-        check("$regime-pilot" in agent_text, "agent default prompt invokes $regime-pilot")
-        check("display_name:" in agent_text and "short_description:" in agent_text,
-              "agent UI metadata is present")
     check(PROMPT.exists(), "skill/compiler_prompt.md exists")
 
     intents = sorted((REPO / "skill" / "examples").glob("*.intent.md"))

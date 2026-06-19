@@ -119,7 +119,7 @@ def main():
 
     # --- print table ---
     print("=" * 64)
-    print(" PHASE 0 VERIFICATION")
+    print(" ENVIRONMENT VERIFICATION")
     print("=" * 64)
     for label, ok, det in rows:
         mark = "PASS" if ok else "FAIL"

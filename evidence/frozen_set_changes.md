@@ -49,9 +49,19 @@ three deterministic synthetic runs using a baseline captured from the pre-fix en
 byte-derived result hashes for the momentum example, v1, and live v2 to remain identical. The CMC
 adapter writes a separate inactive cache and is not selected by the hourly workflow.
 
-## 3. All other 11 frozen-set files — byte-identical
+## 3. engine/data/fetch.py — wording cleanup only
+
+| | sha256 |
+|---|---|
+| before (baseline) | `b46fc8cfa155304d7fa86cf80498b3b4923781cb0ebe8a73dd48f3223240d2c9` |
+| after (approved)  | `faef3036886999244c28311ad21f7177cec345023e95c1baf7417e9f64aa4dbc` |
+
+Only the module docstring changed. Fetch endpoints, parameters, cache behavior, credentials,
+timestamps, and all executable statements are byte-identical.
+
+## 4. All other 10 frozen-set files — byte-identical
 
 `.github/workflows/attest.yml` was **not** changed (Option 1 keeps `cancel-in-progress: false`).
 Every other frozen file matches `frozen_set_baseline.txt` exactly. Verify:
 
-    sha256sum -c evidence/frozen_set_baseline.txt   # 11 OK; two approved changes are logged above
+    sha256sum -c evidence/frozen_set_baseline.txt   # 10 OK; three approved changes are logged above

@@ -107,7 +107,7 @@ def main():
     if fails:
         print(f"RESULT: {len(fails)} problem(s) — DO NOT publish until fixed.")
         return 1
-    print("ALL PHASE 9 CHECKS PASS — repo is public-safe.")
+    print("ALL SECRET CHECKS PASS — repo is public-safe.")
     return 0
 
 

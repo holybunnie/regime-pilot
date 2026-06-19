@@ -52,7 +52,7 @@ def main():
     if fails:
         print(f"RESULT: {len(fails)} problem(s).")
         return 1
-    print("ALL PHASE 7 CHECKS PASS")
+    print("ALL ATTESTATION CHECKS PASS")
     return 0
 
 

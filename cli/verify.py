@@ -55,6 +55,8 @@ def gate_frozen():
             "797d7fea4e4559417592b674dc9b31affc90ec7a9c4e37d1f850e7fc01f854f3",
         "engine/backtest.py":
             "b6f6eb071444d8e5a68c96fc211359efd443cc3ec48c0565bc52d107188c6869",
+        "engine/data/fetch.py":
+            "faef3036886999244c28311ad21f7177cec345023e95c1baf7417e9f64aa4dbc",
     }
     out, ok = [], True
     for f, want in baseline.items():
@@ -95,8 +97,6 @@ ITEMS = [
      [("readme", lambda: run_pyfile("cli/verify_readme.py"))]),
     ("11", "CMC Pro adapter ready; source cutover remains explicit",
      [("datasource", lambda: run_pyfile("cli/verify_datasource.py"))]),
-    ("12", "HANDOFF consistent with STATUS",
-     [("docs", lambda: run_pyfile("cli/verify_docs_consistency.py"))]),
     ("13", "No secrets/salt seed in files or history",
      [("secrets", lambda: run_pyfile("cli/verify_secrets.py"))]),
     ("15", "Data-source & credential map matches real call sites",

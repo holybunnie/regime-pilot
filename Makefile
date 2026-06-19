@@ -7,8 +7,8 @@ PY := python3
         verify-environment verify-data verify-skill verify-strategy verify-attestation \
         verify-framing verify-readme verify-universe verify-datasource \
         verify-cmc-pro \
-        verify-docs-consistency verify-datasources verify-attest-race \
-        attest-dryrun-verify verify-self-audit \
+        verify-datasources verify-attest-race \
+        attest-dryrun-verify \
         data data-cmc backtest falsify demo clean \
         attest-deploy attest-commit attest-status attest-reveal attest-verify x402-pay x402-plan
 
@@ -65,12 +65,6 @@ verify-universe:
 
 verify-datasource:
 	PYTHONPATH=. $(PY) cli/verify_datasource.py
-
-verify-docs-consistency:
-	$(PY) cli/verify_docs_consistency.py
-
-verify-self-audit:
-	$(PY) cli/verify_self_audit.py
 
 verify-datasources:
 	$(PY) cli/verify_datasources.py

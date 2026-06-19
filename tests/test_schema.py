@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 2 verification: schema accepts valid specs and rejects malformed ones.
+"""Schema verification: valid specs accepted and malformed specs rejected.
 
 Run: python tests/test_schema.py   (exit 0 = all pass)
 

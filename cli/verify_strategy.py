@@ -65,7 +65,7 @@ def main():
     if fails:
         print(f"RESULT: {len(fails)} problem(s).")
         return 1
-    print("ALL PHASE 5 CHECKS PASS")
+    print("ALL STRATEGY CHECKS PASS")
     return 0
 
 

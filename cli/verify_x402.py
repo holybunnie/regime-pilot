@@ -67,7 +67,7 @@ def main():
     if fails:
         print(f"RESULT: {len(fails)} problem(s).")
         return 1
-    print("ALL PHASE 8 CHECKS PASS")
+    print("ALL X402 CHECKS PASS")
     return 0
 
 

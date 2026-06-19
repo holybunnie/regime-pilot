@@ -2,7 +2,7 @@
 
 ## Why this exists
 We paid one **real** x402 micro-payment so the data cost here is *measured, not estimated*, and every
-figure below is reported **net of that real cost**. The point is **agent-pays-its-own-data**: an
+figure below is reported **net of that real cost**. The point is **automated data payment**: a
 autonomous runner can buy exactly the feeds it needs over x402 with **no API key**, and the same rail
 **unlocks first-party CMC derivatives** (funding / open interest) the free REST tier blocks. One
 settled payment is **proof-of-capability, not a full production pipeline** — everything here recomputes

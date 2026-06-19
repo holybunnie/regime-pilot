@@ -27,7 +27,7 @@ backtest. This does not activate CMC for the cron.
 | Environment / credentials | ✅ DONE | Machine, APIs, BSC chains, wallet, CMC tier verified live. `make verify-environment` (live). |
 | Data layer | ✅ DONE | 15 tokens hourly OHLCV + CMC Fear&Greed; 0 gaps, source spot-check. `make verify-data` (live). |
 | Spec schema | ✅ DONE | Closed-grammar JSON schema; malformed specs rejected. `make verify-spec`. |
-| Skill (compiler) | ✅ DONE | Valid current skill package + agent metadata + compiler prompt + examples. `make verify-skill`. |
+| Skill (compiler) | ✅ DONE | Valid skill package + compiler prompt + examples. `make verify-skill`. |
 | Backtest engine | ✅ DONE | Deterministic + no-lookahead, proven on a committed fixture. `make verify-engine`. |
 | Flagship strategy | ✅ DONE | v1 (−10.4%) + v2 (−10.9%) vs BTC −44.7%. Embargo enforced. `make verify-strategy` (live). |
 | Falsification | ✅ DONE | Walk-forward, perturbation, shuffle canary (passed), deflated Sharpe, ablation. `make verify-falsification`. |

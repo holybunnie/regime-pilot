@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 7 verification: hash recipe + full local commit->reveal->verify on a mock chain.
+"""Hash recipe + full local commit->reveal->verify on a mock chain.
 
 Uses eth-tester (in-memory EVM) with the REAL compiled SignalAttestor bytecode, so the
 exact contract that will go to BSC mainnet is exercised here first — no real funds.

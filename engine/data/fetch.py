@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Phase 1 data layer (hybrid model).
+"""Historical data layer (hybrid model).
 
-Sources (all verified reachable in Phase 0):
+Sources:
   - Binance public klines  -> hourly OHLCV per universe token (backtest prices / PnL)
   - CoinMarketCap          -> Fear & Greed history (sentiment regime feature)
 

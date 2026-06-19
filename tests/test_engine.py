@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 4 verification: determinism + no-lookahead guard + feature shift.
+"""Verification: determinism + no-lookahead guard + feature shift.
 
 Run: python tests/test_engine.py   (exit 0 = pass)
 """
