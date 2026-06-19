@@ -3,8 +3,8 @@
 **Regime Pilot is a [CoinMarketCap](https://coinmarketcap.com/) (CMC) trading-strategy Skill paired
 with a system that produces an honest, tamper-evident measurement of any AI-authored strategy's
 edge.** An LLM-driven CMC Skill turns a plain-English trading idea into a machine-checkable strategy
-spec — drawing market state (price, 24h volume, Fear & Greed, global metrics) from CoinMarketCap's
-API via its MCP tools — and a deterministic system then measures that strategy three ways that are
+spec using the installed engine's executable feature set: price, 24h dollar-volume, BTC price, and
+Fear & Greed. A deterministic system then measures that strategy three ways that are
 each hard to fake: a deterministic, lookahead-free backtest, a falsification battery that actively
 tries to *disprove* the edge, and an on-chain commit-reveal record that proves the live forward test
 could not be curve-fit after the fact. We demonstrate it on our own strategy, which the system
@@ -22,7 +22,7 @@ working.**
 |---|---|
 | **Contract (BSC mainnet)** | [`0xB87481e29b0Dce9545b1B00b8526810679B521c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1) — source-verified on BscScan |
 | **One-command proof (offline)** | `make verify` — full PASS/FAIL scoreboard, no secrets, no network |
-| **Live checks (needs CMC key + data)** | `make verify-full` |
+| **Live checks (needs CMC key + both caches)** | `make verify-full` — strict aggregate, confirmed passing June 19, 2026 |
 
 ---
 
@@ -72,17 +72,15 @@ anyone.
 
 ## The CoinMarketCap Skill
 
-The front door is an installable **CoinMarketCap Strategy Skill** (`skill/SKILL.md`,
-`user-invocable`, MIT). It is the *only* LLM-driven component, and it does exactly one thing:
+The front door is an installable **CoinMarketCap Strategy Skill** (`skill/SKILL.md`, MIT). It is
+the *only* LLM-driven component, and it does exactly one thing:
 compile a user's natural-language trading intent into a strict JSON **strategy spec** validated
 against `spec/schema.json`. It never computes results.
 
-- **CoinMarketCap as the data substrate.** The Skill designs strategies against what CoinMarketCap
-  actually exposes on the operator's tier — per-asset and BTC price, 24h dollar-volume, the CMC
-  **Fear & Greed** index, and **global metrics** — read live through CoinMarketCap's MCP tools
-  (`get_crypto_quotes_latest`, `get_global_metrics_latest`, `get_crypto_metrics`). Features that
-  CMC's free tier does not serve (funding rate, open interest) are rejected by design rather than
-  faked; first-party CMC derivatives are an x402 upgrade path (see below).
+- **Executable data contract.** The Skill may emit only sources implemented by the deterministic
+  engine: per-asset price, BTC price, 24h dollar-volume, and CMC **Fear & Greed**. Global metrics,
+  market-cap history, funding rate, and open interest are rejected until both schema and engine
+  support them. This prevents a valid-looking spec from failing or changing meaning at runtime.
 - **Closed, auditable output.** The spec is a small predicate AST — features (`raw | sma |
   realized_vol | percentile_rank | breadth | delta`), boolean regime trees with hysteresis, a
   drawdown-budget sizing law, risk limits, and costs — never free-form code. `python
@@ -116,7 +114,7 @@ on-chain id (including two documented duplicate commits, ids 7 and 26).
 
 ## Results, honestly
 
-The backtest window was a severe bear market: **BTC −44.7%**. Read these in order.
+The frozen published backtest window was a severe bear market: **BTC −44.7%**. Read these in order.
 
 **1. Full-window result (the headline).**
 
@@ -156,10 +154,10 @@ parameter perturbation. The live, on-chain forward test is the real arbiter.
 - **Commit-reveal attestation.** A deterministic salt (`keccak(seed || timestamp)`) lets an
   ephemeral runner commit without persisting secrets, yet reproduce the exact salt at reveal.
   *Why:* the forward record cannot be back-dated or re-tuned.
-- **Hybrid data (documented).** Historical OHLCV for the backtest comes from a free public source;
-  the CMC Fear & Greed sentiment feature and the live/forward signal inputs are CMC-native. *Why:*
-  a real 12-month backtest at $0 within the operator's free CMC tier, which blocks historical
-  price endpoints. See *Honest limitations* and `DATA_SOURCES.md`.
+- **Versioned data sources.** Frozen v1/v2 use Binance hourly OHLCV plus CMC Fear & Greed because
+  the original Basic key could not access historical prices. CMC Pro hourly access is now verified,
+  and a separate 364-day shadow cache exists for all 15 assets. It is not silently substituted into
+  historical evidence or the live v2 record.
 - **Interim 15-token universe.** The engine is universe-agnostic; switching to the official
   149-token list is a one-line config change (`make verify-universe`). *Why:* the team's official
   list / first-party symbol resolution was not available during the build.
@@ -168,15 +166,14 @@ parameter perturbation. The live, on-chain forward test is the real arbiter.
 
 ## Honest limitations
 
-- **Versioned data transition.** Frozen v1/v2 backtest prices are sourced from a free public OHLCV source; CMC supplies the
-  sentiment feature, the live forward signal inputs, and the x402 derivatives proof. CMC Pro was
-  provisioned on June 19, 2026 and the separate first-party hourly adapter is built. It is not
-  silently substituted into the frozen evidence: CMC-only prices begin with an explicit post-reveal
-  version cutover — see `DATA_PLAN.md` and `DATA_SOURCES.md`.
+- **Versioned data transition.** Frozen v1/v2 prices and volume come from Binance; CMC supplies
+  Fear & Greed. CMC Pro hourly OHLCV was verified on June 19, 2026, and the separate 364-day
+  shadow cache contains 8,735 rows for each active asset. CMC-only operation requires a new
+  strategy/data version and explicit cutover; it does not rewrite v1/v2 evidence.
 - **Interim universe.** 15 liquid majors pending the brief's official 149-token list
   (`spec/universe_official_149.json` ships ready; flip with one config line).
-- **Ranking proxy.** Assets are ranked by 24h dollar-volume (circulating-supply / market-cap
-  history is not on the free tier).
+- **Ranking proxy.** Assets are ranked by 24h dollar-volume. Point-in-time market-cap membership is
+  not implemented, so market-cap ranking is rejected rather than approximated.
 - **Owner-only verification until reveal.** Payloads + salts are sealed until the reveal on
   June 20–21; until then judges verify the *hashes and timing* on-chain, not the cleartext signals.
 - **Zero trades executed.** This is a measurement system; it places no orders. All timestamps UTC.
@@ -191,10 +188,12 @@ make setup            # install pinned deps (Python 3.12)
 make verify           # OFFLINE scoreboard — no secrets, no network, no downloaded data
 ```
 `make verify` runs on a fresh clone using a committed synthetic fixture and a committed snapshot
-of the on-chain ledger. For the live checks:
+of the on-chain ledger. Live verification uses current local caches and temporary output, so it
+does not rewrite the frozen published reports. For the live checks:
 ```bash
-make verify-full      # live: needs a CMC API key + `make data` (downloads market data)
+make verify-full      # live: needs CMC key + `make data` + `make data-cmc`
 make verify-cmc-pro   # confirms the upgraded key serves hourly historical CMC OHLCV
+make data-cmc         # builds the separate ignored CMC shadow cache
 ```
 
 | Claim | Command |
@@ -203,7 +202,9 @@ make verify-cmc-pro   # confirms the upgraded key serves hourly historical CMC O
 | Backtest is **deterministic** (byte-identical reruns) | `make verify-engine` |
 | **No lookahead** (guard rejects future reads; features use data ≤ T−1) | `make verify-engine` |
 | Drawdown-budget sizing + de-risk ladder are correct | `make verify-engine` |
-| Cached price data has no gaps or duplicates and matches its source within tolerance | `make verify-data` |
+| Active v2 cache has no gaps or duplicates and matches Binance within tolerance | `make verify-data` |
+| CMC Pro serves normalized hourly historical OHLCV | `make verify-cmc-pro` |
+| CMC shadow cache is complete and v2 runs against it | `make verify-data-cmc` |
 | The Skill is installable + the LLM is quarantined | `make verify-skill` |
 | Falsification is complete and the shuffle canary passes | `make verify-falsification` |
 | Every on-chain commit is accounted for and reproduces | `make attest-verify` |
@@ -217,8 +218,8 @@ We executed **one real $0.01 USDC x402 payment on Base** (gasless EIP-3009, sett
 1.5000 → 1.4900 USDC, HTTP 200, data delivered; `evidence/x402_executed_payment.json`).
 `x402plan/DATA_PLAN.md` recomputes per-feed weekly cost, the minimal viable feed set, the
 net-of-cost out-of-sample return, and the break-even capital (~$400) below which free data wins.
-x402 also unlocks first-party CMC derivatives (funding / open interest) that the free REST tier
-blocks — material for a future strategy version.
+x402 demonstrates a paid first-party CMC data path. Funding/open-interest features remain outside
+the executable schema until their complete data and engine contracts are implemented.
 
 ## Reveal runbook & status
 
@@ -240,11 +241,11 @@ predates its outcome window — the report ends "N on-chain commits, all account
 |------|----------|
 | `skill/` | the installable CoinMarketCap Strategy Skill: `SKILL.md`, `compiler_prompt.md`, example intents |
 | `spec/` | `schema.json` + `regime_pilot.spec.json` (v1) + `regime_pilot_v2.spec.json` (v2) + `universe.json` + `universe_official_149.json` |
-| `engine/` | deterministic backtester: `backtest.py`, `indicators.py`, `sizing.py`, `data/` fetch+cache, `datasource.py` |
+| `engine/` | deterministic backtester plus active hybrid fetcher and inactive CMC Pro shadow adapter |
 | `falsify/` | falsification suite + reports + `deflated_sharpe.py` |
 | `attest/` | `contracts/SignalAttestor.sol`, deploy/commit/reveal/verify, `commits_public.csv`, `onchain_ledger.json`, `RECONCILIATION.md` |
 | `x402plan/` | x402 client (`pay_x402.py`), `prices.json`, `DATA_PLAN.md` |
 | `cli/` | claim-based verification gates |
 | `tests/` | unit tests + `fixtures/` (synthetic offline dataset) |
-| `evidence/` | raw saved API responses + on-chain/payment proofs + frozen-set baseline |
+| `evidence/` | on-chain/payment proofs and frozen-set compatibility baselines |
 | `DATA_SOURCES.md` / `DATA_PLAN.md` / `DECISIONS.md` / `ASSUMPTIONS.md` / `STATUS.md` | plain-English logs |

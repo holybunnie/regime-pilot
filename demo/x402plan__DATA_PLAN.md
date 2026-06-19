@@ -2,9 +2,9 @@
 
 ## Why this exists
 We paid one **real** x402 micro-payment so the data cost here is *measured, not estimated*, and every
-figure below is reported **net of that real cost**. The point is **automated data payment**: a
-autonomous runner can buy exactly the feeds it needs over x402 with **no API key**, and the same rail
-**unlocks first-party CMC derivatives** (funding / open interest) the free REST tier blocks. One
+figure below is reported **net of that real cost**. The point is **automated data payment**: an
+autonomous runner can buy exactly the feeds it needs over x402 with **no API key**, including a
+first-party derivatives path for future versions. One
 settled payment is **proof-of-capability, not a full production pipeline** — everything here recomputes
 deterministically from the saved price and the ablation via `make verify-x402`.
 
@@ -26,22 +26,22 @@ forfeited when that feed's features are removed and the strategy is re-run with 
 fixed (the worst case across the feed's features). It measures the feed's importance, not its price.
 
 - **Minimal viable feed set:** price, fear_greed.
-- **Sourcing (see `DATA_SOURCES.md`):** price = Binance klines (backtest) + CMC free tier (live);
-  Fear & Greed = CMC free REST; x402 proof + CMC derivatives = CoinMarketCap.
-- Fear & Greed is **not** sold via x402; it stays free on the CMC v3 REST endpoint.
-- x402 additionally **unlocks** get_global_crypto_derivatives_metrics (funding/OI) — blocked on free REST tier — useful for a future strategy version.
+- **Sourcing (see `DATA_SOURCES.md`):** frozen v2 = Binance OHLCV + authenticated CMC Fear & Greed;
+  CMC Pro OHLCV is a separate shadow source; x402 is the paid proof path.
+- Fear & Greed is **not** sold via x402; it stays on the CMC v3 REST endpoint.
+- x402 additionally provides a paid first-party derivatives data path for future versions.
 
 ## Cost to run live
-- **Today: $0.00/week.** The strategy runs entirely on free sources
-  (Binance klines + CMC free tier), so there is no live data bill.
+- **Frozen v2 metered cost: $0.00/week.** Binance is public and no
+  per-request CMC charge is assigned here; any API subscription is an account-level plan cost.
 - **If priced via x402 instead:** $1.68/week
   (≈ $7.20/month), dominated by the hourly price feed.
 
 ## Performance net of data cost
 - Flagship v2 out-of-sample (embargo, ~30d) gross return: **+1.79%**.
-- Net of **free** sources used today: **+1.79%** (cost $0).
+- Net of attributed per-request source cost: **+1.79%**.
 - The x402 cost is **fixed** ($/month), so it only erodes a percentage return below a capital
   threshold. **Break-even capital ≈ $402** — above that, the
-  monthly x402 bill is smaller than the OOS return; below it, use the free sources (which we do).
+  monthly x402 bill is smaller than the OOS return.
 
 *Backtested/out-of-sample performance does not predict live results. This project executes zero trades.*

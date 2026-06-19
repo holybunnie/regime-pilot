@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Item 11: the CMC Pro data-source abstraction is wired and selects correctly.
+"""Verify CMC Pro source selection, identifiers, and normalization.
 
 Confirms (with MOCKED env — no real key needed):
   - with no override, the frozen v2 source remains binance
@@ -27,7 +27,7 @@ def main():
             fails.append(msg)
 
     check(ds.select_price_source({}) == "binance",
-          "default (no key) -> binance (current free source)")
+          "default (no key) -> binance (frozen v2 source)")
     check(ds.select_price_source({"CMC_API_KEY": "mock-key-123"}) == "binance",
           "CMC key presence alone does not alter frozen v2")
     check(ds.select_price_source({"CMC_API_KEY": "mock-key-123",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Item 15: DATA_SOURCES.md matches the real call sites in the code.
+"""Verify DATA_SOURCES.md against the real external call sites.
 
 Extracts every external host actually called from the fetch/client code and asserts:
   - every such host is documented in DATA_SOURCES.md (no undocumented call site)

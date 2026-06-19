@@ -17,7 +17,7 @@ Data source: live BSC RPC when reachable, else the committed snapshot
 attest/onchain_ledger.json — so the check runs on a fresh clone with no secrets and no
 network (make verify, offline). Pass `--offline` to force the snapshot.
 
-Run: python attest/verify.py [--offline]   (or: make attest-verify)
+Run: python attest/verify.py [--offline] [--no-write]   (or: make attest-verify)
 """
 import csv
 import json
@@ -47,8 +47,9 @@ def build_ledger_live():
     c = w3.eth.contract(address=w3.to_checksum_address(d["address"]), abi=d["abi"])
     csv_blocks = {}
     if PUBLIC.exists():
-        csv_blocks = {int(r["commit_id"]): r.get("block")
-                      for r in csv.DictReader(PUBLIC.open())}
+        with PUBLIC.open() as handle:
+            csv_blocks = {int(r["commit_id"]): r.get("block")
+                          for r in csv.DictReader(handle)}
     n = c.functions.commitCount().call()
     ledger = []
     for i in range(n):
@@ -71,14 +72,17 @@ def load_ledger(offline):
     return json.loads(SNAPSHOT.read_text()), f"committed snapshot {SNAPSHOT.name}"
 
 
-def main():
-    offline = "--offline" in sys.argv
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else argv
+    offline = "--offline" in args
+    write_report = "--no-write" not in args
     ledger, source = load_ledger(offline)
 
     # primary forward commits (one row per decision hour)
     csv_rows = {}
     if PUBLIC.exists():
-        csv_rows = {int(r["commit_id"]): r for r in csv.DictReader(PUBLIC.open())}
+        with PUBLIC.open() as handle:
+            csv_rows = {int(r["commit_id"]): r for r in csv.DictReader(handle)}
     reveals = json.loads(REVEALS.read_text()) if REVEALS.exists() else {}
 
     # optional independent hash reproduction (needs reveals + market data; skipped offline)
@@ -165,12 +169,14 @@ def main():
               + (f"all accounted for{pending_note}." if accounted
                  else f"{len(bad)} UNACCOUNTED/MISMATCH — FAIL.")
               + "**"]
-    OUT.write_text("\n".join(lines) + "\n")
+    if write_report:
+        OUT.write_text("\n".join(lines) + "\n")
 
     print(f"Chain-complete verify via {source}")
     print("  " + " | ".join(f"{k}:{counts[k]}" for k in sorted(counts)))
     if accounted:
-        print(f"PASS: {len(results)} on-chain commits, all accounted for{pending_note} -> {OUT}")
+        destination = f" -> {OUT}" if write_report else ""
+        print(f"PASS: {len(results)} on-chain commits, all accounted for{pending_note}{destination}")
         return 0
     print(f"FAIL: {len(bad)} unaccounted/mismatch ids: {[r['id'] for r in bad]}")
     return 1

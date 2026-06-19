@@ -9,7 +9,6 @@
 Run: python cli/verify_attestation.py   (or: make verify-attestation)
 """
 import csv
-import runpy
 import sys
 from pathlib import Path
 
@@ -41,12 +40,16 @@ def main():
 
     # 3) commits exist
     pub = REPO / "attest" / "commits_public.csv"
-    n = len(list(csv.DictReader(pub.open()))) if pub.exists() else 0
+    if pub.exists():
+        with pub.open() as handle:
+            n = len(list(csv.DictReader(handle)))
+    else:
+        n = 0
     check(n >= 1, f"hourly commits recorded ({n})")
 
     # 4) every commit reproducible + matches chain
     import attest.verify as v
-    check(v.main() == 0, "all on-chain hashes reproduced from public data")
+    check(v.main(["--no-write"]) == 0, "all on-chain hashes reproduced from public data")
 
     print()
     if fails:

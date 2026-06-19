@@ -25,9 +25,9 @@ FEATURE_FEED = {
 # Feed request cadence (requests per week) and whether x402 can serve it.
 FEEDS = {
     "price":      {"cadence_per_week": HOURS_PER_WEEK, "x402_available": True,
-                   "free_source": "Binance public klines (backtest) + CMC free tier (live)"},
+                   "free_source": "Frozen v2: Binance public OHLCV"},
     "fear_greed": {"cadence_per_week": 7, "x402_available": False,
-                   "free_source": "CMC /v3/fear-and-greed (free on all tiers; not on x402)"},
+                   "free_source": "Authenticated CMC /v3/fear-and-greed"},
 }
 
 
@@ -62,7 +62,7 @@ def main():
             "verdict": "KEEP" if keep else "DROP",
         })
 
-    # net-of-cost: live cost is $0 (free sources). If priced via x402, monthly cost vs OOS return.
+    # Net-of-cost: no metered per-request charge is attributed to frozen v2.
     monthly_x402 = round(weekly_total_x402 / 7 * DAYS_PER_MONTH, 2)
     breakeven_capital = round(monthly_x402 / full_oos, 2) if full_oos > 0 else None
 
@@ -72,13 +72,13 @@ def main():
         "feeds": feeds_out,
         "minimal_viable_feed_set": [f["feed"] for f in feeds_out if f["verdict"] == "KEEP"],
         "live_cost_now_usd_per_week": 0.0,
-        "live_cost_now_note": "Strategy runs on FREE sources (Binance + CMC free tier); $0/week.",
+        "live_cost_now_note": "Frozen v2 has no metered per-request market-data charge.",
         "x402_cost_if_used_usd_per_week": round(weekly_total_x402, 2),
         "x402_cost_if_used_usd_per_month": monthly_x402,
         "flagship_v2_oos_return_gross": full_oos,
         "flagship_v2_oos_return_net_of_free_sources": full_oos,
         "x402_breakeven_capital_usd": breakeven_capital,
-        "x402_unlocks_beyond_free": "get_global_crypto_derivatives_metrics (funding/OI) — blocked on free REST tier",
+        "x402_unlocks_beyond_free": "a paid first-party derivatives data path for future versions",
     }
     (REPO / "x402plan" / "DATA_PLAN.json").write_text(json.dumps(plan, indent=2, sort_keys=True))
     _md(plan)
@@ -96,9 +96,9 @@ def _md(p):
 
 ## Why this exists
 We paid one **real** x402 micro-payment so the data cost here is *measured, not estimated*, and every
-figure below is reported **net of that real cost**. The point is **automated data payment**: a
-autonomous runner can buy exactly the feeds it needs over x402 with **no API key**, and the same rail
-**unlocks first-party CMC derivatives** (funding / open interest) the free REST tier blocks. One
+figure below is reported **net of that real cost**. The point is **automated data payment**: an
+autonomous runner can buy exactly the feeds it needs over x402 with **no API key**, including a
+first-party derivatives path for future versions. One
 settled payment is **proof-of-capability, not a full production pipeline** — everything here recomputes
 deterministically from the saved price and the ablation via `make verify-x402`.
 
@@ -119,23 +119,23 @@ forfeited when that feed's features are removed and the strategy is re-run with 
 fixed (the worst case across the feed's features). It measures the feed's importance, not its price.
 
 - **Minimal viable feed set:** {", ".join(p["minimal_viable_feed_set"])}.
-- **Sourcing (see `DATA_SOURCES.md`):** price = Binance klines (backtest) + CMC free tier (live);
-  Fear & Greed = CMC free REST; x402 proof + CMC derivatives = CoinMarketCap.
-- Fear & Greed is **not** sold via x402; it stays free on the CMC v3 REST endpoint.
-- x402 additionally **unlocks** {p["x402_unlocks_beyond_free"]} — useful for a future strategy version.
+- **Sourcing (see `DATA_SOURCES.md`):** frozen v2 = Binance OHLCV + authenticated CMC Fear & Greed;
+  CMC Pro OHLCV is a separate shadow source; x402 is the paid proof path.
+- Fear & Greed is **not** sold via x402; it stays on the CMC v3 REST endpoint.
+- x402 additionally provides {p["x402_unlocks_beyond_free"]}.
 
 ## Cost to run live
-- **Today: ${p["live_cost_now_usd_per_week"]:.2f}/week.** The strategy runs entirely on free sources
-  (Binance klines + CMC free tier), so there is no live data bill.
+- **Frozen v2 metered cost: ${p["live_cost_now_usd_per_week"]:.2f}/week.** Binance is public and no
+  per-request CMC charge is assigned here; any API subscription is an account-level plan cost.
 - **If priced via x402 instead:** ${p["x402_cost_if_used_usd_per_week"]:.2f}/week
   (≈ ${p["x402_cost_if_used_usd_per_month"]:.2f}/month), dominated by the hourly price feed.
 
 ## Performance net of data cost
 - Flagship v2 out-of-sample (embargo, ~30d) gross return: **{p["flagship_v2_oos_return_gross"]:+.2%}**.
-- Net of **free** sources used today: **{p["flagship_v2_oos_return_net_of_free_sources"]:+.2%}** (cost $0).
+- Net of attributed per-request source cost: **{p["flagship_v2_oos_return_net_of_free_sources"]:+.2%}**.
 - The x402 cost is **fixed** ($/month), so it only erodes a percentage return below a capital
   threshold. **Break-even capital ≈ ${p["x402_breakeven_capital_usd"]:,.0f}** — above that, the
-  monthly x402 bill is smaller than the OOS return; below it, use the free sources (which we do).
+  monthly x402 bill is smaller than the OOS return.
 
 *Backtested/out-of-sample performance does not predict live results. This project executes zero trades.*
 """

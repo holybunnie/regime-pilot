@@ -2,7 +2,7 @@
 """Optional data-source abstraction (Item 11): choose the price/history source by config.
 
 The frozen v2 record uses Binance public klines for historical OHLCV because the original CMC
-Basic tier blocked historical price endpoints. The operator now has Pro access and the separate
+plan blocked historical price endpoints. The operator now has Pro access and the separate
 CMC adapter can provide first-party prices/history without changing strategy logic. The engine
 consumes a normalized panel either way.
 

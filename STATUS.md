@@ -4,28 +4,32 @@
 **Repo:** https://github.com/holybunnie/regime-pilot · **Contract:** [`0xB874…21c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
 
 ## Bottom line
-**All components are built, tested, committed, and live on `main`.** `make verify` (offline) passes
-top to bottom on a fresh clone with no secrets and no downloaded data; `make verify-full` is
-**previously confirmed passing live** (CMC Basic key + `make data`) — data integrity, skill, strategy, and the
-full chain-complete attestation all green. The on-chain attestation runs itself every hour (now with
+**The frozen v2 system is built, tested, committed, and live on `main`.** `make verify` passes on a
+fresh clone with no secrets or downloaded data. CMC Pro hourly access and the separate shadow cache
+are verified, while the active v2 data path remains Binance OHLCV + CMC Fear & Greed. The on-chain
+attestation runs itself every hour (now with
 the duplicate-commit guard live), and the **contract source is verified on BscScan** (exact bytecode
 + ABI match). The only remaining live event is the **reveal on June 20–21** — scripted, and already
 rehearsed end-to-end against a real EVM (`attest/REVEAL_DRYRUN.md`).
 
-**New but deliberately inactive:** the operator reports CMC **Pro** access is provisioned. The real
-hourly CMC OHLCV adapter and shadow cache path are built, but the frozen v2 committer remains on its
-original source through reveal. Run `make verify-cmc-pro` in the secret-bearing environment, then
-perform a documented v3 cutover after reveal. The official **149-token** universe remains pending.
+**Deliberately inactive:** the CMC Pro adapter and shadow cache are not selected by the frozen v2
+committer. A future CMC-only release requires a new strategy/data version, a defined cutover hour,
+and refreshed reports. The official **149-token** universe remains pending.
 
 **CMC Pro verified 2026-06-19:** hourly historical access passes; a separate 364-day, 15-asset
 shadow cache was built successfully and the current v2 strategy completed a CMC-backed shadow
 backtest. This does not activate CMC for the cron.
 
+**Strict live verification confirmed 2026-06-19:** `make verify-full` passed environment, CMC Pro,
+CMC shadow cache/backtest, active v2 data integrity, skill, strategy, and chain-complete attestation.
+The verification commands now use temporary/no-write output and leave tracked reports unchanged.
+
 ## Scoreboard
 | Component | State | One-line summary |
 |-------|-------|------------------|
-| Environment / credentials | ✅ DONE | Machine, APIs, BSC chains, wallet, CMC tier verified live. `make verify-environment` (live). |
-| Data layer | ✅ DONE | 15 tokens hourly OHLCV + CMC Fear&Greed; 0 gaps, source spot-check. `make verify-data` (live). |
+| Environment / credentials | ✅ DONE | CMC Pro and required network dependencies verified. `make verify-environment`, `make verify-cmc-pro`. |
+| Active v2 data layer | ✅ LIVE | 15-token Binance hourly OHLCV + CMC Fear & Greed. `make verify-data`. |
+| CMC Pro shadow data | ✅ READY | 364 days, 8,735 hourly rows per active asset; `make verify-data-cmc`. |
 | Spec schema | ✅ DONE | Closed-grammar JSON schema; malformed specs rejected. `make verify-spec`. |
 | Skill (compiler) | ✅ DONE | Valid skill package + compiler prompt + examples. `make verify-skill`. |
 | Backtest engine | ✅ DONE | Deterministic + no-lookahead, proven on a committed fixture. `make verify-engine`. |
@@ -72,7 +76,7 @@ forward test*, which is accruing now and will be the real arbiter.
 ```bash
 cd regime-pilot
 make verify            # OFFLINE PASS/FAIL scoreboard (no secrets, no network)
-make verify-full       # live checks (needs CMC key + make data)
+make verify-full       # live checks (needs CMC key + make data + make data-cmc)
 make attest-status     # one-line attestation liveness
 make demo              # regenerate charts + report bundle offline
 ```

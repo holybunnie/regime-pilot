@@ -2,7 +2,7 @@
 """Strategy verification: the flagship strategy.
 
   - flagship spec validates (schema + semantic)
-  - full backtest runs end-to-end and writes summary + report
+  - full backtest runs end-to-end and writes summary + report to a temporary directory
   - EMBARGO untouched: a fitting run capped at embargo_start never reads data at or
     after the embargo boundary (proven by the run's reported window_end)
   - no $1 dust: normalized equity never collapses toward zero
@@ -11,6 +11,7 @@ Run: python cli/verify_strategy.py   (or: make verify-strategy)
 """
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -40,10 +41,10 @@ def main():
 
     # full run
     result = bt.run(spec)
-    bt.write_outputs(result, REPO / "engine" / "reports" / "regime_pilot")
+    with tempfile.TemporaryDirectory(prefix="regime_pilot_verify_") as output:
+        bt.write_outputs(result, output)
+        check((Path(output) / "report.md").exists(), "summary report generated")
     s = result["summary"]
-    check((REPO / "engine" / "reports" / "regime_pilot" / "report.md").exists(),
-          "summary report generated")
     print(f"         full window {s['window_start'][:10]}..{s['window_end'][:10]}, "
           f"return {s['total_return']:+.2%} vs BTC {s['benchmark_btc_return']:+.2%} "
           f"(excess {s['excess_return_vs_btc']:+.2%}), maxDD {s['max_drawdown']:.2%}")

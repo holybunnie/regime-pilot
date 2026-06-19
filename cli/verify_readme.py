@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Items 9 & 10: the README is self-contained, system-first, and free of the sponsor own-goal.
+"""Verify that README is self-contained, accurate, and system-first.
 
 Asserts every required judge-facing section is present, the system-first thesis leads, and the
 old "matches live Binance" headline claim is gone (reworded as a generic source-tolerance claim).
@@ -30,7 +30,13 @@ REQUIRED = [
     ("x402 plan", "all", ["## x402 data-cost plan"]),
     ("reveal runbook", "all", ["## reveal runbook", "make attest-reveal"]),
 ]
-FORBIDDEN = ["matches live binance"]
+FORBIDDEN = [
+    "matches live binance",
+    "user-invocable",
+    "free cmc tier",
+    "cmc free tier",
+    "waiting on the team",
+]
 
 
 def main():
