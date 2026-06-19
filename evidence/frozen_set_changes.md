@@ -59,9 +59,24 @@ adapter writes a separate inactive cache and is not selected by the hourly workf
 Only the module docstring changed. Fetch endpoints, parameters, cache behavior, credentials,
 timestamps, and all executable statements are byte-identical.
 
-## 4. All other 10 frozen-set files — byte-identical
+## 4. Hourly workflow — verification snapshot auto-refresh
 
-`.github/workflows/attest.yml` was **not** changed (Option 1 keeps `cancel-in-progress: false`).
+**File:** `.github/workflows/attest.yml`
+
+**Approved hash:** `360a89e9c11afadd78720fc1bd77caea2cfb653c1e6e95694d05cd600ac2a202`
+
+**Change:** After the hourly transaction attempt, the workflow now reads the contract's
+`commitCount()`, refreshes `attest/onchain_ledger.json`, regenerates `attest/VERIFICATION.md`, and
+copies the report into the demo bundle before pushing the public record.
+
+**Why signal meaning is unchanged:** This is a read-only post-commit reporting step. It does not
+change the strategy spec, signal computation, hash, salt, transaction timing, or contract call.
+Failure to refresh the snapshot does not prevent the CSV/heartbeat push.
+
+## 5. All other frozen-set files — byte-identical
+
+The workflow still keeps `cancel-in-progress: false`; the existing single-flight and on-chain
+duplicate guards remain unchanged.
 Every other frozen file matches `frozen_set_baseline.txt` exactly. Verify:
 
     sha256sum -c evidence/frozen_set_baseline.txt   # 10 OK; three approved changes are logged above

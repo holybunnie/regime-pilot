@@ -51,6 +51,8 @@ def gate_frozen():
         h, _, f = line.partition("  ")
         baseline[f.strip()] = h.strip()
     approved = {
+        ".github/workflows/attest.yml":
+            "360a89e9c11afadd78720fc1bd77caea2cfb653c1e6e95694d05cd600ac2a202",
         "attest/commit_hour.py":
             "797d7fea4e4559417592b674dc9b31affc90ec7a9c4e37d1f850e7fc01f854f3",
         "engine/backtest.py":

@@ -98,11 +98,14 @@ of it on-chain. The signal is computed only from data **strictly before** the de
 (≤ T−1h), and the commit lands **within the first minutes of hour T, before essentially all of
 the T→T+1h outcome is realized** — so it is a genuine forward prediction, not a hindsight pick.
 
-The production record is disclosed as observed, not described as perfect: through
+At the submission checkpoint, the production record was disclosed as observed, not described as
+perfect: through
 **2026-06-19T16:00Z** it contains **150 primary predictions across 154 decision hours (97.4%
 coverage)**, four missing hours, and two byte-identical duplicate transactions (ids 7 and 26).
 The verifier starts from the contract's own commit count, so duplicates or unexplained ids cannot
-be hidden by omitting rows from the repository ledger.
+be hidden by omitting rows from the repository ledger. The hourly workflow now refreshes
+`attest/onchain_ledger.json` and `attest/VERIFICATION.md` after each run; BscScan can briefly be one
+transaction ahead while that workflow is still finishing.
 
 ```
 signal      = {spec_version, spec_hash, universe_hash, timestamp_utc, regime, target_weights}

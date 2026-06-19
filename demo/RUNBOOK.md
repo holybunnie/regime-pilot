@@ -41,10 +41,11 @@ product working. A verifier that only says yes when its creators want yes is wor
 Show the BscScan contract, one old transaction, then `attest__VERIFICATION.md`.
 
 “Each decision-hour signal is reduced to a hash and committed to BNB Smart Chain before that
-hour’s outcome. The block timestamp is the chain’s clock, not ours. The current public ledger has
-150 primary predictions; two duplicate transactions are disclosed as ids 7 and 26,
-and 4 decision hours are missing, for 97.4% coverage through June 19 at 16:00 UTC.
-Nothing is silently dropped: the verifier starts from the contract’s own commit count.”
+hour’s outcome. The block timestamp is the chain’s clock, not ours. This report displays the latest
+checked-in count and explicitly labels the two duplicate transactions, ids 7 and 26. It also
+discloses missing decision hours rather than claiming perfect coverage. Nothing is silently
+dropped: the verifier starts from the contract’s own commit count, and the hourly workflow
+refreshes this report automatically.”
 
 “Before reveal, this proves existence, ordering, timing, and complete accounting while payloads
 remain sealed. After reveal, `make attest-verify` also recomputes each payload and salt against its

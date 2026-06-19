@@ -9,11 +9,9 @@ Produces in demo/:
 
 Run: python demo/build_demo.py   (or: make demo)
 """
-import csv
 import json
 import shutil
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import matplotlib
@@ -75,16 +73,6 @@ def main():
         if p.exists():
             shutil.copy(p, DEMO / (src.replace("/", "__")))
 
-    with (REPO / "attest" / "commits_public.csv").open() as handle:
-        public_rows = list(csv.DictReader(handle))
-    primary_count = len(public_rows)
-    first_hour = datetime.fromisoformat(public_rows[0]["timestamp_utc"].replace("Z", "+00:00"))
-    last_hour = datetime.fromisoformat(public_rows[-1]["timestamp_utc"].replace("Z", "+00:00"))
-    expected_hours = int((last_hour - first_hour).total_seconds() / 3600) + 1
-    missing_hours = expected_hours - primary_count
-    coverage = primary_count / expected_hours
-    coverage_end = last_hour.strftime("%B %-d at %H:%M UTC")
-
     # --- runbook ---
     (DEMO / "RUNBOOK.md").write_text(f"""# Demo Runbook
 
@@ -129,10 +117,11 @@ product working. A verifier that only says yes when its creators want yes is wor
 Show the BscScan contract, one old transaction, then `attest__VERIFICATION.md`.
 
 “Each decision-hour signal is reduced to a hash and committed to BNB Smart Chain before that
-hour’s outcome. The block timestamp is the chain’s clock, not ours. The current public ledger has
-{primary_count} primary predictions; two duplicate transactions are disclosed as ids 7 and 26,
-and {missing_hours} decision hours are missing, for {coverage:.1%} coverage through {coverage_end}.
-Nothing is silently dropped: the verifier starts from the contract’s own commit count.”
+hour’s outcome. The block timestamp is the chain’s clock, not ours. This report displays the latest
+checked-in count and explicitly labels the two duplicate transactions, ids 7 and 26. It also
+discloses missing decision hours rather than claiming perfect coverage. Nothing is silently
+dropped: the verifier starts from the contract’s own commit count, and the hourly workflow
+refreshes this report automatically.”
 
 “Before reveal, this proves existence, ordering, timing, and complete accounting while payloads
 remain sealed. After reveal, `make attest-verify` also recomputes each payload and salt against its

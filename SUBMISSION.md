@@ -72,7 +72,7 @@ verdict is intentional evidence that the verifier does not flatter its creators.
 
 - Contract: [`0xB87481e29b0Dce9545b1B00b8526810679B521c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
 - Network: BNB Smart Chain mainnet
-- Public record through **2026-06-19T16:00Z**: **150 primary predictions across 154 decision
+- Submission checkpoint through **2026-06-19T16:00Z**: **150 primary predictions across 154 decision
   hours (97.4% coverage)**
 - Disclosures: four missing decision hours and two byte-identical duplicate transactions, ids 7
   and 26
@@ -80,7 +80,9 @@ verdict is intentional evidence that the verifier does not flatter its creators.
 
 Before reveal, the chain proves hash existence, ordering, timestamp, and complete accounting while
 the payloads remain sealed. After reveal, `make attest-verify` recomputes each published payload and
-salt and compares it with the on-chain hash.
+salt and compares it with the on-chain hash. The hourly workflow automatically refreshes the
+checked-in ledger snapshot and `attest/VERIFICATION.md`; the live BscScan count may lead the
+repository by one transaction while a workflow run completes.
 
 ## CoinMarketCap and x402
 

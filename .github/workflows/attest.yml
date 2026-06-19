@@ -1,6 +1,8 @@
 name: hourly-attestation
 
-# Commits one signal hash to BSC mainnet every hour, then pushes the public record.
+# Commits one signal hash to BSC mainnet every hour, then pushes the public record and
+# a chain-complete verification snapshot. The snapshot makes the checked-in
+# attest/VERIFICATION.md follow the live contract without manual edits.
 # Runs at HH:05 so the prior hour's data is settled and the commit lands within the
 # signal's effective hour (a true forward prediction). Manual run also allowed.
 on:
@@ -41,8 +43,18 @@ jobs:
       - name: Push public attestation record
         if: always()        # push even if the commit step logged a MISSED slot
         run: |
+          export PYTHONPATH=.
+          if python attest/snapshot_ledger.py && python attest/verify.py --offline; then
+            cp attest/VERIFICATION.md demo/attest__VERIFICATION.md
+          fi
           git config user.name "holybunnie"
           git config user.email "melindacharles82@gmail.com"
-          git add attest/commits_public.csv attest/heartbeat.txt attest/missed.log 2>/dev/null || true
+          git add \
+            attest/commits_public.csv \
+            attest/heartbeat.txt \
+            attest/missed.log \
+            attest/onchain_ledger.json \
+            attest/VERIFICATION.md \
+            demo/attest__VERIFICATION.md 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Record hourly attestation $(date -u +%Y-%m-%dT%H:%MZ)"
           git push || true
