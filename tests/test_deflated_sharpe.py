@@ -59,5 +59,9 @@ def main():
     return 0
 
 
+def test_deflated_sharpe_contract():
+    assert main() == 0
+
+
 if __name__ == "__main__":
     sys.exit(main())

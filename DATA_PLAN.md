@@ -1,4 +1,4 @@
-# DATA_PLAN — current data, and the optional CMC Pro upgrade (Item 11)
+# DATA_PLAN — frozen v2 data and the versioned CMC Pro cutover
 
 ## What we run on today (and why)
 - **Prices / OHLCV:** free Binance public klines (`data-api.binance.vision`). The operator's CMC
@@ -9,23 +9,26 @@
 - **Live forward signal:** computed hourly and notarized on BSC (commit-reveal).
 - Full code-verified source/credential map: see `DATA_SOURCES.md`.
 
-## CMC Pro API — prepared, not blocking
-CMC Pro API access was **not available during the build**. The system ships and runs on the
-documented hybrid data above. Pro is a clean, optional upgrade:
+## CMC Pro API — provisioned, adapter built, not silently activated
+The operator reported the API key upgraded to Pro on **2026-06-19**. The repository now includes a
+real hourly historical-OHLCV adapter at `engine/data/cmc_pro.py`, stable numeric CMC IDs in
+`spec/cmc_ids.json`, source-specific caching under `engine/data/cache_cmc/`, and a live capability
+probe (`make verify-cmc-pro`).
 
-- A documented data-source abstraction (`engine/datasource.py`) selects the price/history source
-  by config: default **Binance**; set `CMC_PRO_API_KEY` (or `REGIME_PILOT_PRICE_SOURCE=cmc_pro`)
-  to source prices **first-party from CoinMarketCap** — with **no change to engine logic**.
-  Verified by `make verify-datasource` (mocks the key; no real key required).
+- The same `CMC_API_KEY` is used; no duplicate `CMC_PRO_API_KEY` secret is required.
+- Key presence does **not** switch sources. `REGIME_PILOT_PRICE_SOURCE=cmc_pro` is required.
+- CMC data is normalized separately, including correct treatment of CMC's USD quote-volume field.
+- `make verify-cmc-pro` confirmed hourly access on 2026-06-19. The plan exposes 12 months of
+  historical data; the shadow cache uses a 364-day window (8,735 hourly rows for each of 15 assets)
+  and passes the engine's CMC-backed v2 shadow run.
 - The x402 path already proves first-party CMC **derivatives** (funding / open interest) are
   reachable and payable ($0.01 USDC on Base).
 
 ## What Pro changes — and what it does not
-Wiring Pro improves data **coherence** (first-party CMC prices, longer history, derivatives). It is
-**not expected to manufacture an edge** — the falsification result (no statistically significant
-edge over the window) stands either way. If Pro arrives, CMC-sourced results will be published as a
-clearly-labeled **SUPPLEMENTARY** backtest, never as a replacement of the **attested forward
-record**, and never by touching the frozen committer before reveal day.
+CMC improves data **coherence**; it does not rewrite the existing evidence. The Binance-backed v2
+record continues through reveal. After reveal, CMC becomes a clearly versioned v3 source cutover,
+with a new backtest/falsification report and source identifier. Old v1/v2 reports and commits remain
+reproducible from their original source.
 
 See `x402plan/DATA_PLAN.md` for the per-feed cost model, minimal viable feed set, net-of-cost
 out-of-sample return, and break-even capital.

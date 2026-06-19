@@ -33,8 +33,8 @@
       "properties": {
         "source": {"type": "string", "enum": ["eligible_list", "explicit"], "description": "eligible_list = the hackathon BEP-20 universe; explicit = use the 'symbols' list verbatim."},
         "symbols": {"type": "array", "items": {"type": "string"}, "description": "Used when source=explicit, or as an allow-filter on eligible_list."},
-        "max_market_cap_rank": {"type": "integer", "minimum": 1, "description": "Keep only assets with CMC rank <= this."},
-        "min_volume_24h_usd": {"type": "number", "minimum": 0},
+        "max_market_cap_rank": {"type": "integer", "minimum": 1, "description": "Documented admission criterion for the prebuilt eligible list; not a dynamic backtest filter without point-in-time membership data."},
+        "min_volume_24h_usd": {"type": "number", "minimum": 0, "description": "Documented admission criterion for the prebuilt eligible list; runtime selection ranks by observed 24h dollar volume."},
         "exclude_symbols": {"type": "array", "items": {"type": "string"}}
       }
     },
@@ -51,8 +51,8 @@
           "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "Unique snake_case id; referenced by predicates."},
           "source": {
             "type": "string",
-            "enum": ["price", "volume_24h", "market_cap", "btc_price", "global_market_cap", "global_volume", "fear_greed", "funding_rate", "open_interest"],
-            "description": "Raw data field. Availability depends on the data tier; the engine errors if a referenced source was not fetched (no silent zero-fill)."
+            "enum": ["price", "volume_24h", "btc_price", "fear_greed"],
+            "description": "Raw data field implemented by the installed deterministic engine. Unsupported sources must be added to both the engine and schema before a skill may emit them."
           },
           "asset": {"type": "string", "description": "Optional symbol this feature is computed for (e.g. BTC). Omit for market-wide sources or per-universe breadth."},
           "transform": {
@@ -106,15 +106,12 @@
             "additionalProperties": false,
             "description": "How assets are chosen from the universe for hold_assets.",
             "properties": {
-              "rank_by": {"type": "string", "enum": ["market_cap", "volume_24h", "feature"]},
-              "feature": {"type": "string", "description": "Required when rank_by=feature."},
+              "rank_by": {"type": "string", "enum": ["volume_24h"]},
               "top_n": {"type": "integer", "minimum": 1}
             }
           },
           "assets": {"type": "array", "items": {"type": "string"}, "description": "Explicit asset list for staged_reentry / mean_revert."},
-          "entry": {"$ref": "#/$defs/predicate"},
-          "exit": {"$ref": "#/$defs/predicate"},
-          "min_hold_hours": {"type": "integer", "minimum": 0},
+          "min_hold_hours": {"type": "integer", "minimum": 0, "description": "Legacy documentation field retained for frozen specs. Executable switching hysteresis is regimes[].persistence_hours."},
           "reentry_feature": {"type": "string", "description": "For staged_reentry: feature whose percentile recovery scales exposure in."}
         }
       }
@@ -167,7 +164,7 @@
         "fee_bps": {"type": "number", "minimum": 0, "description": "Per-side fee in basis points."},
         "slippage_bps_floor": {"type": "number", "minimum": 0, "description": "Fixed slippage floor per fill, in bps."},
         "slippage_size_coeff": {"type": "number", "minimum": 0, "description": "Size-aware slippage: extra bps = coeff * (order_notional / asset_volume_24h). Conservative; not an order-book model."},
-        "latency_minutes": {"type": "integer", "minimum": 0, "description": "Delay from signal at hour T to fill, in minutes. Fill price is taken at T + latency."},
+        "latency_minutes": {"type": "integer", "const": 60, "description": "The installed hourly engine supports exactly 60 minutes from decision to outcome/fill interval."},
         "short_borrow_bps_per_day": {"type": "number", "minimum": 0, "description": "Borrow/funding cost in bps per day applied to short notional (short_assets). Absent/0 = no short cost (long-only specs)."}
       }
     }

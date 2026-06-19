@@ -20,14 +20,14 @@ def sh(*args):
 
 
 # Only these .env keys hold actual secrets. Other keys (RPC/MCP URLs) are public config.
-SECRET_KEYS = {"CMC_API_KEY", "X402_BASE_PRIVATE_KEY", "ATTEST_PRIVATE_KEY",
+SECRET_KEYS = {"CMC_API_KEY", "CMC_PRO_API_KEY", "X402_BASE_PRIVATE_KEY", "ATTEST_PRIVATE_KEY",
                "ATTEST_SALT_SEED", "GH_PAT", "BSCSCAN_API_KEY"}
 
 # Pattern-based deep scan (independent of .env — works on a fresh clone with no secrets).
 # A secret leaks as an ASSIGNMENT `KEY=<value>`; the on-chain commit hashes that fill the repo are
 # 64-hex too but never appear in that form, so this catches real leaks with zero hash false-positives.
 SECRET_ASSIGN = re.compile(
-    r"(CMC_API_KEY|X402_BASE_PRIVATE_KEY|ATTEST_PRIVATE_KEY|ATTEST_SALT_SEED|GH_PAT|"
+    r"(CMC_API_KEY|CMC_PRO_API_KEY|X402_BASE_PRIVATE_KEY|ATTEST_PRIVATE_KEY|ATTEST_SALT_SEED|GH_PAT|"
     r"BSCSCAN_API_KEY|PRIVATE_KEY|SALT_SEED)"
     r"['\"]?\s*[:=]\s*['\"]?"
     # value must itself be credential-SHAPED, so code refs (os.environ["ATTEST_PRIVATE_KEY"]) and

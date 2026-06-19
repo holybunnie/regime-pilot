@@ -5,8 +5,6 @@ description: |
   The LLM ONLY authors the JSON spec; a separate deterministic engine executes it and produces results, so outputs are reproducible and lookahead-proof.
   Trigger: "trading strategy", "backtest", "regime", "build a strategy", "strategy skill", "compile strategy", "/regime-pilot"
 license: MIT
-compatibility: ">=1.0.0"
-user-invocable: true
 allowed-tools:
   - Read
   - Write
@@ -34,9 +32,10 @@ make a strategy "work"; only change the spec.
 
 - The repo's schema at `spec/schema.json` (the contract you must satisfy).
 - The validator `cli/validate_spec.py` and engine `engine/backtest.py`.
-- Know what data is actually available (it gates which features are legal). On the current tier:
-  **price (per asset and BTC), 24h volume, Fear & Greed, global metrics** are available;
-  **funding rate / open interest are NOT**. If you reference an unavailable source the engine
+- Know what data the installed engine actually executes (it gates which features are legal):
+  **price (per asset and BTC), 24h dollar volume, and Fear & Greed** are available.
+  **Global metrics, funding rate, and open interest are NOT executable in this version.** If you
+  reference an unavailable source the validator
   raises — so do not. When unsure, confirm availability with the CMC tools before designing around
   a feature.
 
@@ -84,6 +83,11 @@ until it prints `VALID`. Do not proceed on an invalid spec.
 Run `python engine/backtest.py <spec> <outdir>` for results, and `python falsify/report.py <spec>`
 for the falsification report (walk-forward, perturbation, shuffle canary, deflated Sharpe,
 ablation). Present results honestly (see Important Notes).
+
+The current engine executes hourly strategies with exactly 60 minutes of signal-to-fill latency,
+uses `volume_24h` for asset ranking, and supports `price`, `btc_price`, `volume_24h`, and
+`fear_greed` feature sources. Do not emit optional schema fields unless the validator confirms the
+installed engine supports them.
 
 ## Handling impossible intents
 

@@ -6,9 +6,10 @@ PY := python3
         verify-spec verify-engine verify-falsification verify-secrets verify-x402 \
         verify-environment verify-data verify-skill verify-strategy verify-attestation \
         verify-framing verify-readme verify-universe verify-datasource \
+        verify-cmc-pro \
         verify-docs-consistency verify-datasources verify-attest-race \
         attest-dryrun-verify verify-self-audit \
-        data backtest falsify demo clean \
+        data data-cmc backtest falsify demo clean \
         attest-deploy attest-commit attest-status attest-reveal attest-verify x402-pay x402-plan
 
 help:
@@ -22,13 +23,15 @@ help:
 	@echo "  make verify-falsification   Falsification battery + deflated-Sharpe known-answer"
 	@echo "  make verify-x402            x402 payment real + plan recomputes"
 	@echo "  make verify-secrets         No secrets in files or git history"
+	@echo "  make verify-skill           Skill package + deterministic handoff"
 	@echo "  make verify-attest-race     Duplicate-commit race is closed"
 	@echo "  make attest-verify          Every on-chain commit accounted for (offline snapshot)"
 	@echo "  make attest-dryrun-verify   Reveal rehearsal: commit->reveal->verify on in-memory EVM"
 	@echo "  -- claim-based gates (live; part of verify-full) --"
 	@echo "  make verify-environment     External deps + credentials reachable"
 	@echo "  make verify-data            Cached data has no gaps/dupes; matches source"
-	@echo "  make verify-skill           Skill installable + LLM quarantined"
+	@echo "  make verify-cmc-pro         Confirm upgraded key serves hourly CMC OHLCV"
+	@echo "  make data-cmc               Build separate inactive CMC Pro shadow cache"
 	@echo "  make verify-strategy        Flagship backtest runs; embargo enforced"
 	@echo "  make verify-attestation     Live contract + commits verify on-chain"
 
@@ -75,6 +78,9 @@ verify-datasources:
 verify-attest-race:
 	PYTHONPATH=. $(PY) cli/verify_attest_race.py
 
+verify-skill:
+	PYTHONPATH=. $(PY) cli/verify_skill.py
+
 attest-verify:
 	PYTHONPATH=. $(PY) attest/verify.py
 
@@ -91,8 +97,8 @@ verify-environment:
 verify-data:
 	$(PY) cli/verify_data.py
 
-verify-skill:
-	$(PY) cli/verify_skill.py
+verify-cmc-pro:
+	PYTHONPATH=. $(PY) cli/verify_cmc_pro.py
 
 verify-strategy:
 	$(PY) cli/verify_strategy.py
@@ -108,20 +114,25 @@ verify:
 verify-full: verify
 	@echo
 	@echo "######## LIVE CHECKS (need CMC key + make data) ########"
-	@$(PY) cli/verify_environment.py || true
+	@$(PY) cli/verify_environment.py
 	@echo
-	@$(PY) cli/verify_data.py || true
+	@PYTHONPATH=. $(PY) cli/verify_cmc_pro.py
 	@echo
-	@$(PY) cli/verify_skill.py || true
+	@$(PY) cli/verify_data.py
 	@echo
-	@$(PY) cli/verify_strategy.py || true
+	@PYTHONPATH=. $(PY) cli/verify_skill.py
 	@echo
-	@PYTHONPATH=. $(PY) cli/verify_attestation.py || true
+	@$(PY) cli/verify_strategy.py
+	@echo
+	@PYTHONPATH=. $(PY) cli/verify_attestation.py
 	@echo "#######################################################"
 
 # ---- build / run ----
 data:
 	$(PY) engine/data/fetch.py
+
+data-cmc:
+	$(PY) engine/data/cmc_pro.py
 
 backtest:
 	$(PY) engine/backtest.py

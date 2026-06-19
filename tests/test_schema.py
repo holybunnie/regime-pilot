@@ -65,6 +65,54 @@ def malformed_cases():
     def _(s):
         s["surprise"] = {"x": 1}; return s
 
+    @case("duplicate feature names")
+    def _(s):
+        s["features"].append(copy.deepcopy(s["features"][0])); return s
+
+    @case("duplicate regime names")
+    def _(s):
+        s["regimes"].append(copy.deepcopy(s["regimes"][0])); return s
+
+    @case("explicit universe without symbols")
+    def _(s):
+        s["universe"] = {"source": "explicit"}; return s
+
+    @case("missing final catch-all regime")
+    def _(s):
+        s["regimes"][-1]["predicate"] = {"const_bool": False}; return s
+
+    @case("invalid created_at date")
+    def _(s):
+        s["meta"]["created_at"] = "not-a-date"; return s
+
+    @case("unsupported feature source")
+    def _(s):
+        s["features"][0]["source"] = "global_market_cap"; return s
+
+    @case("unsupported ranking method")
+    def _(s):
+        s["playbooks"]["risk_on"]["select"]["rank_by"] = "feature"
+        s["playbooks"]["risk_on"]["select"]["feature"] = "btc_now"
+        return s
+
+    @case("staged reentry missing requirements")
+    def _(s):
+        s["playbooks"]["risk_on"] = {"action": "staged_reentry"}; return s
+
+    @case("short action without borrow cost")
+    def _(s):
+        s["playbooks"]["risk_on"]["action"] = "short_assets"
+        s["costs"].pop("short_borrow_bps_per_day", None)
+        return s
+
+    @case("unsupported latency")
+    def _(s):
+        s["costs"]["latency_minutes"] = 5; return s
+
+    @case("playbook entry rule is not executable")
+    def _(s):
+        s["playbooks"]["risk_on"]["entry"] = {"const_bool": True}; return s
+
     return cases
 
 
@@ -107,6 +155,10 @@ def main():
         return 1
     print("ALL SCHEMA TESTS PASS")
     return 0
+
+
+def test_schema_contract():
+    assert main() == 0
 
 
 if __name__ == "__main__":

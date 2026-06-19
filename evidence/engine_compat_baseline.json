@@ -1,0 +1,10 @@
+{
+  "description": "Known-answer hashes produced by the pre-fix frozen engine on deterministic synthetic panels. Any engine repair must preserve all three legacy results.",
+  "fixture_hours": 5200,
+  "numpy_seed": 20260619,
+  "results": {
+    "skill/examples/momentum_simple.spec.json": "afa362eae1b12b27dbdccccf76cc965419643d72db41966161fca144c63c0438",
+    "spec/regime_pilot.spec.json": "ff5f4e8b4148b678826d2faabc625b7d7e76f9c5d153a440c693dc0cf04ceab4",
+    "spec/regime_pilot_v2.spec.json": "567c97c553578a87fbef8ec370d07b18186ec13a0b7b8d52a589cc59a70a83a8"
+  }
+}

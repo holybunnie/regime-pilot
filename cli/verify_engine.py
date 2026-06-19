@@ -27,7 +27,8 @@ def main():
     use_fixture_cache()                      # route engine at the synthetic fixture
     rc1 = _run("tests/test_engine.py")
     rc2 = _run("tests/test_sizing.py")
-    return 0 if (rc1 in (0, None) and rc2 in (0, None)) else 1
+    rc3 = _run("tests/test_engine_compat.py")
+    return 0 if all(rc in (0, None) for rc in (rc1, rc2, rc3)) else 1
 
 
 if __name__ == "__main__":

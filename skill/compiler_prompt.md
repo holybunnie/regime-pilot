@@ -10,12 +10,10 @@ into ONE JSON object that validates against `spec/schema.json`. Output nothing b
 1. **Closed grammar only.** Predicates are an AST of and/or/not + comparisons over feature
    references and numeric constants. No code, no functions, no fields outside the schema
    (`additionalProperties:false` everywhere — extra keys fail validation).
-2. **Legal data sources only:** `price, volume_24h, market_cap, btc_price, global_market_cap,
-   global_volume, fear_greed` (and `funding_rate, open_interest` ONLY if the user confirms their
-   tier exposes them — default: assume NOT available). Referencing an unfetched source makes the
-   engine raise.
-3. **Asset ranking** uses `volume_24h` (liquidity). `market_cap` ranking needs a snapshot not on
-   the free tier — avoid unless confirmed.
+2. **Legal executable data sources only:** `price, volume_24h, btc_price, fear_greed`.
+   Do not emit global metrics, market cap, funding rate, or open interest until both the schema and
+   installed engine implement them.
+3. **Asset ranking** uses `volume_24h` (liquidity). No fallback ranking is permitted.
 4. **`sizing.asset_vol_feature` must name a `realized_vol` feature.**
 5. **Every regime needs a playbook**; the last regime should be the catch-all `{"const_bool":true}`.
 6. **`meta.configurations_tried`** = honest total of distinct parameter configs explored.
@@ -35,6 +33,9 @@ into ONE JSON object that validates against `spec/schema.json`. Output nothing b
 `hold_assets` (long the selection) · `short_assets` (short the selection; set
 `costs.short_borrow_bps_per_day`) · `staged_reentry` (scale in as `reentry_feature` recovers) ·
 `mean_revert` (single most-liquid pair) · `flat` (cash).
+
+The installed hourly engine requires `costs.latency_minutes` to be exactly `60`. Use
+`regimes[].persistence_hours` for executable hysteresis; do not rely on playbook entry/exit rules.
 
 ## Method (trader's discipline)
 - Translate the *economic* thesis first; choose thresholds by reasoning/symmetry, not by searching

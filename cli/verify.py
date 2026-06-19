@@ -45,14 +45,17 @@ def run_pyfile(path, argv=None):
 
 
 def gate_frozen():
-    """Item 0: every frozen file byte-identical to baseline, except the approved
-    guard-only change to commit_hour.py (Item 2)."""
+    """Item 0: every frozen file matches its baseline or an approved documented hash."""
     baseline = {}
     for line in (REPO / "evidence" / "frozen_set_baseline.txt").read_text().splitlines():
         h, _, f = line.partition("  ")
         baseline[f.strip()] = h.strip()
-    approved = {"attest/commit_hour.py":
-                "797d7fea4e4559417592b674dc9b31affc90ec7a9c4e37d1f850e7fc01f854f3"}
+    approved = {
+        "attest/commit_hour.py":
+            "797d7fea4e4559417592b674dc9b31affc90ec7a9c4e37d1f850e7fc01f854f3",
+        "engine/backtest.py":
+            "b6f6eb071444d8e5a68c96fc211359efd443cc3ec48c0565bc52d107188c6869",
+    }
     out, ok = [], True
     for f, want in baseline.items():
         got = hashlib.sha256((REPO / f).read_bytes()).hexdigest()
@@ -82,13 +85,15 @@ ITEMS = [
       ("sizing", lambda: run_pyfile("tests/test_sizing.py")),
       ("deflated-sharpe", lambda: run_pyfile("tests/test_deflated_sharpe.py")),
       ("falsification", lambda: run_pyfile("cli/verify_falsification.py"))]),
+    ("Skill", "Skill package valid; examples execute deterministically",
+     [("skill", lambda: run_pyfile("cli/verify_skill.py"))]),
     ("6", "Attestation unit test runs on pinned deps (in-memory EVM)",
      [("test_attest", lambda: run_pyfile("tests/test_attest.py"))]),
     ("8", "Universe: 149-token file valid; one-switch swap",
      [("universe", lambda: run_pyfile("cli/verify_universe.py"))]),
     ("9/10", "README self-contained, system-first; source claim reworded",
      [("readme", lambda: run_pyfile("cli/verify_readme.py"))]),
-    ("11", "CMC Pro datasource abstraction ready (optional)",
+    ("11", "CMC Pro adapter ready; source cutover remains explicit",
      [("datasource", lambda: run_pyfile("cli/verify_datasource.py"))]),
     ("12", "HANDOFF consistent with STATUS",
      [("docs", lambda: run_pyfile("cli/verify_docs_consistency.py"))]),
@@ -135,7 +140,7 @@ def main():
             print(f"## Item{item} / {label}:\n{out.strip()[-1500:]}\n")
     print("###############################################################")
     print(f"RESULT: {npass} PASS, {nfail} FAIL — "
-          + ("safe to submit (offline gates)" if nfail == 0 else "NOT READY"))
+          + ("offline gates passed" if nfail == 0 else "NOT READY"))
     return 0 if nfail == 0 else 1
 
 

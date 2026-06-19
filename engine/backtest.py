@@ -38,17 +38,23 @@ class LookaheadError(Exception):
 # --------------------------------------------------------------- data loading
 def load_panels(symbols, benchmark="BTC"):
     closes, vols = {}, {}
-    for s in symbols:
+    load_symbols = list(dict.fromkeys([*symbols, benchmark]))
+    for s in load_symbols:
         df = pd.read_parquet(CACHE / f"ohlcv_{s}.parquet")
         closes[s] = df["close"]
-        vols[s] = df["close"] * df["volume"]            # dollar volume proxy
-    close = pd.DataFrame(closes).sort_index()
-    dvol = pd.DataFrame(vols).sort_index()
+        if "volume_24h_usd" in df:
+            vols[s] = df["volume_24h_usd"]
+        else:
+            vols[s] = (df["close"] * df["volume"]).rolling(24, min_periods=1).sum()
+    close_all = pd.DataFrame(closes).sort_index()
+    dvol_all = pd.DataFrame(vols).sort_index()
+    close = close_all[symbols]
+    dvol = dvol_all[symbols]
     idx = close.index
     fg = pd.read_parquet(CACHE / "fear_greed.parquet")["fear_greed"]
     fg_h = fg.reindex(idx.union(fg.index)).sort_index().ffill().reindex(idx)
-    return {"close": close, "dvol24": dvol.rolling(24, min_periods=1).sum(),
-            "btc": close[benchmark], "fear_greed": fg_h, "index": idx}
+    return {"close": close, "dvol24": dvol,
+            "btc": close_all[benchmark].reindex(idx), "fear_greed": fg_h, "index": idx}
 
 
 # --------------------------------------------------------- feature computation
@@ -181,16 +187,19 @@ def select_assets(playbook, feats_row, panels, t, universe):
     sel = playbook.get("select", {})
     rank_by = sel.get("rank_by", "volume_24h")
     top_n = sel.get("top_n", len(universe))
-    avail = [a for a in universe if not np.isnan(panels["close"][a].asof(t))]
+    accessor = GuardedAccessor(panels["close"])
+    avail = []
+    for asset in universe:
+        try:
+            price = accessor.decision_price(asset, t)
+        except LookaheadError:
+            continue
+        if price is not None and not np.isnan(price):
+            avail.append(asset)
     if rank_by == "volume_24h":
         avail.sort(key=lambda a: panels["dvol24"][a].asof(t - pd.Timedelta(hours=1)), reverse=True)
-    elif rank_by == "feature":
-        # ranking feature must be per-asset; fall back to liquidity if not resolvable here
-        avail.sort(key=lambda a: panels["dvol24"][a].asof(t - pd.Timedelta(hours=1)), reverse=True)
     else:
-        raise NotImplementedError(
-            f"rank_by='{rank_by}' needs a market-cap snapshot not in the current data tier; "
-            f"use volume_24h. See ASSUMPTIONS.md.")
+        raise NotImplementedError(f"rank_by='{rank_by}' is not implemented; use volume_24h")
     return avail[:top_n]
 
 
@@ -234,7 +243,35 @@ def target_weights(spec, row, panels, t, regime, dd, ladder, universe):
             wt = min(gross / len(chosen), risk["per_asset_cap"])
             for a in chosen:
                 w[a] = -wt
+    gross_now = sum(abs(v) for v in w.values())
+    if gross_now > risk["max_gross_exposure"] and gross_now > 0:
+        scale = risk["max_gross_exposure"] / gross_now
+        w = {a: value * scale for a, value in w.items()}
     return w
+
+
+def resolve_universe(spec, eligible=None):
+    """Resolve the strategy's trade universe without silently ignoring spec filters.
+
+    `eligible_list` starts from the committed eligible-token file and optionally applies
+    `symbols` as an allow-list. `explicit` uses symbols verbatim. Exclusions are then applied.
+    Market-cap/volume fields describe how the eligible list was admitted; dynamic filtering is
+    intentionally not performed without point-in-time membership data.
+    """
+    if eligible is None:
+        eligible = [t["symbol"] for t in
+                    json.loads((REPO / "spec" / "universe.json").read_text())["tokens"]]
+    cfg = spec["universe"]
+    if cfg["source"] == "explicit":
+        universe = list(cfg["symbols"])
+    else:
+        allow = set(cfg.get("symbols", eligible))
+        universe = [symbol for symbol in eligible if symbol in allow]
+    excluded = set(cfg.get("exclude_symbols", []))
+    universe = [symbol for symbol in universe if symbol not in excluded]
+    if not universe:
+        raise ValueError("strategy universe resolves to zero assets")
+    return universe
 
 
 def run(spec, universe=None, end=None, panels=None, feats=None):
@@ -244,8 +281,11 @@ def run(spec, universe=None, end=None, panels=None, feats=None):
     Optional `panels`/`feats` injection (default None = compute normally) lets the
     falsification suite reuse data/features across variants and feed shuffled data.
     These are additive: the live attestation path (compute_signal) never calls run()."""
-    universe = universe or [t["symbol"] for t in
-                            json.loads((REPO / "spec" / "universe.json").read_text())["tokens"]]
+    from cli.validate_spec import validate
+    valid, errors = validate(spec)
+    if not valid:
+        raise ValueError("invalid strategy spec: " + "; ".join(errors))
+    universe = universe or resolve_universe(spec)
     if panels is None:
         panels = load_panels(universe)
     if feats is None:

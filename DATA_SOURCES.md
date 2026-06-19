@@ -8,6 +8,7 @@ the code and that no code call-site host is missing from this table.
 |---|---|---|---|---|---|
 | `data-api.binance.vision` `/api/v3/klines` | none | Historical hourly **OHLCV (close + volume)** for the backtest **and** the live attested signal's prices | free | cached (incremental) | `engine/data/fetch.py` (BINANCE, `_fetch_klines_page`) |
 | `pro-api.coinmarketcap.com` `/v3/fear-and-greed/historical` | `CMC_API_KEY` (`X-CMC_PRO_API_KEY`) | The **Fear & Greed sentiment** series → `fg_level` / `fg_delta_7d` features → regime → **the attested signal** | free tier | cached | `engine/data/fetch.py` (`fetch_fear_greed`) |
+| `pro-api.coinmarketcap.com` `/v2/cryptocurrency/ohlcv/historical` | `CMC_API_KEY` (`X-CMC_PRO_API_KEY`) | Separate **CMC Pro hourly OHLCV shadow cache** for the versioned post-reveal cutover; not selected by frozen v2 | Pro | inactive shadow cache | `engine/data/cmc_pro.py` (`fetch_chunk`) |
 | `pro-api.coinmarketcap.com` `/v1/key/info` | `CMC_API_KEY` | Key-validity check only (environment gate) | free | live | `cli/verify_environment.py` |
 | `mcp.coinmarketcap.com` `/mcp` | none | Reachability probe only (environment gate) | free | live | `cli/verify_environment.py` |
 | `mcp.coinmarketcap.com` `/x402/mcp` | `X402_BASE_PRIVATE_KEY` (Base wallet, EIP-3009) | The one **real $0.01 USDC** paid request (CMC derivatives proof) | paid $0.01 | live, one-shot (evidence saved) | `x402plan/pay_x402.py` |
@@ -31,10 +32,10 @@ but `make verify-full` / `verify-environment` and the live Fear & Greed fetch fa
 operator's **free CMC tier blocks all historical price endpoints** (verified, error 1006), so a
 real 12-month backtest at $0 needs a free price source.
 
-**The honest one-liner.** Price/OHLCV = Binance public klines; sentiment (Fear & Greed) + the
-x402 proof = CoinMarketCap. CMC Pro would let prices *also* come first-party — a data-coherence
-upgrade, wired but optional (see Item 11 / `DATA_PLAN.md`); it is not expected to manufacture an
-edge, and the attested forward record stands either way.
+**The honest one-liner.** Frozen v1/v2 price/OHLCV = Binance public klines; sentiment = CMC.
+CMC Pro has now been provisioned and the separate first-party adapter is built, but source presence
+does not silently rewrite the live record. CMC-only operation begins at an explicit versioned
+cutover after reveal.
 
 **FROZEN-SET note.** `engine/data/fetch.py` is on the live committer's path, so both Binance
 (prices) and CMC (Fear & Greed) feed the attested signals. The CMC key therefore matters to the

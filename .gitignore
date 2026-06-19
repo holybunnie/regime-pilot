@@ -24,6 +24,7 @@ out/
 
 # Data cache (regenerable, can be large)
 engine/data/cache/
+engine/data/cache_cmc/
 *.parquet
 *.sqlite
 

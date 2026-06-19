@@ -168,11 +168,11 @@ parameter perturbation. The live, on-chain forward test is the real arbiter.
 
 ## Honest limitations
 
-- **Hybrid data.** Backtest prices are sourced from a free public OHLCV source; CMC supplies the
+- **Versioned data transition.** Frozen v1/v2 backtest prices are sourced from a free public OHLCV source; CMC supplies the
   sentiment feature, the live forward signal inputs, and the x402 derivatives proof. CMC Pro was
-  not available during the build; wiring it is an optional config upgrade that improves data
-  *coherence* (first-party CMC prices, longer history, derivatives) but is **not** expected to
-  manufacture an edge — see `DATA_PLAN.md` and `DATA_SOURCES.md`.
+  provisioned on June 19, 2026 and the separate first-party hourly adapter is built. It is not
+  silently substituted into the frozen evidence: CMC-only prices begin with an explicit post-reveal
+  version cutover — see `DATA_PLAN.md` and `DATA_SOURCES.md`.
 - **Interim universe.** 15 liquid majors pending the brief's official 149-token list
   (`spec/universe_official_149.json` ships ready; flip with one config line).
 - **Ranking proxy.** Assets are ranked by 24h dollar-volume (circulating-supply / market-cap
@@ -194,6 +194,7 @@ make verify           # OFFLINE scoreboard — no secrets, no network, no downlo
 of the on-chain ledger. For the live checks:
 ```bash
 make verify-full      # live: needs a CMC API key + `make data` (downloads market data)
+make verify-cmc-pro   # confirms the upgraded key serves hourly historical CMC OHLCV
 ```
 
 | Claim | Command |

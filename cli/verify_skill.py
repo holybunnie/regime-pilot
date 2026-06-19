@@ -12,6 +12,7 @@ Run: python cli/verify_skill.py   (or: make verify-skill)
 """
 import hashlib
 import json
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -24,7 +25,36 @@ from engine import backtest as bt         # noqa: E402
 
 SKILL = REPO / "skill" / "SKILL.md"
 PROMPT = REPO / "skill" / "compiler_prompt.md"
-FRONTMATTER_KEYS = ["name:", "description:", "license:", "compatibility:", "user-invocable:", "allowed-tools:"]
+AGENT_CONFIG = REPO / "skill" / "agents" / "openai.yaml"
+REQUIRED_FRONTMATTER = {"name", "description"}
+ALLOWED_FRONTMATTER = {"name", "description", "license", "metadata", "allowed-tools"}
+
+
+def _frontmatter(path):
+    text = path.read_text()
+    if not text.startswith("---\n"):
+        return {}, ["SKILL.md must start with YAML frontmatter"]
+    parts = text.split("---\n", 2)
+    if len(parts) < 3:
+        return {}, ["SKILL.md frontmatter is not closed"]
+    keys = {}
+    for line in parts[1].splitlines():
+        if not line or line[0].isspace() or line.lstrip().startswith("#"):
+            continue
+        m = re.match(r"^([a-zA-Z0-9_-]+):(?:\s*(.*))?$", line)
+        if m:
+            keys[m.group(1)] = (m.group(2) or "").strip()
+    errors = []
+    missing = REQUIRED_FRONTMATTER - set(keys)
+    extra = set(keys) - ALLOWED_FRONTMATTER
+    if missing:
+        errors.append(f"missing frontmatter keys: {sorted(missing)}")
+    if extra:
+        errors.append(f"unsupported frontmatter keys: {sorted(extra)}")
+    name = keys.get("name", "").strip("\"'")
+    if not re.fullmatch(r"[a-z0-9-]{1,64}", name):
+        errors.append("name must be 1-64 lowercase letters, digits, or hyphens")
+    return keys, errors
 
 
 def _hash_dir(d):
@@ -44,9 +74,17 @@ def main():
 
     check(SKILL.exists(), "skill/SKILL.md exists")
     if SKILL.exists():
-        head = SKILL.read_text()[:1200]
-        for k in FRONTMATTER_KEYS:
-            check(k in head, f"SKILL.md frontmatter has {k}")
+        frontmatter, errors = _frontmatter(SKILL)
+        check(not errors, "SKILL.md has valid installable frontmatter"
+              + ("" if not errors else f": {errors}"))
+        check(frontmatter.get("name", "").strip("\"'") == "regime-pilot",
+              "skill folder/name identity is regime-pilot")
+    check(AGENT_CONFIG.exists(), "skill/agents/openai.yaml exists")
+    if AGENT_CONFIG.exists():
+        agent_text = AGENT_CONFIG.read_text()
+        check("$regime-pilot" in agent_text, "agent default prompt invokes $regime-pilot")
+        check("display_name:" in agent_text and "short_description:" in agent_text,
+              "agent UI metadata is present")
     check(PROMPT.exists(), "skill/compiler_prompt.md exists")
 
     intents = sorted((REPO / "skill" / "examples").glob("*.intent.md"))
@@ -62,6 +100,8 @@ def main():
         check(ok, f"validates: {sp.relative_to(REPO)}" + ("" if ok else f" -> {errs}"))
 
     # determinism on an example spec (downstream purity)
+    from cli._fixture import use_fixture_cache
+    use_fixture_cache()
     ex = json.loads((REPO / "skill" / "examples" / "momentum_simple.spec.json").read_text())
     with tempfile.TemporaryDirectory() as a, tempfile.TemporaryDirectory() as b:
         bt.write_outputs(bt.run(ex), a)
@@ -72,7 +112,7 @@ def main():
     if fails:
         print(f"RESULT: {len(fails)} problem(s).")
         return 1
-    print("ALL PHASE 3 CHECKS PASS")
+    print("ALL SKILL CHECKS PASS")
     return 0
 
 

@@ -1,19 +1,25 @@
 # STATUS — Regime Pilot (plain English, for the operator)
 
-**Last updated:** 2026-06-15 · **Freeze:** 2026-06-21 13:00 UTC.
+**Last updated:** 2026-06-19 · **Freeze:** 2026-06-21 13:00 UTC.
 **Repo:** https://github.com/holybunnie/regime-pilot · **Contract:** [`0xB874…21c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
 
 ## Bottom line
 **All components are built, tested, committed, and live on `main`.** `make verify` (offline) passes
 top to bottom on a fresh clone with no secrets and no downloaded data; `make verify-full` is
-**confirmed passing live** (CMC Basic key + `make data`) — data integrity, skill, strategy, and the
+**previously confirmed passing live** (CMC Basic key + `make data`) — data integrity, skill, strategy, and the
 full chain-complete attestation all green. The on-chain attestation runs itself every hour (now with
 the duplicate-commit guard live), and the **contract source is verified on BscScan** (exact bytecode
 + ABI match). The only remaining live event is the **reveal on June 20–21** — scripted, and already
 rehearsed end-to-end against a real EVM (`attest/REVEAL_DRYRUN.md`).
 
-**Not yet (non-blocking):** CMC **Pro** access (waiting on the team — optional upgrade, not in the
-live committer path); the official **149-token** universe (file ready, interim 15 active).
+**New but deliberately inactive:** the operator reports CMC **Pro** access is provisioned. The real
+hourly CMC OHLCV adapter and shadow cache path are built, but the frozen v2 committer remains on its
+original source through reveal. Run `make verify-cmc-pro` in the secret-bearing environment, then
+perform a documented v3 cutover after reveal. The official **149-token** universe remains pending.
+
+**CMC Pro verified 2026-06-19:** hourly historical access passes; a separate 364-day, 15-asset
+shadow cache was built successfully and the current v2 strategy completed a CMC-backed shadow
+backtest. This does not activate CMC for the cron.
 
 ## Scoreboard
 | Component | State | One-line summary |
@@ -21,7 +27,7 @@ live committer path); the official **149-token** universe (file ready, interim 1
 | Environment / credentials | ✅ DONE | Machine, APIs, BSC chains, wallet, CMC tier verified live. `make verify-environment` (live). |
 | Data layer | ✅ DONE | 15 tokens hourly OHLCV + CMC Fear&Greed; 0 gaps, source spot-check. `make verify-data` (live). |
 | Spec schema | ✅ DONE | Closed-grammar JSON schema; malformed specs rejected. `make verify-spec`. |
-| Skill (compiler) | ✅ DONE | Installable CMC-format SKILL.md + compiler prompt + example intents. `make verify-skill`. |
+| Skill (compiler) | ✅ DONE | Valid current skill package + agent metadata + compiler prompt + examples. `make verify-skill`. |
 | Backtest engine | ✅ DONE | Deterministic + no-lookahead, proven on a committed fixture. `make verify-engine`. |
 | Flagship strategy | ✅ DONE | v1 (−10.4%) + v2 (−10.9%) vs BTC −44.7%. Embargo enforced. `make verify-strategy` (live). |
 | Falsification | ✅ DONE | Walk-forward, perturbation, shuffle canary (passed), deflated Sharpe, ablation. `make verify-falsification`. |
@@ -59,8 +65,8 @@ forward test*, which is accruing now and will be the real arbiter.
 1. **The official 149-token universe list** → replace `spec/universe_official_149.json` and flip the
    one config line (`make verify-universe` validates the swap). Until then we run a verified interim
    set of 15 liquid majors; the engine is universe-agnostic.
-2. (Optional) a CMC Pro API key — wires in as a config upgrade (`make verify-datasource`); not
-   required, does not change the attested forward record.
+2. After reveal, choose the exact v3 cutover hour. CMC Pro access and the shadow cache are verified;
+   activation remains intentionally separate from the frozen v2 forward record.
 
 ## How to see it all
 ```bash

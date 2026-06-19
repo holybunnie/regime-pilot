@@ -1,7 +1,7 @@
 # FROZEN SET — approved changes log
 
 The baseline of every live-committer runtime file is `frozen_set_baseline.txt` (recorded
-before any work). This file logs the **only** operator-approved exception.
+before any work). This file logs every operator-approved exception.
 
 ## 1. attest/commit_hour.py — guard-only change (Item 2), operator-approved
 
@@ -24,9 +24,34 @@ on-chain hash are byte-identical:
 Proof: `diff -u` shows only added guard blocks (import, `locked_hour`, lock acquire, on-chain
 guard, `finally` release). The committer still signs exactly the same hash for any given hour.
 
-## 2. All other 12 frozen-set files — byte-identical
+## 2. engine/backtest.py — contract hardening with legacy-result compatibility
+
+**Approval:** operator requested the comprehensive audit fixes while explicitly requiring that the
+hourly cron continue uninterrupted.
+
+| | sha256 |
+|---|---|
+| before (baseline) | `b7390788fdd458fc26b41b8fe233766f6b35f180a6e9b0f18e07dc9ca5f29105` |
+| after (approved)  | `b6f6eb071444d8e5a68c96fc211359efd443cc3ec48c0565bc52d107188c6869` |
+
+**Correctness-only changes:**
+- Validate every spec before execution.
+- Apply explicit symbol allow-lists and exclusions.
+- Make unsupported ranking fail instead of silently falling back.
+- Use the no-lookahead accessor in asset availability checks.
+- Enforce `max_gross_exposure` after every action, including staged re-entry.
+- Accept CMC's normalized `volume_24h_usd` without multiplying or rolling it again.
+- Load BTC benchmark data even when an explicit trade universe excludes BTC.
+
+**What did NOT change:** the active v1/v2 strategy meaning, Binance cache interpretation, regime
+logic, sizing law, costs, fills, or signal hash recipe. `tests/test_engine_compat.py` regenerates
+three deterministic synthetic runs using a baseline captured from the pre-fix engine and requires
+byte-derived result hashes for the momentum example, v1, and live v2 to remain identical. The CMC
+adapter writes a separate inactive cache and is not selected by the hourly workflow.
+
+## 3. All other 11 frozen-set files — byte-identical
 
 `.github/workflows/attest.yml` was **not** changed (Option 1 keeps `cancel-in-progress: false`).
 Every other frozen file matches `frozen_set_baseline.txt` exactly. Verify:
 
-    sha256sum -c evidence/frozen_set_baseline.txt   # 12 OK; commit_hour.py is the approved change above
+    sha256sum -c evidence/frozen_set_baseline.txt   # 11 OK; two approved changes are logged above
