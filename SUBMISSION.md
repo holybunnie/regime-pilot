@@ -91,12 +91,23 @@ net-of-data-cost plan.
 
 ## Reproduce
 
+One-time setup on macOS or Linux:
+
 ```bash
+git clone https://github.com/holybunnie/regime-pilot.git
+cd regime-pilot
+python3 -m venv .venv
+source .venv/bin/activate
+make setup
 make verify          # 13 offline claim gates; no key or network required
 python3 -m pytest -q # 17 tests
 make demo            # regenerates the presentation bundle from local cache
 make attest-verify   # chain-complete accounting; recomputes payloads after reveal
 ```
+
+Installing the pinned dependencies with `make setup` requires internet access once. The core
+`make verify` command is then offline. In later terminal sessions, activate the environment again
+with `source .venv/bin/activate`.
 
 Final check on June 19, 2026: all 13 offline gates, all 17 tests, the full live verification suite,
 CMC Pro capability, both data caches, the strategy run, and the BSC contract check passed.

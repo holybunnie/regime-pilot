@@ -189,13 +189,23 @@ parameter perturbation. The live, on-chain forward test is the real arbiter.
 
 ## Reproduce it yourself
 
+One-time setup on macOS or Linux (Python 3.12 recommended):
+
 ```bash
-make setup            # install pinned deps (Python 3.12)
-make verify           # OFFLINE scoreboard — no secrets, no network, no downloaded data
+git clone https://github.com/holybunnie/regime-pilot.git
+cd regime-pilot
+python3 -m venv .venv
+source .venv/bin/activate
+make setup            # install pinned Python dependencies into .venv
+make verify           # offline scoreboard: no secrets, network, or market-data download
 ```
-`make verify` runs on a fresh clone using a committed synthetic fixture and a committed snapshot
-of the on-chain ledger. Live verification uses current local caches and temporary output, so it
-does not rewrite the frozen published reports. For the live checks:
+
+Dependency installation requires internet access once. After `make setup` completes, `make verify`
+itself runs offline using a committed synthetic fixture and committed on-chain ledger snapshot.
+In a new terminal session, run `source .venv/bin/activate` before the verification commands.
+
+Live verification uses current local caches and temporary output, so it does not rewrite the frozen
+published reports. For the live checks:
 ```bash
 make verify-full      # live: needs CMC key + `make data` + `make data-cmc`
 make verify-cmc-pro   # confirms the upgraded key serves hourly historical CMC OHLCV
