@@ -61,7 +61,7 @@ forward test*, which is accruing now and will be the real arbiter.
   before them — a second hourly run for the same hour produced the same deterministic hash. They
   sign nothing new and are fully documented in `attest/RECONCILIATION.md`.
   The duplicate-commit race that caused them is now closed (`make verify-attest-race`). Through
-  2026-06-19T14:00Z, the public record contains 148 primary predictions across 152 decision hours:
+  2026-06-19T16:00Z, the public record contains 150 primary predictions across 154 decision hours:
   four hours are missing (97.4% coverage). `missed.log` contains six failure entries because some
   entries are retries for the same hour; one skipped scheduler hour produced no log entry. Nothing
   hidden — `make attest-verify` accounts for every on-chain id, online and offline, and is robust

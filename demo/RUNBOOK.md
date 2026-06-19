@@ -42,8 +42,8 @@ Show the BscScan contract, one old transaction, then `attest__VERIFICATION.md`.
 
 “Each decision-hour signal is reduced to a hash and committed to BNB Smart Chain before that
 hour’s outcome. The block timestamp is the chain’s clock, not ours. The current public ledger has
-148 primary predictions; two duplicate transactions are disclosed as ids 7 and 26,
-and 4 decision hours are missing, for 97.4% coverage through June 19 at 14:00 UTC.
+150 primary predictions; two duplicate transactions are disclosed as ids 7 and 26,
+and 4 decision hours are missing, for 97.4% coverage through June 19 at 16:00 UTC.
 Nothing is silently dropped: the verifier starts from the contract’s own commit count.”
 
 “Before reveal, this proves existence, ordering, timing, and complete accounting while payloads

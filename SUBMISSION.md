@@ -72,7 +72,7 @@ verdict is intentional evidence that the verifier does not flatter its creators.
 
 - Contract: [`0xB87481e29b0Dce9545b1B00b8526810679B521c1`](https://bscscan.com/address/0xB87481e29b0Dce9545b1B00b8526810679B521c1)
 - Network: BNB Smart Chain mainnet
-- Public record through **2026-06-19T14:00Z**: **148 primary predictions across 152 decision
+- Public record through **2026-06-19T16:00Z**: **150 primary predictions across 154 decision
   hours (97.4% coverage)**
 - Disclosures: four missing decision hours and two byte-identical duplicate transactions, ids 7
   and 26

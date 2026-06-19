@@ -99,7 +99,7 @@ of it on-chain. The signal is computed only from data **strictly before** the de
 the T→T+1h outcome is realized** — so it is a genuine forward prediction, not a hindsight pick.
 
 The production record is disclosed as observed, not described as perfect: through
-**2026-06-19T14:00Z** it contains **148 primary predictions across 152 decision hours (97.4%
+**2026-06-19T16:00Z** it contains **150 primary predictions across 154 decision hours (97.4%
 coverage)**, four missing hours, and two byte-identical duplicate transactions (ids 7 and 26).
 The verifier starts from the contract's own commit count, so duplicates or unexplained ids cannot
 be hidden by omitting rows from the repository ledger.
