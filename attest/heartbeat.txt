@@ -1,1 +1,1 @@
-2026-06-21T13:03:54Z alive; committed id=193 hour=2026-06-21T13:00:00Z regime=downtrend
+2026-06-21T13:22:55Z alive; last decision 2026-06-21T13:00:00Z; no-op (already committed)
