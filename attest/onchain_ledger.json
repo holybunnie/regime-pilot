@@ -1542,5 +1542,13 @@
     "block_timestamp_utc": "2026-06-21T12:03:40Z",
     "revealed": false,
     "present_in_csv": true
+  },
+  {
+    "id": 193,
+    "hash": "0x6dad6cd0f3a072d3ecec2f1b627cc3f64e7c6b95f39c92c848b49fc5e30e25d8",
+    "block_number": 105530283,
+    "block_timestamp_utc": "2026-06-21T13:03:53Z",
+    "revealed": false,
+    "present_in_csv": true
   }
 ]
