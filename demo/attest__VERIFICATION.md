@@ -1,8 +1,8 @@
 # On-Chain Attestation Verification
 
 - Source: committed snapshot onchain_ledger.json
-- On-chain commits (commitCount): **205**
-- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 203
+- On-chain commits (commitCount): **206**
+- Status tally: DOCUMENTED-DUPLICATE 2, RECORDED 204
 
 | id | decision hour (UTC) | block ts (UTC) | status | note |
 |--:|---------------------|----------------|--------|------|
@@ -211,5 +211,6 @@
 | 202 | 2026-06-22T00:00:00Z | 2026-06-22T00:03:52Z | RECORDED ✅ | primary forward commit for 2026-06-22T00:00:00Z; payload sealed until reveal |
 | 203 | 2026-06-22T01:00:00Z | 2026-06-22T01:03:47Z | RECORDED ✅ | primary forward commit for 2026-06-22T01:00:00Z; payload sealed until reveal |
 | 204 | 2026-06-22T03:00:00Z | 2026-06-22T03:03:41Z | RECORDED ✅ | primary forward commit for 2026-06-22T03:00:00Z; payload sealed until reveal |
+| 205 | 2026-06-22T04:00:00Z | 2026-06-22T04:03:33Z | RECORDED ✅ | primary forward commit for 2026-06-22T04:00:00Z; payload sealed until reveal |
 
-**205 on-chain commits, all accounted for.**
+**206 on-chain commits, all accounted for.**
